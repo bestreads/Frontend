@@ -1,4 +1,3 @@
-import '../styles/global.css'; // Import global styles if needed, or component specific styles
 
 /**
  * Example reusable component

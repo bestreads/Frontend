@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ExampleComponent from '../components/ExampleComponent';
 import { fetchExampleData } from '../api/exampleService';
 import { formatDate } from '../utils/formatters';

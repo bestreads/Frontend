@@ -1,9 +1,9 @@
 /**
  * Formats a date object to a readable string.
- * @param {Date} date - The date to format.
- * @returns {string} The formatted date string.
+ * @param date - The date to format.
+ * @returns The formatted date string.
  */
-export const formatDate = (date) => {
+export const formatDate = (date: Date): string => {
     return new Intl.DateTimeFormat('de-DE', {
         year: 'numeric',
         month: 'long',

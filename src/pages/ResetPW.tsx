@@ -4,7 +4,7 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui
 import { Input } from "@/components/ui/input"
 import { Link } from "react-router"
 
-function Login() {
+function ResetPW() {
   return (
     <div className="flex w-full h-full items-center justify-center p-6">
       <div className="w-full max-w-xl">
@@ -13,9 +13,9 @@ function Login() {
         <div className="flex flex-col gap-6 m-6">
           <Card>
             <CardHeader>
-              <CardTitle>Anmeldung</CardTitle>
+              <CardTitle>Passwort zurücksetzen</CardTitle>
               <CardDescription>
-                Gib deine Email und dein Passwort an, um dich anzumelden.
+                Gib deine Email-Adresse ein. Wir senden dir einen Link zum Zurücksetzen deines Passworts.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -29,23 +29,14 @@ function Login() {
                       placeholder="beispiel@email.com"
                       required
                     />
+                    <FieldDescription>
+                      Wir senden dir einen Link an diese Email-Adresse.
+                    </FieldDescription>
                   </Field>
                   <Field>
-                    <div className="flex items-center">
-                      <FieldLabel htmlFor="password">Passwort</FieldLabel>
-                      <Link
-                        to="/reset-password"
-                        className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                      >
-                        Passwort vergessen?
-                      </Link>
-                    </div>
-                    <Input id="password" type="password" required />
-                  </Field>
-                  <Field>
-                    <Button type="submit">Login</Button>
+                    <Button type="submit">Link senden</Button>
                     <FieldDescription className="text-center">
-                      Noch kein Account? <Link to="/signup">Jetzt Registrieren!</Link>
+                      Zurück zur <Link to="/login">Anmeldung</Link>
                     </FieldDescription>
                   </Field>
                 </FieldGroup>
@@ -59,4 +50,4 @@ function Login() {
   )
 }
 
-export default Login
+export default ResetPW

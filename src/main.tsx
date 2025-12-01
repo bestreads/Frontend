@@ -6,7 +6,8 @@ import './style.css'
 import Home from './pages/Home.tsx'
 import Layout from './components/Layout.tsx';
 import Login from './pages/Login.tsx';
-import Register from './pages/Register.tsx';
+import Signup from './pages/Signup.tsx';
+import ResetPW from './pages/ResetPW.tsx';
 
 
 const router = createBrowserRouter([
@@ -20,11 +21,15 @@ const router = createBrowserRouter([
       },
       {
         path: "login",
-        element: <Login></Login>
+        element: <Login />
       },
       {
-        path: "register",
-        element: <Register></Register>
+        path: "signup",
+        element: <Signup />
+      },
+      {
+        path: "reset-password",
+        element: <ResetPW />
       }
     ]
   },

@@ -30,7 +30,7 @@ function Layout() {
 
       </header>
 
-      <main className="flex-1 bg-accent ">
+      <main className="flex-1 bg-background ">
         <Outlet />
       </main>
     </div>

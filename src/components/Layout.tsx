@@ -10,7 +10,7 @@ import {
 
 function Layout() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="h-screen flex flex-col">
       <header className="bg-amber-300 flex gap-3 p-3 place-content-center">
 
         <NavigationMenu>
@@ -30,7 +30,7 @@ function Layout() {
 
       </header>
 
-      <main className="flex-1">
+      <main className="flex-1 bg-accent ">
         <Outlet />
       </main>
     </div>

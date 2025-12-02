@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Link } from "react-router"
 import { Mail, Lock, Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
+import logoImage from "@/assets/images/logo_komplett_klein.png"
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false)
@@ -12,7 +13,7 @@ function Login() {
   return (
     <div className="flex w-full h-full items-center justify-center p-6">
       <div className="w-full max-w-xl">
-        <img src="src/assets/images/logo_komplett_klein.png" alt="bestreads logo"
+        <img src={logoImage} alt="bestreads logo"
           className="m-auto w-50" />
         <div className="flex flex-col gap-6 m-6">
           <Card>
@@ -23,7 +24,7 @@ function Login() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form>
+              <form onSubmit={(e) => { e.preventDefault() }}>
                 <FieldGroup>
                   <Field>
                     <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -40,7 +41,7 @@ function Login() {
                   </Field>
                   <Field>
                     <div className="flex items-center">
-                      <FieldLabel htmlFor="password">Passwort *</FieldLabel>
+                      <FieldLabel htmlFor="password">Passwort</FieldLabel>
                       <Link
                         to="/reset-password"
                         className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
@@ -60,6 +61,7 @@ function Login() {
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        aria-label={showPassword ? "Passwort verbergen" : "Passwort anzeigen"}
                       >
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>

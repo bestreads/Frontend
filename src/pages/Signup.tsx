@@ -32,7 +32,7 @@ function Signup() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form>
+            <form onSubmit={(e)=>{e.preventDefault()}}>
               <FieldGroup>
                 <Field>
                   <FieldLabel htmlFor="firstname">Vorname</FieldLabel>
@@ -76,6 +76,7 @@ function Signup() {
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      aria-label={showPassword ? "Passwort verbergen" : "Passwort anzeigen"}
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -98,6 +99,7 @@ function Signup() {
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      aria-label={showConfirmPassword ? "Passwort verbergen" : "Passwort anzeigen"}
                     >
                       {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>

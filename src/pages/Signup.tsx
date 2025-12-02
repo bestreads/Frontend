@@ -14,8 +14,13 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Link } from "react-router"
+import { Mail, Lock, User, Eye, EyeOff } from "lucide-react"
+import { useState } from "react"
 
 function Signup() {
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
   return (
     <div className="flex w-full h-full items-center justify-center p-6">
       <div className="w-full max-w-xl">
@@ -31,34 +36,72 @@ function Signup() {
               <FieldGroup>
                 <Field>
                   <FieldLabel htmlFor="firstname">Vorname</FieldLabel>
-                  <Input id="firstname" type="text" placeholder="Max" required />
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input id="firstname" type="text" placeholder="Max" className="pl-10" required />
+                  </div>
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="lastname">Nachname</FieldLabel>
-                  <Input id="lastname" type="text" placeholder="Mustermann" required />
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input id="lastname" type="text" placeholder="Mustermann" className="pl-10" required />
+                  </div>
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="email">Email</FieldLabel>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="beispiel@email.com"
-                    required
-                  />
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="beispiel@email.com"
+                      className="pl-10"
+                      required
+                    />
+                  </div>
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="password">Passwort</FieldLabel>
-                  <Input id="password" type="password" required />
-                  <FieldDescription>
-                    Muss mindestens 8 Zeichen lang sein.
-                  </FieldDescription>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      minLength={8}
+                      className="pl-10 pr-10"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="confirm-password">
                     Passwort bestätigen
                   </FieldLabel>
-                  <Input id="confirm-password" type="password" required />
-                  <FieldDescription>Bitte bestätige dein Passwort.</FieldDescription>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="confirm-password"
+                      type={showConfirmPassword ? "text" : "password"}
+                      minLength={8}
+                      className="pl-10 pr-10"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </Field>
                 <FieldGroup>
                   <Field>

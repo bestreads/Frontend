@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { Mail } from "lucide-react"
 import { Link } from "react-router"
 
 function ResetPW() {
@@ -23,20 +24,21 @@ function ResetPW() {
                 <FieldGroup>
                   <Field>
                     <FieldLabel htmlFor="email">Email</FieldLabel>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="beispiel@email.com"
-                      required
-                    />
-                    <FieldDescription>
-                      Wir senden dir einen Link an diese Email-Adresse.
-                    </FieldDescription>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="beispiel@email.com"
+                        className="pl-10"
+                        required
+                      />
+                    </div>
                   </Field>
                   <Field>
                     <Button type="submit">Link senden</Button>
                     <FieldDescription className="text-center">
-                      Zurück zur <Link to="/login">Anmeldung</Link>
+                      <Link to="/login">Zurück zur Anmeldung</Link>
                     </FieldDescription>
                   </Field>
                 </FieldGroup>

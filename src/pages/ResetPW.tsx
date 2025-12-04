@@ -4,13 +4,13 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui
 import { Input } from "@/components/ui/input"
 import { Mail } from "lucide-react"
 import { Link } from "react-router"
-import logoImage from "@/assets/images/logo_komplett_klein.png"
+import logoSvg from "@/assets/images/logo.svg"
 
 function ResetPW() {
   return (
     <div className="flex w-full h-full items-center justify-center p-6">
       <div className="w-full max-w-xl">
-        <img src={logoImage} alt="bestreads logo"
+        <img src={logoSvg} alt="bestreads logo"
           className="m-auto w-50" />
         <div className="flex flex-col gap-6 m-6">
           <Card>

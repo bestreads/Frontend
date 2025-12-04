@@ -29,7 +29,7 @@ function Login() {
                   <Field>
                     <FieldLabel htmlFor="email">
                       <Mail className="h-4 w-4 inline mr-2" />
-                      Email
+                      E-Mail
                     </FieldLabel>
                     <Input
                       id="email"

@@ -27,21 +27,23 @@ function Login() {
               <form onSubmit={(e) => { e.preventDefault() }}>
                 <FieldGroup>
                   <Field>
-                    <FieldLabel htmlFor="email">Email</FieldLabel>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="beispiel@email.com"
-                        className="pl-10"
-                        required
-                      />
-                    </div>
+                    <FieldLabel htmlFor="email">
+                      <Mail className="h-4 w-4 inline mr-2" />
+                      Email
+                    </FieldLabel>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="beispiel@email.com"
+                      required
+                    />
                   </Field>
                   <Field>
                     <div className="flex items-center">
-                      <FieldLabel htmlFor="password">Passwort</FieldLabel>
+                      <FieldLabel htmlFor="password">
+                        <Lock className="h-4 w-4 inline mr-2" />
+                        Passwort
+                      </FieldLabel>
                       <Link
                         to="/reset-password"
                         className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
@@ -50,11 +52,10 @@ function Login() {
                       </Link>
                     </div>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="password"
                         type={showPassword ? "text" : "password"}
-                        className="pl-10 pr-10"
+                        className="pr-10"
                         required
                       />
                       <button

@@ -32,44 +32,38 @@ function Signup() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={(e)=>{e.preventDefault()}}>
+            <form onSubmit={(e) => { e.preventDefault() }}>
               <FieldGroup>
                 <Field>
-                  <FieldLabel htmlFor="firstname">Vorname</FieldLabel>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input id="firstname" type="text" placeholder="Max" className="pl-10" required />
-                  </div>
+                  <FieldLabel htmlFor="username">
+                    <User className="h-4 w-4 inline mr-2" />
+                    Benutzername
+                  </FieldLabel>
+                  <Input id="username" type="text" placeholder="max.mustermann" required />
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="lastname">Nachname</FieldLabel>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input id="lastname" type="text" placeholder="Mustermann" className="pl-10" required />
-                  </div>
+                  <FieldLabel htmlFor="email">
+                    <Mail className="h-4 w-4 inline mr-2" />
+                    E-Mail
+                  </FieldLabel>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="beispiel@email.com"
+                    required
+                  />
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="email">Email</FieldLabel>
+                  <FieldLabel htmlFor="password">
+                    <Lock className="h-4 w-4 inline mr-2" />
+                    Passwort
+                  </FieldLabel>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="beispiel@email.com"
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor="password">Passwort</FieldLabel>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
                       minLength={8}
-                      className="pl-10 pr-10"
+                      className="pr-10"
                       required
                     />
                     <button
@@ -84,15 +78,15 @@ function Signup() {
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="confirm-password">
+                    <Lock className="h-4 w-4 inline mr-2" />
                     Passwort bestätigen
                   </FieldLabel>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="confirm-password"
                       type={showConfirmPassword ? "text" : "password"}
                       minLength={8}
-                      className="pl-10 pr-10"
+                      className="pr-10"
                       required
                     />
                     <button

@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Lock, Eye, EyeOff, Mail, Pencil, User } from "lucide-react";
 
 interface ProfileDialogProps {
   open: boolean;
@@ -24,6 +25,8 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
   const [tempPassword, setTempPassword] = useState<string>("");
   const [tempPasswordConfirm, setTempPasswordConfirm] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string>("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
 
   const handleUpdateUsername = async (newUsername: string) => {  
@@ -61,8 +64,8 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
     } else if (editingField === "email") {
       handleUpdateEmail(tempEmail);
     } else if (editingField === "password") {
-      if (tempPassword.length < 6) {
-        setPasswordError("Passwort muss mindestens 6 Zeichen lang sein!");
+      if (tempPassword.length < 8) {
+        setPasswordError("Passwort muss mindestens 8 Zeichen lang sein!");
         return;
       }
       if (tempPassword !== tempPasswordConfirm) {
@@ -178,7 +181,10 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <label className="text-sm font-medium">Benutzername</label>
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  <label className="text-sm font-medium">Benutzername</label>
+                </div>
                 <p className="text-sm text-muted-foreground">{userName}</p>
               </div>
               {editingField !== "username" && (
@@ -187,7 +193,7 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
                   size="sm"
                   onClick={() => startEditing("username", userName)}
                 >
-                  Ändern
+                  <Pencil className="w-4 h-4" />
                 </Button>
               )}
             </div>
@@ -215,7 +221,10 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <label className="text-sm font-medium">E-Mail</label>
+                <div className="flex items-center gap-2">
+                  <Mail className="w-4 h-4" />
+                  <label className="text-sm font-medium">E-Mail</label>
+                </div>
                 <p className="text-sm text-muted-foreground">user@example.com</p>
               </div>
               {editingField !== "email" && (
@@ -224,7 +233,7 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
                   size="sm"
                   onClick={() => startEditing("email", "user@example.com")}
                 >
-                  Ändern
+                  <Pencil className="w-4 h-4" />
                 </Button>
               )}
             </div>
@@ -252,7 +261,10 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <label className="text-sm font-medium">Passwort</label>
+                <div className="flex items-center gap-2">
+                  <Lock className="w-4 h-4" />
+                  <label className="text-sm font-medium">Passwort</label>
+                </div>
                 <p className="text-sm text-muted-foreground">••••••••</p>
               </div>
               {editingField !== "password" && (
@@ -261,7 +273,7 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
                   size="sm"
                   onClick={() => startEditing("password")}
                 >
-                  Ändern
+                  <Pencil className="w-4 h-4" />
                 </Button>
               )}
             </div>
@@ -270,26 +282,48 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
                 {passwordError && (
                   <p className="text-sm text-destructive font-medium">{passwordError}</p>
                 )}
-                <Input
-                  type="password"
-                  placeholder="Neues Passwort"
-                  value={tempPassword}
-                  onChange={(e) => {
-                    setTempPassword(e.target.value);
-                    setPasswordError("");
-                  }}
-                  aria-invalid={passwordError ? "true" : "false"}
-                />
-                <Input
-                  type="password"
-                  placeholder="Passwort wiederholen"
-                  value={tempPasswordConfirm}
-                  onChange={(e) => {
-                    setTempPasswordConfirm(e.target.value);
-                    setPasswordError("");
-                  }}
-                  aria-invalid={passwordError ? "true" : "false"}
-                />
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Neues Passwort"
+                    value={tempPassword}
+                    onChange={(e) => {
+                      setTempPassword(e.target.value);
+                      setPasswordError("");
+                    }}
+                    aria-invalid={passwordError ? "true" : "false"}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    aria-label={showPassword ? "Passwort verbergen" : "Passwort anzeigen"}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                <div className="relative">
+                  <Input
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Passwort wiederholen"
+                    value={tempPasswordConfirm}
+                    onChange={(e) => {
+                      setTempPasswordConfirm(e.target.value);
+                      setPasswordError("");
+                    }}
+                    aria-invalid={passwordError ? "true" : "false"}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    aria-label={showConfirmPassword ? "Passwort verbergen" : "Passwort anzeigen"}
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" size="sm" onClick={handleCancel}>
                     Abbrechen
@@ -301,12 +335,6 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
               </div>
             )}
           </div>
-        </div>
-
-        <div className="flex justify-end pt-2">
-          <Button variant="outline" onClick={() => handleDialogClose(false)}>
-            Schließen
-          </Button>
         </div>
       </DialogContent>
     </Dialog>

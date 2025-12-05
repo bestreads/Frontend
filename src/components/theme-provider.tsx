@@ -13,12 +13,7 @@ type ThemeProviderState = {
   setTheme: (theme: Theme) => void
 }
 
-const initialState: ThemeProviderState = {
-  theme: "system",
-  setTheme: () => null,
-}
-
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
+const ThemeProviderContext = createContext<ThemeProviderState | undefined>(undefined)
 
 export function ThemeProvider({
   children,
@@ -26,11 +21,6 @@ export function ThemeProvider({
   storageKey = "vite-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => {
-      if (typeof window !== 'undefined') {
-        return (localStorage.getItem(storageKey) as Theme) || defaultTheme
-      }
   const [theme, setTheme] = useState<Theme>(() => {
     const stored = localStorage.getItem(storageKey);
     if (stored === "dark" || stored === "light" || stored === "system") {
@@ -43,22 +33,48 @@ export function ThemeProvider({
     const root = window.document.documentElement
     root.classList.remove("light", "dark")
 
+    const appliedTheme = theme === "system" 
+      ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+      : theme
+
+    root.classList.add(appliedTheme)
+
+    // Announce to screen readers
+    const announcement = document.createElement('div')
+    announcement.setAttribute('role', 'status')
+    announcement.setAttribute('aria-live', 'polite')
+    announcement.className = 'sr-only'
+    announcement.textContent = `Theme changed to ${appliedTheme} mode`
+    document.body.appendChild(announcement)
+    
+    const timeoutId = setTimeout(() => announcement.remove(), 1000)
+
     if (theme === "system") {
       const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
-      const systemTheme = mediaQuery.matches ? "dark" : "light"
-      
-      root.classList.add(systemTheme)
       
       const handler = (e: MediaQueryListEvent) => {
         root.classList.remove("light", "dark")
-        root.classList.add(e.matches ? "dark" : "light")
+        const newTheme = e.matches ? "dark" : "light"
+        root.classList.add(newTheme)
+        
+        // Announce system theme change
+        const systemAnnouncement = document.createElement('div')
+        systemAnnouncement.setAttribute('role', 'status')
+        systemAnnouncement.setAttribute('aria-live', 'polite')
+        systemAnnouncement.className = 'sr-only'
+        systemAnnouncement.textContent = `Theme changed to ${newTheme} mode`
+        document.body.appendChild(systemAnnouncement)
+        setTimeout(() => systemAnnouncement.remove(), 1000)
       }
       
       mediaQuery.addEventListener("change", handler)
-      return () => mediaQuery.removeEventListener("change", handler)
+      return () => {
+        mediaQuery.removeEventListener("change", handler)
+        clearTimeout(timeoutId)
+      }
     }
 
-    root.classList.add(theme)
+    return () => clearTimeout(timeoutId)
   }, [theme])
 
   const value = {

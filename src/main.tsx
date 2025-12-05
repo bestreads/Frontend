@@ -8,6 +8,7 @@ import Layout from './components/Layout.tsx';
 import Login from './pages/Login.tsx';
 import Signup from './pages/Signup.tsx';
 import ResetPW from './pages/ResetPW.tsx';
+import Library from './pages/Library.tsx';
 
 
 const router = createBrowserRouter([
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Home />,
+      },
+      {
+        path: "library",
+        element: <Library></Library>
       },
       {
         path: "login",

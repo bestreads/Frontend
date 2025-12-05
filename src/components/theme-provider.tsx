@@ -31,9 +31,13 @@ export function ThemeProvider({
       if (typeof window !== 'undefined') {
         return (localStorage.getItem(storageKey) as Theme) || defaultTheme
       }
-      return defaultTheme
+  const [theme, setTheme] = useState<Theme>(() => {
+    const stored = localStorage.getItem(storageKey);
+    if (stored === "dark" || stored === "light" || stored === "system") {
+      return stored;
     }
-  )
+    return defaultTheme;
+  })
 
   useEffect(() => {
     const root = window.document.documentElement

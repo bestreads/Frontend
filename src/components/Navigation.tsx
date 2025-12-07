@@ -7,7 +7,6 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { LogOut, Search, Settings, User, Menu, Library, House } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -57,7 +56,7 @@ function Navigation() {
               <Link
                 to="/"
                 onClick={() => setMobileMenuOpen(false)}
-                className={`px-4 py-2 rounded-md hover:bg-accent flex items-center gap-2 ${location.pathname == "/" ? "bg-accent-foreground" : ""
+                className={`px-4 py-2 rounded-md hover:bg-accent flex items-center gap-2 ${location.pathname === "/" ? "bg-accent-foreground" : ""
                   }`}
               >
                 <House className="w-4 h-4" />
@@ -66,7 +65,7 @@ function Navigation() {
               <Link
                 to="/library"
                 onClick={() => setMobileMenuOpen(false)}
-                className={`px-4 py-2 rounded-md hover:bg-accent flex items-center gap-2 ${location.pathname == "/library" ? "bg-accent-foreground" : ""
+                className={`px-4 py-2 rounded-md hover:bg-accent flex items-center gap-2 ${location.pathname === "/library" ? "bg-accent-foreground" : ""
                   }`}
               >
                 <Library className="w-4 h-4" />
@@ -114,12 +113,12 @@ function Navigation() {
 
         {/* Desktop Haupt-Navigation */}
         <NavigationMenu className="hidden md:flex">
-          <NavigationMenuList className=" md:flex gap-6 ">
+          <NavigationMenuList className=" md:flex gap-6">
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link
                   to="/"
-                  className={`px-4 py-2 text-sm font-medium rounded-md hover:bg-accent hover:text-accent-foreground flex flex-row items-center gap-2 ${location.pathname == "/" ? "bg-accent-foreground" : ""}`}
+                  className={`px-4 py-2 text-sm font-medium rounded-md hover:bg-accent hover:text-accent-foreground flex flex-row items-center gap-2 ${location.pathname === "/" ? "bg-accent-foreground" : ""}`}
                 >
                   <House className="w-4 h-4 text-current" />
                   Startseite
@@ -131,7 +130,7 @@ function Navigation() {
               <NavigationMenuLink asChild>
                 <Link
                   to="/library"
-                  className={`px-4 py-2 text-sm font-medium rounded-md hover:bg-accent hover:text-accent-foreground flex flex-row  gap-2  ${location.pathname == "/library" ? "bg-accent-foreground" : ""}`}
+                  className={`px-4 py-2 text-sm font-medium rounded-md hover:bg-accent hover:text-accent-foreground flex flex-row gap-2 ${location.pathname === "/library" ? "bg-accent-foreground" : ""}`}
                 >
                   <Library className="w-4 h-4 text-current" />
                   Bibliothek
@@ -169,7 +168,7 @@ function Navigation() {
                       onClick={() => setProfileOpen(true)}
                       className="w-full px-3 py-2 text-sm hover:bg-accent rounded-md text-left flex items-center gap-2"
                     >
-                      <User className="w-4 h-4 " />
+                      <User className="w-4 h-4" />
                       Profil
                     </button>
                   </li>

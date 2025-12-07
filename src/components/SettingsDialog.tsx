@@ -5,6 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { useTheme } from "@/components/theme-provider"
 
 interface SettingsDialogProps {
   open: boolean;
@@ -12,6 +13,7 @@ interface SettingsDialogProps {
 }
 
 function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
+  const { theme, setTheme } = useTheme();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -22,19 +24,54 @@ function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <label className="text-sm font-medium">
-                Dark Mode
+          <div className="space-y-3">
+            <label className="text-sm font-medium">
+              Theme
+            </label>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="theme"
+                  value="system"
+                  checked={theme === "system"}
+                  onChange={() => setTheme("system")}
+                  className="h-4 w-4"
+                />
+                <div>
+                  <div className="text-sm font-medium">System</div>
+                  <div className="text-xs text-muted-foreground">Browser-Einstellung verwenden</div>
+                </div>
               </label>
-              <p className="text-sm text-muted-foreground">
-                Dunkles Farbschema verwenden
-              </p>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="theme"
+                  value="light"
+                  checked={theme === "light"}
+                  onChange={() => setTheme("light")}
+                  className="h-4 w-4"
+                />
+                <div>
+                  <div className="text-sm font-medium">Light</div>
+                  <div className="text-xs text-muted-foreground">Helles Farbschema</div>
+                </div>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="theme"
+                  value="dark"
+                  checked={theme === "dark"}
+                  onChange={() => setTheme("dark")}
+                  className="h-4 w-4"
+                />
+                <div>
+                  <div className="text-sm font-medium">Dark</div>
+                  <div className="text-xs text-muted-foreground">Dunkles Farbschema</div>
+                </div>
+              </label>
             </div>
-            <input
-              type="checkbox"
-              className="h-4 w-4"
-            />
           </div>
         </div>
         <div className="flex justify-end gap-2">
@@ -45,6 +82,7 @@ function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
             Abbrechen
           </button>
           <button
+            onClick={() => onOpenChange(false)}
             className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
           >
             Speichern

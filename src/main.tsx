@@ -9,6 +9,8 @@ import Login from './pages/Login.tsx';
 import Signup from './pages/Signup.tsx';
 import ResetPW from './pages/ResetPW.tsx';
 import Library from './pages/Library.tsx';
+import Error from './pages/Eror.tsx';
+
 import { ThemeProvider } from './components/theme-provider.tsx';
 
 const router = createBrowserRouter([
@@ -16,6 +18,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <Layout />,
     children: [
+
       {
         index: true,
         element: <Home />,
@@ -35,7 +38,11 @@ const router = createBrowserRouter([
       {
         path: "reset-password",
         element: <ResetPW />
-      }
+      },
+      {
+        path: "*",
+        element: <Error />,
+      },
     ]
   },
 ]);

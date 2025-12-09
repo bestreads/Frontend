@@ -8,9 +8,10 @@ import Layout from './components/Layout.tsx';
 import Login from './pages/Login.tsx';
 import Signup from './pages/Signup.tsx';
 import ResetPW from './pages/ResetPW.tsx';
+import Library from './pages/Library.tsx';
 import Error from './pages/Eror.tsx';
-import { ThemeProvider } from './components/theme-provider.tsx';
 
+import { ThemeProvider } from './components/theme-provider.tsx';
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Home />,
+      },
+      {
+        path: "library",
+        element: <Library />
       },
       {
         path: "login",

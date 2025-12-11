@@ -74,20 +74,6 @@ function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
             </div>
           </div>
         </div>
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={() => onOpenChange(false)}
-            className="px-4 py-2 text-sm border rounded-md hover:bg-accent"
-          >
-            Abbrechen
-          </button>
-          <button
-            onClick={() => onOpenChange(false)}
-            className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-          >
-            Speichern
-          </button>
-        </div>
       </DialogContent>
     </Dialog>
   );

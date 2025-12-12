@@ -9,7 +9,8 @@ import Login from './pages/Login.tsx';
 import Signup from './pages/Signup.tsx';
 import ResetPW from './pages/ResetPW.tsx';
 import Library from './pages/Library.tsx';
-import Error from './pages/Eror.tsx';
+import Error from './pages/Errorpage.tsx';
+import UserProfile from './pages/UserProfile.tsx';
 
 import { ThemeProvider } from './components/theme-provider.tsx';
 
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
       {
         path: "reset-password",
         element: <ResetPW />
+      },
+      {
+        path: "profile/:userId",
+        element: <UserProfile />
       },
       {
         path: "*",

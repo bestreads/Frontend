@@ -148,7 +148,6 @@ function Navigation() {
               <Button
                 onClick={() => alert('Buchsuche')}
                 variant="default"
-                size="sm"
                 className="flex gap-2"
               >
                 <Search className="w-4 h-4" />

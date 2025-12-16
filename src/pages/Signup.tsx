@@ -13,16 +13,25 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Link } from "react-router"
+import { Link, Navigate } from "react-router"
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
+import { useAuth } from "@/contexts/Authcontext"
+import logoSvg from "@/assets/images/logo_text_untereinander.svg"
 
 function Signup() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const { isAuthenticated } = useAuth()
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />
+  }
 
   return (
-    <div className="flex w-full h-full items-center justify-center p-6">
+    <div className="flex flex-col w-full h-screen items-center justify-center p-6">
+      <img src={logoSvg} alt="bestreads logo"
+        className="m-auto w-50" />
       <div className="w-full max-w-xl">
         <Card>
           <CardHeader>
@@ -32,7 +41,10 @@ function Signup() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={(e) => { e.preventDefault() }}>
+            <form onSubmit={(e) => {
+              e.preventDefault()
+              /*TODO: Funktionalität hinzufügen */
+            }}>
               <FieldGroup>
                 <Field>
                   <FieldLabel htmlFor="username">

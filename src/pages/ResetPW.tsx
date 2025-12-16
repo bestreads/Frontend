@@ -3,10 +3,18 @@ import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/com
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Mail } from "lucide-react"
-import { Link } from "react-router"
-import logoSvg from "@/assets/images/logo.svg"
+import { Link, Navigate } from "react-router"
+import logoSvg from "@/assets/images/logo_text_untereinander.svg"
+import { useAuth } from "@/contexts/Authcontext"
 
 function ResetPW() {
+  const { isAuthenticated } = useAuth()
+
+  // Redirect wenn bereits eingeloggt
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />
+  }
+
   return (
     <div className="flex w-full h-full items-center justify-center p-6">
       <div className="w-full max-w-xl">
@@ -21,7 +29,10 @@ function ResetPW() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={(e) => { e.preventDefault() }}>
+              <form onSubmit={(e) => {
+                e.preventDefault()
+                /* TODO: Funktionalität hinzufügen */
+              }}>
                 <FieldGroup>
                   <Field>
                     <FieldLabel htmlFor="email">Email</FieldLabel>

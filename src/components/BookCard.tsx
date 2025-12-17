@@ -6,8 +6,21 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { useState } from "react"
+import { bookStateLabels } from "@/types/book"
 import type { BookWithUserData, BookState } from "@/types/book"
+import { BookDetailDialog } from "@/components/BookDetailDialog"
 
 interface BookCardProps {
   book: BookWithUserData
@@ -16,16 +29,11 @@ interface BookCardProps {
   onRate: (isbn: string, rating: number) => void
 }
 
-const stateLabels: Record<BookState, string> = {
-  read: "Gelesen",
-  reading: "Lese ich gerade",
-  "want-to-read": "Möchte ich lesen",
-}
-
 export function BookCard({ book, onDelete, onUpdateStatus, onRate }: BookCardProps) {
   const [hoverRating, setHoverRating] = useState(0)
   const [isRatingPopoverOpen, setIsRatingPopoverOpen] = useState(false)
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState(false)
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
 
   const handleStatusChange = (newStatus: BookState) => {
     onUpdateStatus(book.ISBN, newStatus)
@@ -76,7 +84,10 @@ export function BookCard({ book, onDelete, onUpdateStatus, onRate }: BookCardPro
 
   return (
     <>
-      <Card className="p-6">
+      <Card 
+        className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
+        onClick={() => setIsDetailDialogOpen(true)}
+      >
         <div className="flex gap-6">
           {/* Buchcover */}
           <div className="flex-shrink-0">
@@ -98,7 +109,7 @@ export function BookCard({ book, onDelete, onUpdateStatus, onRate }: BookCardPro
                 
                 <div className="flex items-center gap-2 mb-8">
                   <span className="text-sm text-muted-foreground">Status:</span>
-                  <span className="text-sm font-medium">{stateLabels[book.userBook.state]}</span>
+                  <span className="text-sm font-medium">{bookStateLabels[book.userBook.state]}</span>
                 </div>
                 
                 <div className="flex items-center gap-2">
@@ -107,7 +118,7 @@ export function BookCard({ book, onDelete, onUpdateStatus, onRate }: BookCardPro
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-2 flex-shrink-0">
+              <div className="flex gap-2 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
                 {/* Bewertung Popover */}
                 <Popover open={isRatingPopoverOpen} onOpenChange={setIsRatingPopoverOpen}>
                   <PopoverTrigger asChild>
@@ -168,19 +179,49 @@ export function BookCard({ book, onDelete, onUpdateStatus, onRate }: BookCardPro
                   </PopoverContent>
                 </Popover>
 
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleDelete}
-                  title="Löschen"
-                >
-                  <Trash2 className="h-5 w-5 text-red-600" />
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      title="Löschen"
+                    >
+                      <Trash2 className="h-5 w-5 text-red-600" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Buch löschen?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Möchtest du "{book.title}" wirklich aus deiner Bibliothek entfernen? Diese Aktion kann nicht rückgängig gemacht werden.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleDelete}
+                        className={`bg-destructive text-white hover:bg-destructive/75 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60 dark:hover:bg-destructive/50 active:scale-95 transition-all`}
+                      >
+                        Löschen
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           </div>
         </div>
       </Card>
+
+      {/* Book Detail Dialog */}
+      <BookDetailDialog
+        book={book}
+        open={isDetailDialogOpen}
+        onOpenChange={setIsDetailDialogOpen}
+        isInLibrary={true}
+        currentStatus={book.userBook.state}
+        onStatusChange={(_, status) => onUpdateStatus(book.ISBN, status)}
+      />
     </>
   )
 }

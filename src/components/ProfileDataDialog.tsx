@@ -8,7 +8,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Lock, Eye, EyeOff, Mail, Pencil, User } from "lucide-react";
+import { Lock, Eye, EyeOff, Mail, Pencil, User, Camera } from "lucide-react";
+import { useAuth } from "@/contexts/Authcontext";
 
 interface ProfileDialogProps {
   open: boolean;
@@ -16,9 +17,9 @@ interface ProfileDialogProps {
 }
 
 function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
+  const { user } = useAuth();
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string>("Max Mustermann");
-  
+
   const [editingField, setEditingField] = useState<string | null>(null);
   const [tempUsername, setTempUsername] = useState<string>("");
   const [tempEmail, setTempEmail] = useState<string>("");
@@ -29,10 +30,9 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
 
-  const handleUpdateUsername = async (newUsername: string) => {  
+  const handleUpdateUsername = async (newUsername: string) => {
     // TODO: Backend-Integration
     console.log("Update username:", newUsername);
-    setUserName(newUsername);
   };
 
   const handleUpdateEmail = async (newEmail: string) => {
@@ -109,60 +109,31 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
     <Dialog open={open} onOpenChange={handleDialogClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Profil</DialogTitle>
+          <DialogTitle>Meine Daten</DialogTitle>
           <DialogDescription>
-            Verwalte deine Profilinformationen.
+            Verwalte deine BestReads-Informationen.
           </DialogDescription>
         </DialogHeader>
 
         {/* Profilbild */}
         <div className="flex flex-col items-center py-4">
           <div className="relative">
-            <div className="w-24 h-24 rounded-full overflow-hidden bg-muted flex items-center justify-center">
-              {profileImage ? (
+            <div className="w-24 h-24 rounded-full overflow-hidden bg-muted flex items-center justify-center border-2">
+              {user?.profilePictureURL || profileImage ? (
                 <img
-                  src={profileImage}
+                  src={user?.profilePictureURL || profileImage || ""}
                   alt="Profilbild"
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="48"
-                  height="48"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-white"
-                  aria-hidden="true"
-                >
-                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
+                <User className="w-12 h-12 text-muted-foreground" />
               )}
             </div>
             <label
               htmlFor="profile-image-input"
               className="absolute bottom-0 right-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/90 transition-colors"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-primary-foreground"
-              >
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                <circle cx="12" cy="13" r="4" />
-              </svg>
+              <Camera className="w-4 h-4 text-primary-foreground" />
               <input
                 id="profile-image-input"
                 type="file"
@@ -172,7 +143,7 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
               />
             </label>
           </div>
-          <h3 className="mt-3 text-lg font-semibold">{userName}</h3>
+          <h3 className="mt-3 text-lg font-semibold">{user?.username || "Unbekannter Benutzer"}</h3>
         </div>
 
         {/* Bearbeitbare Felder */}
@@ -185,13 +156,13 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
                   <User className="w-4 h-4" />
                   <label className="text-sm font-medium">Benutzername</label>
                 </div>
-                <p className="text-sm text-muted-foreground">{userName}</p>
+                <p className="text-sm text-muted-foreground">{user?.username}</p>
               </div>
               {editingField !== "username" && (
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => startEditing("username", userName)}
+                  onClick={() => startEditing("username", user?.username || "")}
                 >
                   <Pencil className="w-4 h-4" />
                 </Button>
@@ -225,13 +196,13 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
                   <Mail className="w-4 h-4" />
                   <label className="text-sm font-medium">E-Mail</label>
                 </div>
-                <p className="text-sm text-muted-foreground">user@example.com</p>
+                <p className="text-sm text-muted-foreground">{user?.email}</p>
               </div>
               {editingField !== "email" && (
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => startEditing("email", "user@example.com")}
+                  onClick={() => startEditing("email", user?.email || "")}
                 >
                   <Pencil className="w-4 h-4" />
                 </Button>

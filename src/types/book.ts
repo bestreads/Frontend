@@ -1,5 +1,11 @@
 export type BookState = "read" | "reading" | "want-to-read"
 
+export const bookStateLabels: Record<BookState, string> = {
+  read: "Gelesen",
+  reading: "Lese ich gerade",
+  "want-to-read": "Möchte ich lesen",
+}
+
 export interface Book {
   ISBN: string
   title: string

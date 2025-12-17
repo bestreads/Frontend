@@ -13,6 +13,7 @@ import Error from './pages/Errorpage.tsx';
 import UserProfile from './pages/UserProfile.tsx';
 
 import { ThemeProvider } from './components/theme-provider.tsx';
+import { AuthProvider } from './contexts/Authcontext.tsx';
 
 const router = createBrowserRouter([
   {
@@ -29,33 +30,31 @@ const router = createBrowserRouter([
         element: <Library />
       },
       {
-        path: "login",
-        element: <Login />
-      },
-      {
-        path: "signup",
-        element: <Signup />
-      },
-      {
-        path: "reset-password",
-        element: <ResetPW />
-      },
-      {
-        path: "profile/:userId",
-        element: <UserProfile />
-      },
-      {
         path: "*",
         element: <Error />,
       },
     ]
   },
+  {
+    path: "login",
+    element: <Login />
+  },
+  {
+    path: "signup",
+    element: <Signup />
+  },
+  {
+    path: "reset-password",
+    element: <ResetPW />
+  },
 ]);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider storageKey="vite-ui-theme">
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider storageKey="vite-ui-theme">
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </AuthProvider>
   </StrictMode>,
 )

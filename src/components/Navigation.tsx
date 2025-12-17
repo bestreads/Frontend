@@ -19,16 +19,17 @@ import {
 } from "@/components/ui/sheet"
 
 import SettingsDialog from "./SettingsDialog";
-import ProfileDialog from "./ProfileDialog";
+import ProfileDialog from "./ProfileDataDialog";
 import logoSvgN from "@/assets/images/logo_text_nebeneinander.svg"
-import logoSvgU from "@/assets/images/logo_text_untereinander.svg"
-
+import { useAuth } from "@/contexts/Authcontext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 function Navigation() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { logout, user } = useAuth();
 
   return (
     <>
@@ -47,11 +48,20 @@ function Navigation() {
           <SheetContent side="right" className="w-[300px] sm:w-[400px] p-6">
             <SheetHeader>
               <SheetTitle>
-                <Link to="/" className="shrink-0" onClick={() => setMobileMenuOpen(false)}>
-                  <img src={logoSvgU} alt="bestreads logo" className="h-40 w-max m-auto" />
-                </Link>
+                <div className="flex flex-col items-center justify-center gap-4">
+                  <Avatar className="border-2 h-20 w-20">
+                    <AvatarImage src={user?.profilePictureURL} />
+                    <AvatarFallback>
+                      <User className="h-4 w-4 inline mr-2" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <h1 className="text-xl font-semibold">
+                    {user?.username}
+                  </h1>
+                </div>
               </SheetTitle>
             </SheetHeader>
+            <hr className="my-2" />
             <div className="flex flex-col gap-4">
               <Link
                 to="/"
@@ -91,7 +101,7 @@ function Navigation() {
                 className="px-4 py-2 rounded-md hover:bg-accent text-left flex items-center gap-2"
               >
                 <User className="w-4 h-4" />
-                Profil
+                Meine Daten
               </button>
               <button
                 onClick={() => {
@@ -103,7 +113,11 @@ function Navigation() {
                 <Settings className="w-4 h-4" />
                 Einstellungen
               </button>
-              <button className="px-4 py-2 rounded-md hover:bg-destructive/20 text-destructive text-left flex items-center gap-2">
+              <button className="px-4 py-2 rounded-md hover:bg-destructive/20 text-destructive text-left flex items-center gap-2"
+                onClick={() => {
+                  logout();
+                  setMobileMenuOpen(false);
+                }}>
                 <LogOut className="w-4 h-4" />
                 Abmelden
               </button>
@@ -130,7 +144,9 @@ function Navigation() {
               <NavigationMenuLink asChild>
                 <Link
                   to="/library"
-                  className={`px-4 py-2 text-sm font-medium rounded-md hover:bg-accent hover:text-accent-foreground flex flex-row gap-2 ${location.pathname === "/library" ? "bg-accent-foreground" : ""}`}
+                  className={` flex flex-row items-center gap-2 px-4 py-2 text-sm font-medium rounded-md 
+                    hover:bg-accent hover:text-accent-foreground 
+                    ${location.pathname === "/library" ? "bg-accent-foreground" : ""}`}
                 >
                   <Library className="w-4 h-4 text-current" />
                   Bibliothek
@@ -143,7 +159,7 @@ function Navigation() {
 
         {/* Desktop User-Menü rechts */}
         <NavigationMenu viewport={false} className="ml-auto hidden md:flex">
-          <NavigationMenuList>
+          <NavigationMenuList className="md:flex gap-6">
             <NavigationMenuItem>
               <Button
                 onClick={() => alert('Buchsuche')}
@@ -156,19 +172,25 @@ function Navigation() {
             </NavigationMenuItem>
 
             <NavigationMenuItem className="relative">
-              <NavigationMenuTrigger>
-                <User className="h-4 w-4 inline mr-2" />
-                Mein Profil
+              <NavigationMenuTrigger className="flex gap-2 items-center">
+
+                <Avatar className="border-2">
+                  <AvatarImage src={user?.profilePictureURL} />
+                  <AvatarFallback>
+                    <User className="h-4 w-4 inline mr-2" />
+                  </AvatarFallback>
+                </Avatar>
+                {user?.username}
               </NavigationMenuTrigger>
               <NavigationMenuContent className="left-auto right-0">
-                <ul className="w-48 p-2">
+                <ul className="p-2 space-y-2">
                   <li>
                     <button
                       onClick={() => setProfileOpen(true)}
                       className="w-full px-3 py-2 text-sm hover:bg-accent rounded-md text-left flex items-center gap-2"
                     >
                       <User className="w-4 h-4" />
-                      Profil
+                      Meine Daten
                     </button>
                   </li>
                   <li>
@@ -181,7 +203,9 @@ function Navigation() {
                     </button>
                   </li>
                   <li>
-                    <button className="w-full px-3 py-2 text-sm text-destructive hover:bg-destructive/20 rounded-md text-left flex items-center gap-2">
+                    <button
+                      onClick={() => logout()}
+                      className="w-full px-3 py-2 text-sm text-destructive hover:bg-destructive/20 rounded-md text-left flex items-center gap-2">
                       <LogOut className="w-4 h-4" />
                       Abmelden
                     </button>

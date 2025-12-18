@@ -23,6 +23,11 @@ FROM nginx:latest AS production
 # Copy the build output from previous stage
 COPY --from=build /app/dist/ /usr/share/nginx/html
 
+# Set correct permissions for Nginx
+RUN chown -R www-data:www-data /var/www/html \
+    && find /var/www/html -type f -exec chmod 644 {} \; \
+    && find /var/www/html -type d -exec chmod 755 {} \;
+
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]

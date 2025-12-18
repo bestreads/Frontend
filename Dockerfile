@@ -24,9 +24,9 @@ FROM nginx:latest AS production
 COPY --from=build /app/dist/ /usr/share/nginx/html
 
 # Set correct permissions for Nginx
-RUN chown -R www-data:www-data /var/www/html \
-    && find /var/www/html -type f -exec chmod 644 {} \; \
-    && find /var/www/html -type d -exec chmod 755 {} \;
+RUN chown -R nginx:nginx /usr/share/nginx/html \
+    && find /usr/share/nginx/html -type f -exec chmod 644 {} \; \
+    && find /usr/share/nginx/html -type d -exec chmod 755 {} \;
 
 EXPOSE 80
 

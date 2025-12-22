@@ -30,6 +30,10 @@ const router = createBrowserRouter([
         element: <Library />
       },
       {
+        path: "profile/:userId",
+        element: <UserProfile />
+      },
+      {
         path: "*",
         element: <Error />,
       },

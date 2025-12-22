@@ -6,6 +6,12 @@ export const bookStateLabels: Record<BookState, string> = {
   "want-to-read": "Möchte ich lesen",
 }
 
+export const bookStateLabelsThirdPerson: Record<BookState, string> = {
+  read: "hat gelesen",
+  reading: "liest gerade",
+  "want-to-read": "möchte lesen",
+}
+
 export interface Book {
   ISBN: string
   title: string

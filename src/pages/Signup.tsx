@@ -31,7 +31,7 @@ function Signup() {
   return (
     <div className="flex flex-col w-full h-screen items-center justify-center p-6">
       <img src={logoSvg} alt="bestreads logo"
-        className="m-auto w-50" />
+        className="w-50" />
       <div className="w-full max-w-xl">
         <Card>
           <CardHeader>

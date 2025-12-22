@@ -94,7 +94,7 @@ function ProfileFeed() {
       content: "Ein absolutes Meisterwerk! Die Welt, die Tolkien erschaffen hat, ist einfach unglaublich detailliert. Kann es jedem nur empfehlen!",
       createdAt: "2025-12-15T18:45:00Z",
       likes: 256,
-      commentCount: 23,
+      commentCount: undefined,
     }
   ]
 
@@ -119,15 +119,16 @@ function ProfileFeed() {
         case "title":
           return a.book.title.localeCompare(b.book.title)
         case "likes":
-          if (b.likes && a.likes) {
-            return b.likes - a.likes
+          {
+            const aLikes = a.likes ?? 0
+            const bLikes = b.likes ?? 0
+            return bLikes - aLikes
           }
-          return -1
-        case "comments":
-          if (b.commentCount && a.commentCount) {
-            return b.commentCount - a.commentCount
-          }
-          return -1
+        case "comments": {
+          const aComments = a.commentCount ?? 0
+          const bComments = b.commentCount ?? 0
+          return bComments - aComments
+        }
         default:
           return 0
       }

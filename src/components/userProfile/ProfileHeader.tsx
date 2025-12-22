@@ -24,9 +24,9 @@ function ProfileHeader({ userId }: { userId: string }) {
   /*
   TODO: Backendaufruf für Followstatus
   */
-  const isFollower = false
+  const isFollowing = false
 
-  const canFollow = !isFollower && (user?.id !== userId);
+  const canFollow = !isFollowing && (user?.id !== userId);
 
   return (
     <div className="flex flex-col gap-6 px-6 lg:flex-row">
@@ -49,8 +49,11 @@ function ProfileHeader({ userId }: { userId: string }) {
 
         {/* Button */}
         {canFollow ?
-          <Button variant="default" onClick={()=>{alert("gefolgt")}}
-          className="ml-auto self-center lg:ml-0">
+          <Button variant="default" onClick={() => {
+            alert("gefolgt")
+            //TODO: Folgefunktionalität
+          }}
+            className="ml-auto self-center lg:ml-0">
             <UserPlus />
             <span className="hidden sm:flex">Folgen</span>
           </Button> :

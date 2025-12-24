@@ -8,7 +8,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-import { LogOut, Search, Settings, User, Menu, Library, House } from "lucide-react";
+import { LogOut, Search, Settings, User, Menu, Library, House, UserPen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -93,6 +93,14 @@ function Navigation() {
                 Buch suchen
               </Button>
               <hr className="my-2" />
+              <Link
+                to={`/profile/${user?.id}`}
+                className="px-4 py-2 rounded-md hover:bg-accent text-left flex items-center gap-2"
+                onClick={() =>{setMobileMenuOpen(false)}}
+              >
+                <User className="w-4 h-4" />
+                Mein Profil
+              </Link>
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
@@ -100,7 +108,7 @@ function Navigation() {
                 }}
                 className="px-4 py-2 rounded-md hover:bg-accent text-left flex items-center gap-2"
               >
-                <User className="w-4 h-4" />
+                <UserPen className="w-4 h-4" />
                 Meine Daten
               </button>
               <button
@@ -180,16 +188,27 @@ function Navigation() {
                     <User className="h-4 w-4 inline mr-2" />
                   </AvatarFallback>
                 </Avatar>
-                {user?.username}
+                <h1 className=" hidden lg:flex">
+                  {user?.username}
+                </h1>
               </NavigationMenuTrigger>
               <NavigationMenuContent className="left-auto right-0">
                 <ul className="p-2 space-y-2">
+                  <li>
+                    <Link
+                      to={`/profile/${user?.id}`}
+                      className="w-full px-3 py-2 text-sm hover:bg-accent rounded-md text-left flex items-center gap-2"
+                    >
+                      <User className="w-4 h-4" />
+                      Mein Profil
+                    </Link>
+                  </li>
                   <li>
                     <button
                       onClick={() => setProfileOpen(true)}
                       className="w-full px-3 py-2 text-sm hover:bg-accent rounded-md text-left flex items-center gap-2"
                     >
-                      <User className="w-4 h-4" />
+                      <UserPen className="w-4 h-4" />
                       Meine Daten
                     </button>
                   </li>

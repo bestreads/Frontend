@@ -11,6 +11,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // maybe muss das noch gelöscht werden. Gerade in Absprache mit Luca
   server: {
     proxy: {
       '/api': {

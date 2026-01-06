@@ -20,6 +20,7 @@ import {
 
 import SettingsDialog from "./SettingsDialog";
 import ProfileDialog from "./ProfileDataDialog";
+import BookSearchDialog from "./BookSearchDialog";
 import logoSvgN from "@/assets/images/logo_text_nebeneinander.svg"
 import { useAuth } from "@/contexts/Authcontext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -28,6 +29,7 @@ function Navigation() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [bookSearchOpen, setBookSearchOpen] = useState(false);
   const location = useLocation();
   const { logout, user } = useAuth();
 
@@ -84,7 +86,7 @@ function Navigation() {
               <Button
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  alert('Buchsuche');
+                  setBookSearchOpen(true);
                 }}
                 variant="default"
                 className="justify-start"
@@ -170,7 +172,7 @@ function Navigation() {
           <NavigationMenuList className="md:flex gap-6">
             <NavigationMenuItem>
               <Button
-                onClick={() => alert('Buchsuche')}
+                onClick={() => setBookSearchOpen(true)}
                 variant="default"
                 className="flex gap-2"
               >
@@ -238,6 +240,7 @@ function Navigation() {
 
       <ProfileDialog open={profileOpen} onOpenChange={setProfileOpen} />
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+      <BookSearchDialog open={bookSearchOpen} onOpenChange={setBookSearchOpen} />
     </>
   );
 }

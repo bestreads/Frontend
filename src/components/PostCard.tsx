@@ -92,7 +92,7 @@ function PostCard({ postData }: { postData: Post }) {
               {postData.author.username}
             </span>
           </Link>
-          <p className="text-l">{bookStateLabelsThirdPerson[postData.book.userBook.state]}</p>
+          <p className="text-lg">{bookStateLabelsThirdPerson[postData.book.userBook.state]}</p>
         </CardHeader>
 
         {/* Buchinformationen */}
@@ -160,7 +160,7 @@ function PostCard({ postData }: { postData: Post }) {
               })}
             </p>
           </div>
-          <p className="text-l my-4">{postData.content}</p>
+          <p className="text-lg my-4">{postData.content}</p>
         </CardContent>
 
         {/* Likes und Kommentare */}
@@ -186,7 +186,7 @@ function PostCard({ postData }: { postData: Post }) {
       </Card >
 
       {/* Book Detail Dialog */}
-      { /* TODO*/}
+      {/* TODO*/}
       < BookDetailDialog
         book={postData.book}
         open={isDetailDialogOpen}

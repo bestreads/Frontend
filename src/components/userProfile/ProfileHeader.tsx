@@ -12,7 +12,7 @@ function ProfileHeader({ userId }: { userId: string }) {
   TODO: Backendaufruf mit userId
   */
   const userStats = {
-    userId: "123dsafasdfasdfsadfasdf",
+    userId: userId,
     username: "test123",
     profilePictureURL: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpapers.com%2Fimages%2Fhd%2Ffunny-face-pictures-rgcsg7f53oic3c5t.jpg&f=1&nofb=1&ipt=fa2b5b9d406c7b592380825b46dd476468ee047dcb676c92e47a14d479a29995",
     accountCreatedAtYear: 2025,

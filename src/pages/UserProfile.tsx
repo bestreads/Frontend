@@ -8,7 +8,7 @@ import { Library, MessagesSquare } from "lucide-react";
 
 function UserProfile() {
   const { userId } = useParams(); // userId aus Adresse bekommen
-  if (!userId) { // TODO: Falsche id im Link abfangen - vlt. einfach ersten Backendaufruf mit id zum Test nutzen
+  if (!userId) { // TODO: Falsche id im Link abfangen
     return <Errorpage />
   }
 
@@ -30,7 +30,7 @@ function UserProfile() {
           </div>
 
           <TabsContent value="posts" className="mt-6">
-            <ProfileFeed></ProfileFeed>
+            <ProfileFeed userId={userId}></ProfileFeed>
           </TabsContent>
 
           <TabsContent value="library" className="mt-6">

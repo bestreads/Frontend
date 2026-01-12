@@ -5,11 +5,16 @@ import { User, Star, Heart, MessageSquare } from "lucide-react"
 import { bookStateLabelsThirdPerson } from "../types/book"
 import { BookDetailDialog } from "@/components/BookDetailDialog"
 import { useState } from "react"
+import { Link, useLocation } from "react-router"
 
 function PostCard({ postData }: { postData: Post }) {
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
   const [likeCount, setLikeCount] = useState(postData.likes || 0)
+  const location = useLocation()
+
+  // Prüft ob man sich bereits auf dem Profil des Post-Autors befindet
+  const isAlreadyOnProfile = location.pathname === `/profile/${postData.author.userId}`
 
   //TODO: Funktion für Like
   const handleLike = () => {
@@ -71,17 +76,23 @@ function PostCard({ postData }: { postData: Post }) {
     <>
       <Card className="flex flex-col p-6 gap-6 lg:grid grid-cols-3 grid-row2">
         {/* Beitrags Autor */}
-        <CardHeader className="flex items-center gap-2 p-0 col-span-3">
-          <Avatar className="w-12 h-12 rounded-full border-2">
-            <AvatarImage src={postData.author.profilePictureURL} />
-            <AvatarFallback>
-              <User className="w-12 h-12 text-primary" />
-            </AvatarFallback>
-          </Avatar>
-          <h1 className="text-xl">
-            {`${postData.author.username}`}
-          </h1>
-          <p className="text-primary font-bold">{`${bookStateLabelsThirdPerson[postData.book.userBook.state]}`}</p>
+        <CardHeader className="flex flex-wrap items-center px-4 col-span-3">
+          <Link
+            to={isAlreadyOnProfile ? "#" : `/profile/${postData.author.userId}`}
+            className={`group flex items-center gap-2 rounded-xl ${isAlreadyOnProfile ? "cursor-default" : "transition-colors"}`}
+            onClick={(e) => isAlreadyOnProfile && e.preventDefault()}
+          >
+            <Avatar className={`w-12 h-12 rounded-full border-2 transition-colors ${isAlreadyOnProfile ? "" : "group-hover:border-accent"}`}>
+              <AvatarImage src={postData.author.profilePictureURL} className="object-cover" />
+              <AvatarFallback>
+                <User className="w-12 h-12 text-primary" />
+              </AvatarFallback>
+            </Avatar>
+            <span className={`text-primary text-xl font-bold transition-colors ${isAlreadyOnProfile ? "" : "group-hover:text-accent"}`}>
+              {postData.author.username}
+            </span>
+          </Link>
+          <p className="text-lg">{bookStateLabelsThirdPerson[postData.book.userBook.state]}</p>
         </CardHeader>
 
         {/* Buchinformationen */}
@@ -149,7 +160,7 @@ function PostCard({ postData }: { postData: Post }) {
               })}
             </p>
           </div>
-          <p className="text-xl my-4">{postData.content}</p>
+          <p className="text-lg my-4">{postData.content}</p>
         </CardContent>
 
         {/* Likes und Kommentare */}
@@ -175,11 +186,12 @@ function PostCard({ postData }: { postData: Post }) {
       </Card >
 
       {/* Book Detail Dialog */}
-      <BookDetailDialog
+      {/* TODO*/}
+      < BookDetailDialog
         book={postData.book}
         open={isDetailDialogOpen}
         onOpenChange={setIsDetailDialogOpen}
-        isInLibrary={true}
+        isInLibrary={postData.book.userBook.state ? true : false}
         currentStatus={postData.book.userBook.state}
       />
     </>

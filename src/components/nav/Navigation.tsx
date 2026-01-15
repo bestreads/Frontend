@@ -98,7 +98,7 @@ function Navigation() {
               <Link
                 to={`/profile/${user?.id}`}
                 className="px-4 py-2 rounded-md hover:bg-accent text-left flex items-center gap-2"
-                onClick={() =>{setMobileMenuOpen(false)}}
+                onClick={() => { setMobileMenuOpen(false) }}
               >
                 <User className="w-4 h-4" />
                 Mein Profil

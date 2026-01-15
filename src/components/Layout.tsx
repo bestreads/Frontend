@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router";
-import Navigation from "./Navigation";
+import Navigation from "./nav/Navigation";
 import { useAuth } from "@/contexts/Authcontext";
 
 

@@ -20,7 +20,7 @@ import {
 
 import SettingsDialog from "./SettingsDialog";
 import ProfileDialog from "./ProfileDataDialog";
-import BookSearchDialog from "./BookSearchDialog";
+import BookSearchDialog from "../BookSearchDialog";
 import logoSvgN from "@/assets/images/logo_text_nebeneinander.svg"
 import { useAuth } from "@/contexts/Authcontext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"

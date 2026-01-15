@@ -59,7 +59,7 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
         setSearchResults([])
       }
     } catch (error) {
-      console.error("Fehler bei der Buchsuche:", error)
+      console.error("Error during book search:", error)
       setSearchResults([])
     } finally {
       setIsLoading(false)

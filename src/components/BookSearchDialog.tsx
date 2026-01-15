@@ -28,28 +28,12 @@ interface BookSearchDialogProps {
   onOpenChange: (open: boolean) => void
 }
 
-const GENRES = [
-  "Alle",
-  "Fantasy",
-  "Science Fiction",
-  "Dystopie",
-  "Romance",
-  "Drama",
-  "Klassiker",
-  "Coming-of-Age",
-  "Philosophie",
-] as const
-
-type Genre = (typeof GENRES)[number]
-
 export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [selectedBook, setSelectedBook] = useState<Book | null>(null)
   const [bookDetailOpen, setBookDetailOpen] = useState(false)
-  const [showGenreFilter, setShowGenreFilter] = useState(false)
-  const [selectedGenre, setSelectedGenre] = useState<Genre>("Alle")
   const [lastSearchQuery, setLastSearchQuery] = useState("")
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -66,7 +50,7 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
     setIsLoading(true)
     try {
       const response = await fetch(
-        `/api/v1/books/search?q=${encodeURIComponent(query)}`
+        `http://localhost:3000/api/v1/books/search?q=${encodeURIComponent(query)}&limit=10`
       )
       if (response.ok) {
         const data: SearchResult[] = await response.json()
@@ -123,21 +107,12 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
     if (!open) {
       setSearchQuery("")
       setSearchResults([])
-      setShowGenreFilter(false)
-      setSelectedGenre("Alle")
       setLastSearchQuery("")
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current)
       }
     }
   }, [open])
-
-  // Gefilterte Ergebnisse nach Genre
-  const filteredResults = selectedGenre === "Alle"
-    ? searchResults
-    : searchResults.filter(result => 
-        result.Genre?.toLowerCase() === selectedGenre.toLowerCase()
-      )
 
   const handleBookClick = (result: SearchResult) => {
     const book: Book = {
@@ -171,7 +146,7 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="Nach Titel, Autor oder Genre suchen..."
+              placeholder="Nach Titel oder Autor suchen..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -180,37 +155,12 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
             />
           </div>
 
-          {/* Genre Filter Toggle und Ergebnisanzahl */}
-          <div className="flex items-center justify-between">
-            <button 
-              onClick={() => setShowGenreFilter(!showGenreFilter)}
-              className="text-primary hover:underline text-sm font-medium text-left w-fit"
-            >
-              {showGenreFilter ? "Genre-Filter ausblenden" : "Nach Genre filtern"}
-            </button>
-            {filteredResults.length > 0 && (
+          {/* Ergebnisanzahl */}
+          {searchResults.length > 0 && (
+            <div className="flex items-center justify-end">
               <span className="text-sm text-muted-foreground">
-                {filteredResults.length} {filteredResults.length === 1 ? "Ergebnis" : "Ergebnisse"}
+                {searchResults.length} {searchResults.length === 1 ? "Ergebnis" : "Ergebnisse"}
               </span>
-            )}
-          </div>
-
-          {/* Genre Filter Buttons */}
-          {showGenreFilter && (
-            <div className="flex flex-wrap gap-2">
-              {GENRES.map((genre) => (
-                <button
-                  key={genre}
-                  onClick={() => setSelectedGenre(genre)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    selectedGenre === genre
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-foreground hover:bg-muted/80"
-                  }`}
-                >
-                  {genre}
-                </button>
-              ))}
             </div>
           )}
 
@@ -223,9 +173,9 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
               <div className="flex items-center justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
-            ) : filteredResults.length > 0 ? (
+            ) : searchResults.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filteredResults.map((result, index) => (
+                {searchResults.map((result, index) => (
                   <button
                     key={`${result.ISBN}-${index}`}
                     onClick={() => handleBookClick(result)}
@@ -257,11 +207,6 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
                       <p className="text-sm text-muted-foreground">
                         {result.ReleaseDate}
                       </p>
-                      {result.Genre && (
-                        <p className="text-sm text-primary font-medium">
-                          {result.Genre}
-                        </p>
-                      )}
                     </div>
                   </button>
                 ))}
@@ -269,7 +214,6 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
             ) : lastSearchQuery.trim() && !isLoading ? (
               <div className="text-center py-8 text-muted-foreground">
                 Keine Bücher gefunden für "{lastSearchQuery}"
-                {selectedGenre !== "Alle" && ` im Genre "${selectedGenre}"`}
               </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">

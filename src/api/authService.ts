@@ -12,11 +12,6 @@ export interface RegisterResponse {
 
 /* Sign up new user */
 export const register = async (data: RegisterData): Promise<RegisterResponse> => {
-  const formData = new URLSearchParams()
-  formData.append("email", data.email)
-  formData.append("username", data.username)
-  formData.append("password", data.password)
-
-  const response = await apiClient.post<RegisterResponse>("/user", formData.toString())
+  const response = await apiClient.post<RegisterResponse>("/user", data)
   return response.data
 }

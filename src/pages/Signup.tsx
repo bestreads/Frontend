@@ -70,8 +70,6 @@ function Signup() {
           default:
             setError(message || "Registrierung fehlgeschlagen. Bitte versuche es erneut.")
         }
-      } else if (err instanceof Error && err.message === "Network Error") {
-        setError("Keine Verbindung zum Server. Bitte prüfe deine Internetverbindung.")
       } else {
         setError("Ein unerwarteter Fehler ist aufgetreten.")
       }
@@ -145,7 +143,7 @@ function Signup() {
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
-                      minLength={8}
+                      minLength={12}
                       className="pr-10"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -171,7 +169,7 @@ function Signup() {
                       id="confirm-password"
                       ref={confirmPasswordRef}
                       type={showConfirmPassword ? "text" : "password"}
-                      minLength={8}
+                      minLength={12}
                       className="pr-10"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}

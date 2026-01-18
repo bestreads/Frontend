@@ -21,75 +21,80 @@ function Library() {
   // Beispieldaten
   const [books, setBooks] = useState<BookWithUserData[]>([
     {
-    ISBN: "978-0441013593",
-    title: "Dune",
-    author: "Frank Herbert",
-    coverurl: "https://m.media-amazon.com/images/I/71oSHCZABCL._SY466_.jpg",
-    ratingavg: 4.2,
-    description: "Arrakis ist eine tödliche Wüstenwelt und der einzige Fundort der Droge 'Spice', die das Reisen zwischen den Sternen ermöglicht. Als seine Familie verraten wird, beginnt für Paul Atreides ein Kampf, der das Schicksal des gesamten Universums verändern wird.",
-    releasedate: 1965,
-    genre: "Science Fiction",
-    userBook: {
-      state: "read",
-      rating: 4,
+      ID: 1,
+      ISBN: "978-0441013593",
+      Title: "Dune",
+      Author: "Frank Herbert",
+      CoverURL: "https://m.media-amazon.com/images/I/71oSHCZABCL._SY466_.jpg",
+      RatingAvg: 4.2,
+      Description: "Arrakis ist eine tödliche Wüstenwelt und der einzige Fundort der Droge 'Spice', die das Reisen zwischen den Sternen ermöglicht. Als seine Familie verraten wird, beginnt für Paul Atreides ein Kampf, der das Schicksal des gesamten Universums verändern wird.",
+      ReleaseDate: 1965,
+      Genre: "Science Fiction",
+      userBook: {
+        state: "read",
+        rating: 4,
+      },
     },
-  },
-  {
-    ISBN: "978-0441013594",
-    title: "Harry Potter und der Stein der Weisen",
-    author: "J.K. Rowling",
-    coverurl: "https://images.thalia.media/-/BF2000-2000/94a2302133384639b32d0f09e2e4c0d4/harry-potter-1-and-the-philosopher-s-stone-gebundene-ausgabe-j-k-rowling-englisch.jpeg",
-    ratingavg: 4.9,
-    description: "Harry Potter und der Stein der Weisen (Band 1) handelt von dem Waisenjungen Harry, der an seinem elften Geburtstag erfährt, dass er ein Zauberer ist und nach Hogwarts geht, wo er Freunde findet und gegen den bösen Lord Voldemort kämpft, der hinter dem mächtigen Stein der Weisen her ist, um seine Macht zurückzuerlangen.",
-    releasedate: 1997,
-    genre: "Roman",
-    userBook: {
-      state: "reading",
-      rating: 5,
+    {
+      ID: 2,
+      ISBN: "978-0441013594",
+      Title: "Harry Potter und der Stein der Weisen",
+      Author: "J.K. Rowling",
+      CoverURL: "https://images.thalia.media/-/BF2000-2000/94a2302133384639b32d0f09e2e4c0d4/harry-potter-1-and-the-philosopher-s-stone-gebundene-ausgabe-j-k-rowling-englisch.jpeg",
+      RatingAvg: 4.9,
+      Description: "Harry Potter und der Stein der Weisen (Band 1) handelt von dem Waisenjungen Harry, der an seinem elften Geburtstag erfährt, dass er ein Zauberer ist und nach Hogwarts geht, wo er Freunde findet und gegen den bösen Lord Voldemort kämpft, der hinter dem mächtigen Stein der Weisen her ist, um seine Macht zurückzuerlangen.",
+      ReleaseDate: 1997,
+      Genre: "Roman",
+      userBook: {
+        state: "reading",
+        rating: 5,
+      },
     },
-  },
-  {
-    ISBN: "978-3608938289",
-    title: "Der Herr der Ringe: Die Gefährten",
-    author: "J.R.R. Tolkien",
-    coverurl: "https://images-eu.ssl-images-amazon.com/images/I/61rTYQFaxPL._AC_UL600_SR600,600_.jpg",
-    ratingavg: 4.8,
-    description: "Der junge Hobbit Frodo Beutlin erbt einen magischen Ring, der vom dunklen Herrscher Sauron geschmiedet wurde. Zusammen mit einer Gemeinschaft aus Gefährten bricht er auf, um den Ring zu zerstören.",
-    releasedate: 1954,
-    genre: "Fantasy",
-    userBook: {
-      state: "read",
-      rating: 5,
+    {
+      ID: 3,
+      ISBN: "978-3608938289",
+      Title: "Der Herr der Ringe: Die Gefährten",
+      Author: "J.R.R. Tolkien",
+      CoverURL: "https://images-eu.ssl-images-amazon.com/images/I/61rTYQFaxPL._AC_UL600_SR600,600_.jpg",
+      RatingAvg: 4.8,
+      Description: "Der junge Hobbit Frodo Beutlin erbt einen magischen Ring, der vom dunklen Herrscher Sauron geschmiedet wurde. Zusammen mit einer Gemeinschaft aus Gefährten bricht er auf, um den Ring zu zerstören.",
+      ReleaseDate: 1954,
+      Genre: "Fantasy",
+      userBook: {
+        state: "read",
+        rating: 5,
+      },
     },
-  },
-  {
-    ISBN: "978-0451524935",
-    title: "1984",
-    author: "George Orwell",
-    coverurl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkdK_06hkWyzxuYeEahTKsIebflxohnhRBn6kUaOXjHRvrajtnlJi-ABVug69qtWBn-tpwZKLL2pFZKydGQbpXN3KQht7wyz2sYDNkpg&s=10",
-    ratingavg: 4.6,
-    description: "In einem totalitären Überwachungsstaat arbeitet Winston Smith im Ministerium für Wahrheit, wo er Geschichte umschreibt. Doch er beginnt, das System und den allgegenwärtigen 'Großen Bruder' zu hinterfragen.",
-    releasedate: 1949,
-    genre: "Dystopie",
-    userBook: {
-      state: "want-to-read",
-      rating: 0,
+    {
+      ID: 4,
+      ISBN: "978-0451524935",
+      Title: "1984",
+      Author: "George Orwell",
+      CoverURL: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkdK_06hkWyzxuYeEahTKsIebflxohnhRBn6kUaOXjHRvrajtnlJi-ABVug69qtWBn-tpwZKLL2pFZKydGQbpXN3KQht7wyz2sYDNkpg&s=10",
+      RatingAvg: 4.6,
+      Description: "In einem totalitären Überwachungsstaat arbeitet Winston Smith im Ministerium für Wahrheit, wo er Geschichte umschreibt. Doch er beginnt, das System und den allgegenwärtigen 'Großen Bruder' zu hinterfragen.",
+      ReleaseDate: 1949,
+      Genre: "Dystopie",
+      userBook: {
+        state: "want-to-read",
+        rating: 0,
+      },
     },
-  },
-  {
-    ISBN: "978-0345391803",
-    title: "Per Anhalter durch die Galaxis",
-    author: "Douglas Adams",
-    coverurl: "https://m.media-amazon.com/images/I/81XSN3hA5gL._AC_UF1000,1000_QL80_.jpg",
-    ratingavg: 4.4,
-    description: "Sekunden bevor die Erde gesprengt wird, um einer Hyperraum-Umgehungsstraße Platz zu machen, wird Arthur Dent von seinem Freund Ford Prefect gerettet. Gemeinsam reisen sie durch das Universum.",
-    releasedate: 1979,
-    genre: "Science Fiction",
-    userBook: {
-      state: "read",
-      rating: 4,
+    {
+      ID: 5,
+      ISBN: "978-0345391803",
+      Title: "Per Anhalter durch die Galaxis",
+      Author: "Douglas Adams",
+      CoverURL: "https://m.media-amazon.com/images/I/81XSN3hA5gL._AC_UF1000,1000_QL80_.jpg",
+      RatingAvg: 4.4,
+      Description: "Sekunden bevor die Erde gesprengt wird, um einer Hyperraum-Umgehungsstraße Platz zu machen, wird Arthur Dent von seinem Freund Ford Prefect gerettet. Gemeinsam reisen sie durch das Universum.",
+      ReleaseDate: 1979,
+      Genre: "Science Fiction",
+      userBook: {
+        state: "read",
+        rating: 4,
+      },
     },
-  },
   ])
 
   // API-Funktionen
@@ -135,8 +140,8 @@ function Library() {
       if (searchQuery) {
         const query = searchQuery.toLowerCase()
         return (
-          book.title.toLowerCase().includes(query) ||
-          book.author.toLowerCase().includes(query)
+          book.Title.toLowerCase().includes(query) ||
+          book.Author.toLowerCase().includes(query)
         )
       }
       
@@ -146,11 +151,11 @@ function Library() {
       // Sortierung
       switch (sortBy) {
         case "title":
-          return a.title.localeCompare(b.title)
+          return a.Title.localeCompare(b.Title)
         case "author":
-          return a.author.localeCompare(b.author)
+          return a.Author.localeCompare(b.Author)
         case "rating":
-          return b.ratingavg - a.ratingavg
+          return b.RatingAvg - a.RatingAvg
         default:
           return 0
       }

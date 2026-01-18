@@ -101,15 +101,15 @@ function PostCard({ postData }: { postData: Post }) {
           onClick={() => setIsDetailDialogOpen(true)}
         >
           <img
-            src={postData.book.coverurl || "/placeholder-book.png"}
-            alt={`Cover von ${postData.book.title}`}
+            src={postData.book.CoverURL || "/placeholder-book.png"}
+            alt={`Cover von ${postData.book.Title}`}
             className="w-24 lg:w-auto max-w-[30%] aspect-2/3  object-cover rounded-lg shadow-md self-start"
           />
           <div className="flex-1 ">
             <div className="mb-3 flex items-start justify-between gap-6 lg:flex-col">
               <div>
-                <h2 className="text-2xl font-bold mr-auto">{postData.book.title}</h2>
-                <p className="text-muted-foreground text-base">von {postData.book.author}</p>
+                <h2 className="text-2xl font-bold mr-auto">{postData.book.Title}</h2>
+                <p className="text-muted-foreground text-base">von {postData.book.Author}</p>
               </div>
               <div>
                 {/* Buch Bewertung */}
@@ -117,11 +117,11 @@ function PostCard({ postData }: { postData: Post }) {
                 <div className="flex items-center gap-2">
                   <Star className={`w-5 h-5 fill-primary text-primary sm:hidden`} />
                   <span className="hidden sm:flex gap-2 items-center">
-                    {renderStars(postData.book.ratingavg)}
+                    {renderStars(postData.book.RatingAvg)}
                   </span>
 
                   <span className="text-sm text-muted-foreground">
-                    ({postData.book.ratingavg.toFixed(1)}/5)
+                    ({postData.book.RatingAvg.toFixed(1)}/5)
                   </span>
 
                 </div>

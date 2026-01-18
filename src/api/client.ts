@@ -1,10 +1,11 @@
 import axios from "axios"
 
-// TODO: env oder so?
-const API_BASE_URL = "http://localhost:3000/api/v1" 
+const isDev = import.meta.env.VITE_DEV === "true"
+const API_BASE_URL = isDev ? "http://localhost:3000/api/v1" : "/api/v1"
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true,
 })
 
 export default apiClient

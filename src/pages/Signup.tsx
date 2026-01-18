@@ -13,16 +13,70 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Link, Navigate } from "react-router"
+import { Link, Navigate, useNavigate } from "react-router"
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useAuth } from "@/contexts/Authcontext"
+import { register } from "@/api/authService"
 import logoSvg from "@/assets/images/logo_text_untereinander.svg"
+import { AxiosError } from "axios"
+import { Spinner } from "@/components/ui/spinner"
 
 function Signup() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
   const { isAuthenticated } = useAuth()
+  const navigate = useNavigate()
+  const confirmPasswordRef = useRef<HTMLInputElement>(null)
+
+  // Validate passwords
+  useEffect(() => {
+    if (confirmPasswordRef.current) {
+      if (confirmPassword && password !== confirmPassword) {
+        confirmPasswordRef.current.setCustomValidity("Die Passwörter stimmen nicht überein.")
+      } else {
+        confirmPasswordRef.current.setCustomValidity("")
+      }
+    }
+  }, [password, confirmPassword])
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+    setIsLoading(true)
+
+    try {
+      await register({ email, username, password })
+      navigate("/login")
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const status = err.response?.status
+        const message = err.response?.data?.message
+
+        switch (status) {
+          case 400:
+            setError("Ungültige Eingabe. Bitte überprüfe deine Daten.")
+            break
+          case 409:
+            setError("Ein Benutzer mit dieser E-Mail oder diesem Benutzernamen existiert bereits.")
+            break
+          default:
+            setError(message || "Registrierung fehlgeschlagen. Bitte versuche es erneut.")
+        }
+      } else {
+        setError("Ein unerwarteter Fehler ist aufgetreten.")
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   if (isAuthenticated) {
     return <Navigate to="/" replace />
@@ -37,21 +91,34 @@ function Signup() {
           <CardHeader>
             <CardTitle>Erstelle einen Account</CardTitle>
             <CardDescription>
-              Gib deine Daten ein, um einen GoodReads-Account zu erstellen.
+              Gib deine Daten ein, um einen BestReads-Account zu erstellen.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={(e) => {
-              e.preventDefault()
-              /*TODO: Funktionalität hinzufügen */
-            }}>
+            {error && (
+              <div className="mb-4 p-3 text-sm text-red-500 bg-red-50 dark:bg-red-950 rounded-md">
+                {error}
+              </div>
+            )}
+            <form onSubmit={handleSubmit}>
               <FieldGroup>
                 <Field>
                   <FieldLabel htmlFor="username">
                     <User className="h-4 w-4 inline mr-2" />
                     Benutzername
                   </FieldLabel>
-                  <Input id="username" type="text" placeholder="max.mustermann" required />
+                  <Input
+                    id="username"
+                    type="text"
+                    placeholder="max.mustermann"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    minLength={3}
+                    maxLength={30}
+                    pattern="^[a-zA-Z0-9._]+$"
+                    title="3-30 Zeichen, nur Buchstaben, Zahlen, Punkte und Unterstriche"
+                    required
+                  />
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="email">
@@ -62,6 +129,8 @@ function Signup() {
                     id="email"
                     type="email"
                     placeholder="beispiel@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </Field>
@@ -74,8 +143,10 @@ function Signup() {
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
-                      minLength={8}
+                      minLength={12}
                       className="pr-10"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       required
                     />
                     <button
@@ -96,9 +167,12 @@ function Signup() {
                   <div className="relative">
                     <Input
                       id="confirm-password"
+                      ref={confirmPasswordRef}
                       type={showConfirmPassword ? "text" : "password"}
-                      minLength={8}
+                      minLength={12}
                       className="pr-10"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
                       required
                     />
                     <button
@@ -113,7 +187,10 @@ function Signup() {
                 </Field>
                 <FieldGroup>
                   <Field>
-                    <Button type="submit">Account erstellen</Button>
+                    <Button type="submit" disabled={isLoading}>
+                      {isLoading && <Spinner />}
+                      {isLoading ? "Wird erstellt..." : "Account erstellen"}
+                    </Button>
                     <FieldDescription className="px-6 text-center">
                       Bereits registriert? <Link to="/login">Melde dich an!</Link>
                     </FieldDescription>

@@ -11,18 +11,6 @@ import { Search } from "lucide-react"
 import { BookDetailDialog } from "./BookDetailDialog"
 import type { Book } from "@/types/book"
 
-interface SearchResult {
-  ID: number
-  ISBN: string
-  Title: string
-  Author: string
-  CoverURL: string
-  RatingAvg: number
-  Description: string
-  ReleaseDate: number
-  Genre?: string
-}
-
 interface BookSearchDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -30,7 +18,7 @@ interface BookSearchDialogProps {
 
 export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) {
   const [searchQuery, setSearchQuery] = useState("")
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const [searchResults, setSearchResults] = useState<Book[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [selectedBook, setSelectedBook] = useState<Book | null>(null)
   const [bookDetailOpen, setBookDetailOpen] = useState(false)
@@ -53,7 +41,7 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
         `http://localhost:3000/api/v1/books/search?q=${encodeURIComponent(query)}&limit=10`
       )
       if (response.ok) {
-        const data: SearchResult[] = await response.json()
+        const data: Book[] = await response.json()
         setSearchResults(data || [])
       } else {
         setSearchResults([])
@@ -114,15 +102,17 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
     }
   }, [open])
 
-  const handleBookClick = (result: SearchResult) => {
+  const handleBookClick = (result: Book) => {
     const book: Book = {
+      ID: result.ID,
       ISBN: result.ISBN,
-      title: result.Title,
-      author: result.Author,
-      coverurl: result.CoverURL,
-      ratingavg: result.RatingAvg,
-      description: result.Description,
-      releasedate: result.ReleaseDate,
+      Title: result.Title,
+      Author: result.Author,
+      CoverURL: result.CoverURL,
+      RatingAvg: result.RatingAvg,
+      Description: result.Description,
+      ReleaseDate: result.ReleaseDate,
+      Genre: result.Genre,
     }
     setSelectedBook(book)
     setBookDetailOpen(true)

@@ -26,14 +26,15 @@ function ProfileFeed({userId}:{userId: string}) {
         profilePictureURL: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpapers.com%2Fimages%2Fhd%2Ffunny-face-pictures-rgcsg7f53oic3c5t.jpg&f=1&nofb=1&ipt=fa2b5b9d406c7b592380825b46dd476468ee047dcb676c92e47a14d479a29995",
       },
       book: {
+        ID: 1,
         ISBN: "978-0441013593",
-        title: "Dune",
-        author: "Frank Herbert",
-        coverurl: "https://m.media-amazon.com/images/I/71oSHCZABCL._SY466_.jpg",
-        ratingavg: 4.2,
-        description: "Arrakis ist eine tödliche Wüstenwelt und der einzige Fundort der Droge 'Spice', die das Reisen zwischen den Sternen ermöglicht. Als seine Familie verraten wird, beginnt für Paul Atreides ein Kampf, der das Schicksal des gesamten Universums verändern wird.",
-        releasedate: 1965,
-        genre: "Science Fiction",
+        Title: "Dune",
+        Author: "Frank Herbert",
+        CoverURL: "https://m.media-amazon.com/images/I/71oSHCZABCL._SY466_.jpg",
+        RatingAvg: 4.2,
+        Description: "Arrakis ist eine tödliche Wüstenwelt und der einzige Fundort der Droge 'Spice', die das Reisen zwischen den Sternen ermöglicht. Als seine Familie verraten wird, beginnt für Paul Atreides ein Kampf, der das Schicksal des gesamten Universums verändern wird.",
+        ReleaseDate: 1965,
+        Genre: "Science Fiction",
         userBook: {
           state: "read",
           rating: 4,
@@ -52,14 +53,15 @@ function ProfileFeed({userId}:{userId: string}) {
         profilePictureURL: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpapers.com%2Fimages%2Fhd%2Ffunny-face-pictures-rgcsg7f53oic3c5t.jpg&f=1&nofb=1&ipt=fa2b5b9d406c7b592380825b46dd476468ee047dcb676c92e47a14d479a29995",
       },
       book: {
+        ID: 2,
         ISBN: "978-0441013594",
-        title: "Harry Potter und der Stein der Weisen",
-        author: "J.K. Rowling",
-        coverurl: "https://images.thalia.media/-/BF2000-2000/94a2302133384639b32d0f09e2e4c0d4/harry-potter-1-and-the-philosopher-s-stone-gebundene-ausgabe-j-k-rowling-englisch.jpeg",
-        ratingavg: 4.9,
-        description: "Harry Potter und der Stein der Weisen (Band 1) handelt von dem Waisenjungen Harry, der an seinem elften Geburtstag erfährt, dass er ein Zauberer ist und nach Hogwarts geht, wo er Freunde findet und gegen den bösen Lord Voldemort kämpft, der hinter dem mächtigen Stein der Weisen her ist, um seine Macht zurückzuerlangen.",
-        releasedate: 1997,
-        genre: "Roman",
+        Title: "Harry Potter und der Stein der Weisen",
+        Author: "J.K. Rowling",
+        CoverURL: "https://images.thalia.media/-/BF2000-2000/94a2302133384639b32d0f09e2e4c0d4/harry-potter-1-and-the-philosopher-s-stone-gebundene-ausgabe-j-k-rowling-englisch.jpeg",
+        RatingAvg: 4.9,
+        Description: "Harry Potter und der Stein der Weisen (Band 1) handelt von dem Waisenjungen Harry, der an seinem elften Geburtstag erfährt, dass er ein Zauberer ist und nach Hogwarts geht, wo er Freunde findet und gegen den bösen Lord Voldemort kämpft, der hinter dem mächtigen Stein der Weisen her ist, um seine Macht zurückzuerlangen.",
+        ReleaseDate: 1997,
+        Genre: "Roman",
         userBook: {
           state: "reading",
           rating: 5,
@@ -78,14 +80,15 @@ function ProfileFeed({userId}:{userId: string}) {
         profilePictureURL: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpapers.com%2Fimages%2Fhd%2Ffunny-face-pictures-rgcsg7f53oic3c5t.jpg&f=1&nofb=1&ipt=fa2b5b9d406c7b592380825b46dd476468ee047dcb676c92e47a14d479a29995",
       },
       book: {
+        ID: 3,
         ISBN: "978-3608938289",
-        title: "Der Herr der Ringe: Die Gefährten",
-        author: "J.R.R. Tolkien",
-        coverurl: "https://images-eu.ssl-images-amazon.com/images/I/61rTYQFaxPL._AC_UL600_SR600,600_.jpg",
-        ratingavg: 4.8,
-        description: "Der junge Hobbit Frodo Beutlin erbt einen magischen Ring, der vom dunklen Herrscher Sauron geschmiedet wurde. Zusammen mit einer Gemeinschaft aus Gefährten bricht er auf, um den Ring zu zerstören.",
-        releasedate: 1954,
-        genre: "Fantasy",
+        Title: "Der Herr der Ringe: Die Gefährten",
+        Author: "J.R.R. Tolkien",
+        CoverURL: "https://images-eu.ssl-images-amazon.com/images/I/61rTYQFaxPL._AC_UL600_SR600,600_.jpg",
+        RatingAvg: 4.8,
+        Description: "Der junge Hobbit Frodo Beutlin erbt einen magischen Ring, der vom dunklen Herrscher Sauron geschmiedet wurde. Zusammen mit einer Gemeinschaft aus Gefährten bricht er auf, um den Ring zu zerstören.",
+        ReleaseDate: 1954,
+        Genre: "Fantasy",
         userBook: {
           state: "read",
           rating: 4.7,
@@ -104,8 +107,8 @@ function ProfileFeed({userId}:{userId: string}) {
       if (searchQuery) {
         const query = searchQuery.toLowerCase()
         return (
-          post.book.title.toLowerCase().includes(query) ||
-          post.book.author.toLowerCase().includes(query)
+          post.book.Title.toLowerCase().includes(query) ||
+          post.book.Author.toLowerCase().includes(query)
         )
       }
 
@@ -117,7 +120,7 @@ function ProfileFeed({userId}:{userId: string}) {
         case "date":
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         case "title":
-          return a.book.title.localeCompare(b.book.title)
+          return a.book.Title.localeCompare(b.book.Title)
         case "likes":
           {
             const aLikes = a.likes ?? 0

@@ -42,7 +42,7 @@ async function updateBookStatus(book: Book, status: BookState, isUpdate: boolean
   
   console.log(isUpdate ? "Update Buchstatus:" : "Buch zur Bibliothek hinzufügen:", {
     isbn: book.ISBN,
-    title: book.title,
+    title: book.Title,
     status: status,
   })
 }
@@ -77,9 +77,9 @@ export function BookDetailDialog({
       >
         <DialogHeader className="flex-row items-start justify-between gap-4">
           <div className="sr-only">
-            <DialogTitle>{book.title}</DialogTitle>
+            <DialogTitle>{book.Title}</DialogTitle>
             <DialogDescription>
-              Buchdetails für {book.title} von {book.author}
+              Buchdetails für {book.Title} von {book.Author}
             </DialogDescription>
           </div>
           <div className="flex gap-2 ml-auto">
@@ -153,10 +153,10 @@ export function BookDetailDialog({
         {/* Buch-Informationen */}
         <div className="flex gap-6">
           {/* Buchcover */}
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <img
-              src={book.coverurl || "/placeholder-book.png"}
-              alt={`Cover von ${book.title}`}
+              src={book.CoverURL || "/placeholder-book.png"}
+              alt={`Cover von ${book.Title}`}
               className="w-36 h-52 object-cover rounded-lg shadow-md"
             />
           </div>
@@ -165,25 +165,25 @@ export function BookDetailDialog({
           <div className="flex-1 space-y-3">
             <div>
               <span className="text-sm text-muted-foreground">Titel</span>
-              <h2 className="text-2xl font-bold">{book.title}</h2>
+              <h2 className="text-2xl font-bold">{book.Title}</h2>
             </div>
 
             <div>
               <span className="text-sm text-muted-foreground">Autor</span>
-              <p className="text-lg font-medium">{book.author}</p>
+              <p className="text-lg font-medium">{book.Author}</p>
             </div>
 
             <div>
               <span className="text-sm text-muted-foreground">Erscheinungsjahr</span>
-              <p className="text-base">{book.releasedate}</p>
+              <p className="text-base">{book.ReleaseDate}</p>
             </div>
 
-            {book.genre && (
+            {book.Genre && (
               <div>
                 <span className="text-sm text-muted-foreground">Genre</span>
                 <div className="mt-1">
                   <span className="inline-block px-3 py-1 text-sm font-medium bg-secondary text-secondary-foreground rounded-full">
-                    {book.genre}
+                    {book.Genre}
                   </span>
                 </div>
               </div>
@@ -197,7 +197,7 @@ export function BookDetailDialog({
         <div>
           <h3 className="text-lg font-semibold mb-2">Beschreibung</h3>
           <p className="text-muted-foreground leading-relaxed">
-            {book.description || "Keine Beschreibung verfügbar."}
+            {book.Description || "Keine Beschreibung verfügbar."}
           </p>
         </div>
       </DialogContent>

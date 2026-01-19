@@ -2,7 +2,7 @@ import apiClient from "./client"
 import type { Book } from "../types/book"
 
 export interface Post {
-  Pfp: string
+  ProfilePicture: string
   Username: string
   Uid: number
   Book: Book

@@ -7,7 +7,6 @@ import Home from './pages/Feed.tsx'
 import Layout from './components/Layout.tsx';
 import Login from './pages/Login.tsx';
 import Signup from './pages/Signup.tsx';
-import ResetPW from './pages/ResetPW.tsx';
 import Library from './pages/Library.tsx';
 import Error from './pages/Errorpage.tsx';
 import UserProfile from './pages/UserProfile.tsx';
@@ -46,10 +45,6 @@ const router = createBrowserRouter([
   {
     path: "signup",
     element: <Signup />
-  },
-  {
-    path: "reset-password",
-    element: <ResetPW />
   },
 ]);
 

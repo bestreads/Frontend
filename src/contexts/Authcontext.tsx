@@ -1,12 +1,17 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import type { ReactNode } from "react"
+import { getUser, type OwnUserProfile } from "@/api/userService"
+import { login as apiLogin, logout as apiLogout } from "@/api/authService"
 
 interface User {
-  id: string
+  userId: number
   username: string
   email: string
   profilePictureURL: string
+  accountCreatedAtYear: number
+  booksInLibrary: number
+  posts: number
 }
 
 interface AuthContextType {
@@ -14,56 +19,74 @@ interface AuthContextType {
   isAuthenticated: boolean
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
+  refreshUser: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+// Transformiert OwnUserProfile zu User
+const mapUserProfile = (profile: OwnUserProfile): User => ({
+  userId: profile.userId,
+  username: profile.username,
+  email: profile.email,
+  profilePictureURL: profile.profilePicture,
+  accountCreatedAtYear: profile.accountCreatedAtYear,
+  booksInLibrary: profile.booksInLibrary,
+  posts: profile.posts,
+})
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // TODO: Vom backend Daten zum user holen
-  const fetchUserData = async (token: string) => {
-    // TODO: Später echter API-Call
-    console.log(`Userdaten mit ${token} geholt!`)
-    const mockUser: User = {
-      id: "123",
-      username: "MaxiMustimann123",
-      email: "max@example.com",
-      profilePictureURL: "https://image.stern.de/7561920/t/rt/v4/w1440/r1.3333/-/affen-selfie-peta-david-slater.jpg"
-    }
-    setUser(mockUser)
-    setIsLoading(false)
-  }
-
-  // TODO: Token aus localstorage oder so holen
-  useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      fetchUserData(token)
-    } else {
-      setIsLoading(false)
+  // Benutzerdaten vom Backend holen
+  const fetchUserData = useCallback(async () => {
+    try {
+      const userData = await getUser()
+      setUser(mapUserProfile(userData))
+    } catch (error) {
+      console.error("Fehler beim Laden der Benutzerdaten:", error)
+      setUser(null)
     }
   }, [])
 
-  // TODO: Login
+  // Beim Start prüfen ob User eingeloggt ist
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const userData = await getUser()
+        setUser(mapUserProfile(userData))
+      } catch {
+        // Nicht eingeloggt oder Token ungültig
+        setUser(null)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    checkAuth()
+  }, [])
+
+  // Login
   const login = async (email: string, password: string) => {
-    // TODO: backend aufruf
-
-    // Mock token generieren und setzen
-    console.log('Mock Login:', email, password)
-    const mockToken = "user_" + Math.random().toString(36)
-    localStorage.setItem('token', mockToken)
-
-    // User-Daten passend zum token holen
-    await fetchUserData(mockToken)
+    await apiLogin({ email, password })
+    await fetchUserData()
   }
 
-  // TODO: Logout
-  const logout = () => {
-    localStorage.removeItem('token')
-    setUser(null)
+  // Logout
+  const logout = async () => {
+    try {
+      await apiLogout()
+    } catch (error) {
+      console.error("Fehler beim Logout:", error)
+    } finally {
+      setUser(null)
+    }
+  }
+
+  // User-Daten neu laden (z.B. nach Profil-Update)
+  const refreshUser = async () => {
+    await fetchUserData()
   }
 
   return (
@@ -72,7 +95,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: !!user,
       isLoading,
       login,
-      logout
+      logout,
+      refreshUser
     }}>
       {children}
     </AuthContext.Provider>

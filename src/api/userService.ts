@@ -33,7 +33,34 @@ export const getUserProfile = async (userId: number): Promise<UserProfile> => {
  * Holt die Daten des aktiven Benutzers (mit Email)
  * @returns Die Response-Daten vom Server
  */
-export const getUser = async () => {
+export const getUser = async (): Promise<OwnUserProfile> => {
   const response = await apiClient.get<OwnUserProfile>(`/user`)
   return response.data
+}
+
+export interface UpdateUserData {
+  username?: string
+  email?: string
+  password?: string
+  profilePicture?: File
+}
+
+/**
+ * Aktualisiert die Benutzerdaten. Alle Felder sind optional.
+ * Es werden nur die übergebenen Felder aktualisiert.
+ * @param data - Die zu aktualisierenden Daten
+ */
+export const updateUserData = async (data: UpdateUserData): Promise<void> => {
+  const formData = new FormData()
+  
+  if (data.username) formData.append("username", data.username)
+  if (data.email) formData.append("email", data.email)
+  if (data.password) formData.append("password", data.password)
+  if (data.profilePicture) formData.append("profile_picture", data.profilePicture)
+  
+  await apiClient.put("/user", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  })
 }

@@ -7,8 +7,16 @@ export interface UserProfile {
   accountCreatedAtYear: number
   booksInLibrary: number
   posts: number
-  follower: number
-  following: number
+}
+
+export interface OwnUserProfile {
+  userId: number
+  username: string
+  profilePicture: string
+  accountCreatedAtYear: number
+  booksInLibrary: number
+  posts: number
+  email: string
 }
 
 /**
@@ -17,6 +25,15 @@ export interface UserProfile {
  * @returns Die Response-Daten vom Server
  */
 export const getUserProfile = async (userId: number): Promise<UserProfile> => {
-  const response = await apiClient.get<UserProfile>(`/user/profile/${userId}`)
+  const response = await apiClient.get<UserProfile>(`/user/${userId}`)
+  return response.data
+}
+
+/**
+ * Holt die Daten des aktiven Benutzers (mit Email)
+ * @returns Die Response-Daten vom Server
+ */
+export const getUser = async () => {
+  const response = await apiClient.get<OwnUserProfile>(`/user`)
   return response.data
 }

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select"
 import { BookCard } from "@/components/BookCard"
 import type { BookWithUserData, BookState } from "@/types/book"
+import { removeBookFromLibrary } from "@/api/libraryService"
 
 function Library() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -98,30 +99,32 @@ function Library() {
   ])
 
   // API-Funktionen
-  const handleDeleteBook = (isbn: string) => {
-    console.log("Lösche Buch:", isbn)
-    // Später: API-Call zum Backend
-    setBooks(books.filter((book) => book.ISBN !== isbn))
+  const handleDeleteBook = (id: number) => {
+    console.log("Lösche Buch:", id)
+    
+    removeBookFromLibrary(id)
+
+    setBooks(books.filter((book) => book.ID !== id))
   }
 
-  const handleUpdateStatus = (isbn: string, status: BookState) => {
-    console.log("Update Status:", isbn, status)
+  const handleUpdateStatus = (id: number, status: BookState) => {
+    console.log("Update Status:", id, status)
     // Später: API-Call zum Backend
     setBooks(
       books.map((book) =>
-        book.ISBN === isbn
+        book.ID === id
           ? { ...book, userBook: { ...book.userBook, state: status } }
           : book
       )
     )
   }
 
-  const handleRateBook = (isbn: string, rating: number) => {
-    console.log("Bewerte Buch:", isbn, rating)
+  const handleRateBook = (id: number, rating: number) => {
+    console.log("Bewerte Buch:", id, rating)
     // Später: API-Call zum Backend
     setBooks(
       books.map((book) =>
-        book.ISBN === isbn
+        book.ID === id
           ? { ...book, userBook: { ...book.userBook, rating } }
           : book
       )
@@ -243,7 +246,7 @@ function Library() {
           <div className="grid gap-4">
             {filteredAndSortedBooks.map((book) => (
               <BookCard
-                key={book.ISBN}
+                key={book.ID}
                 book={book}
                 onDelete={handleDeleteBook}
                 onUpdateStatus={handleUpdateStatus}

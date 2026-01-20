@@ -12,7 +12,7 @@ export interface SearchBooksParams {
  * @returns Die Response-Daten vom Server
  */
 export const getBook = async (bookId: number): Promise<Book> => {
-  const response = await apiClient.get<Book>(`/books/${bookId}`)
+  const response = await apiClient.get<Book>(`/book/${bookId}`)
   return response.data
 }
 
@@ -22,6 +22,6 @@ export const getBook = async (bookId: number): Promise<Book> => {
  * @returns Die Response-Daten vom Server
  */
 export const searchBooks = async (params: SearchBooksParams): Promise<Book[]> => {
-  const response = await apiClient.get<Book[]>("/books/search", { params })
+  const response = await apiClient.get<Book[]>("/book/search", { params })
   return response.data
 }

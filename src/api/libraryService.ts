@@ -8,18 +8,19 @@ export interface LibraryBook {
   Rating: number
 }
 
-export interface AddBookData {
-  bid: number
-  state: number
-}
-
 /**
  * Holt alle Bücher aus der Bibliothek eines Benutzers.
- * @param userId - Die ID des Benutzers
+ * @param userId - Die ID des Benutzers (optional, wenn leer wird die eigene Bibliothek geladen)
+ * @param limit - Maximale Anzahl der Bücher (optional)
  * @returns Die Bücher in der Bibliothek
  */
-export const getLibrary = async (userId: number): Promise<LibraryBook[]> => {
-  const response = await apiClient.get<LibraryBook[]>(`/user/${userId}/lib`)
+export const getLibrary = async (userId?: number, limit?: number): Promise<LibraryBook[]> => {
+  const params = new URLSearchParams()
+  if (userId) params.append("userId", userId.toString())
+  if (limit) params.append("limit", limit.toString())
+  
+  const queryString = params.toString()
+  const response = await apiClient.get<LibraryBook[]>(`/lib${queryString ? `?${queryString}` : ""}`)
   return response.data
 }
 
@@ -29,21 +30,23 @@ export const getLibrary = async (userId: number): Promise<LibraryBook[]> => {
  * @param data - Die Buch-ID und der Status
  * @returns Die Response-Daten vom Server
  */
-export const addBookToLibrary = async (userId: number, data: AddBookData): Promise<LibraryBook> => {
-  const response = await apiClient.post<LibraryBook>(`/user/${userId}/lib`, data)
+export const addBookToLibrary = async (bid: number, state: number): Promise<LibraryBook> => {
+  const response = await apiClient.post<LibraryBook>(`/lib`, {bid, state})
+  return response.data
+}
+
+export const updateRating = async (bookId: number, rating: number) => {
+  const response = await apiClient.put(`/lib/review`, { bookId, rating })
   return response.data
 }
 
 /**
  * Aktualisiert den Status eines Buches in der Bibliothek
- * @param userId - Die ID des Benutzers
  * @param bookId - Die ID des Buches
- * @param state - Der Status des Buches
- * @returns Die Response-Daten vom Server
+ * @param state - Der Status des Buches (0 = want-to-read, 1 = reading, 2 = read)
  */
-export const updateBookState = async (userId: number, bookId: number, state: number): Promise<LibraryBook> => {
-  const response = await apiClient.put<LibraryBook>(`/user/${userId}/lib/${bookId}`, state)
-  return response.data
+export const updateBookState = async (bookId: number, state: number): Promise<void> => {
+  await apiClient.put(`/lib/${bookId}`, { state })
 }
 
 /**
@@ -51,6 +54,6 @@ export const updateBookState = async (userId: number, bookId: number, state: num
  * @param userId - Die ID des Benutzers
  * @param bookId - Die ID des Benutzers
  */
-export const removeBookFromLibrary = async (userId: number, bookId: number): Promise<void> => {
-  await apiClient.delete(`/user/${userId}/lib/${bookId}`)
+export const removeBookFromLibrary = async (bookId: number): Promise<void> => {
+  await apiClient.delete(`/lib/${bookId}`)
 }

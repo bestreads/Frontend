@@ -162,7 +162,7 @@ function ProfileLibrary() {
         ) : (
           <div className="grid gap-4">
             {filteredAndSortedBooks.map((book) => (
-              <BookCard key={book.ISBN} book={book} readOnly={true} />
+              <BookCard key={book.ID} book={book} readOnly={true} />
             ))}
           </div>
         )}

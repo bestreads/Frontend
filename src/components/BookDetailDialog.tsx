@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Plus, X, RefreshCw } from "lucide-react"
 import { bookStateLabels, bookStateToApi } from "@/types/book"
 import type { Book, BookState } from "@/types/book"
-import { updateBookState } from "@/api/libraryService"
+import { updateBookState, addBookToLibrary } from "@/api/libraryService"
 
 interface BookDetailDialogProps {
   book: Book | null
@@ -34,14 +34,15 @@ interface BookDetailDialogProps {
  * @param isUpdate - Ob es ein Update (true) oder ein Hinzufügen (false) ist
  */
 async function updateBookStatus(book: Book, state: BookState, isUpdate: boolean): Promise<void> {
-  updateBookState(book.ID, bookStateToApi[state]);
-
-  console.log(isUpdate ? "Update Buchstatus:" : "Buch zur Bibliothek hinzufügen:", {
-    id: book.ID,
-    title: book.Title,
-    state: state,
-    apiValue: bookStateToApi[state],
-  })
+  const apiState = bookStateToApi[state]
+  
+  if (isUpdate) {
+    // Buch ist bereits in der Bibliothek -> Status aktualisieren
+    await updateBookState(book.ID, apiState)
+  } else {
+    // Buch ist noch nicht in der Bibliothek -> hinzufügen
+    await addBookToLibrary({ bid: book.ID, state: apiState })
+  }
 }
 
 export function BookDetailDialog({

@@ -30,10 +30,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // Einmalig beim Start
+  // check user & cookie at start
   useEffect(() => {
     handleUserdata()
   }, [])
+
+  // check session each 3 min
+  useEffect(() => {
+    if (!user) return
+
+    const timer = setInterval(() => {
+      handleUserdata()
+    }, 1000 * 60 * 3) // 3 min
+
+    return () => clearInterval(timer)
+  }, [user])
 
   const login = async (email: string, password: string) => {
     try {

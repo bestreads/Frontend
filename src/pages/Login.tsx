@@ -7,12 +7,14 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 import logoSvg from "@/assets/images/logo_text_untereinander.svg"
 import { useAuth } from "@/contexts/Authcontext"
+import { Spinner } from "@/components/ui/spinner"
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [error, setError] = useState<string | null>(null) // display login error
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
   const { login, isAuthenticated } = useAuth()
 
   // Redirect wenn bereits eingeloggt
@@ -22,12 +24,14 @@ function Login() {
 
   const handleLogin = async (email: string, password: string) => {
     setError(null)
+    setIsLoading(true)
     try {
       await login(email, password)
-      // navigate("/")
-    } catch(error) {
+    } catch (error) {
       setError("Login fehlgeschlagen. Bitte überprüfe deine Zugangsdaten.")
       console.log(error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -96,7 +100,10 @@ function Login() {
                     </div>
                   </Field>
                   <Field>
-                    <Button type="submit">Login</Button>
+                    <Button type="submit" disabled={isLoading}>
+                      {isLoading && <Spinner />}
+                      {isLoading ? "Anmelden..." : "Login"}
+                    </Button>
                     <FieldDescription className="text-center">
                       Noch kein Account? <Link to="/signup">Jetzt Registrieren!</Link>
                     </FieldDescription>

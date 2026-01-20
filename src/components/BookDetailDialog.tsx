@@ -41,7 +41,7 @@ async function updateBookStatus(book: Book, state: BookState, isUpdate: boolean)
     await updateBookState(book.ID, apiState)
   } else {
     // Buch ist noch nicht in der Bibliothek -> hinzufügen
-    await addBookToLibrary({ bid: book.ID, state: apiState })
+    await addBookToLibrary(book.ID, apiState)
   }
 }
 

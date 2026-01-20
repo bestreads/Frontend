@@ -8,16 +8,6 @@ export interface LibraryBook {
   Rating: number
 }
 
-export interface AddBookData {
-  bid: number
-  state: number
-}
-
-export interface UpdateRating {
-  bookId: number
-  rating: number // 1-5
-}
-
 /**
  * Holt alle Bücher aus der Bibliothek eines Benutzers.
  * @param userId - Die ID des Benutzers (optional, wenn leer wird die eigene Bibliothek geladen)
@@ -40,8 +30,8 @@ export const getLibrary = async (userId?: number, limit?: number): Promise<Libra
  * @param data - Die Buch-ID und der Status
  * @returns Die Response-Daten vom Server
  */
-export const addBookToLibrary = async (data: AddBookData): Promise<LibraryBook> => {
-  const response = await apiClient.post<LibraryBook>(`/lib`, data)
+export const addBookToLibrary = async (bid: number, state: number): Promise<LibraryBook> => {
+  const response = await apiClient.post<LibraryBook>(`/lib`, {bid, state})
   return response.data
 }
 

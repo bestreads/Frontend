@@ -1,18 +1,7 @@
-import { Navigate, Outlet } from "react-router";
+import { Outlet } from "react-router";
 import Navigation from "./nav/Navigation";
-import { useAuth } from "@/contexts/Authcontext";
-
 
 function Layout() {
-  const { isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) {
-    return <div>Lädt...</div>; // Oder Spinner-Component
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
 
   return (
     <div className="h-screen flex flex-col">

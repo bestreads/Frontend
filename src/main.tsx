@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import './style.css'
 import Home from './pages/Feed.tsx'
 import Layout from './components/Layout.tsx';
+import ProtectedRoute from './components/ProtectedRoute.tsx';
 import Login from './pages/Login.tsx';
 import Signup from './pages/Signup.tsx';
 import Library from './pages/Library.tsx';
@@ -17,25 +18,29 @@ import { AuthProvider } from './contexts/Authcontext.tsx';
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: <ProtectedRoute />,
     children: [
-
       {
-        index: true,
-        element: <Home />,
-      },
-      {
-        path: "library",
-        element: <Library />
-      },
-      {
-        path: "profile/:userId",
-        element: <UserProfile />
-      },
-      {
-        path: "*",
-        element: <Error />,
-      },
+        element: <Layout />,
+        children: [
+          {
+            index: true,
+            element: <Home />,
+          },
+          {
+            path: "library",
+            element: <Library />
+          },
+          {
+            path: "profile/:userId",
+            element: <UserProfile />
+          },
+          {
+            path: "*",
+            element: <Error />,
+          },
+        ]
+      }
     ]
   },
   {

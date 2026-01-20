@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Link, useNavigate, Navigate } from "react-router"
+import { Link, Navigate } from "react-router"
 import { Mail, Lock, Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 import logoSvg from "@/assets/images/logo_text_untereinander.svg"
@@ -12,12 +12,23 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState<string | null>(null) // display login error
   const { login, isAuthenticated } = useAuth()
-  const navigate = useNavigate();
 
   // Redirect wenn bereits eingeloggt
   if (isAuthenticated) {
     return <Navigate to="/" replace />
+  }
+
+  const handleLogin = async (email: string, password: string) => {
+    setError(null)
+    try {
+      await login(email, password)
+      // navigate("/")
+    } catch(error) {
+      setError("Login fehlgeschlagen. Bitte überprüfe deine Zugangsdaten.")
+      console.log(error)
+    }
   }
 
   return (
@@ -34,10 +45,14 @@ function Login() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {error && (
+                <div className="mb-4 p-3 text-sm text-red-500 bg-red-50 dark:bg-red-950 rounded-md">
+                  {error}
+                </div>
+              )}
               <form onSubmit={async (e) => {
                 e.preventDefault()
-                await login(email, password)
-                navigate("/")
+                await handleLogin(email, password)
               }}>
                 <FieldGroup>
                   <Field>
@@ -88,18 +103,6 @@ function Login() {
                   </Field>
                 </FieldGroup>
               </form>
-
-              {/*TODO: entfernen */}
-              <button
-                onClick={async () => {
-                  await login("test@example.com", "password123")
-                  navigate("/")
-                }}
-                className="mt-4 w-full px-4 py-2 text-sm text-muted-foreground border border-dashed rounded hover:bg-muted"
-                type="button"
-              >
-                Schnell Login (Entwicklung)
-              </button>
             </CardContent>
           </Card>
         </div>

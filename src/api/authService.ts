@@ -21,6 +21,7 @@ export interface AuthResponse {
  * @returns Die Response-Daten vom Server
  */
 export const login = async (data: LoginData): Promise<AuthResponse> => {
+  // Wichtig: apiClient mit withCredentials: true damit Cookies gesetzt werden
   const response = await apiClient.post<AuthResponse>("/auth/login", data)
   return response.data
 }

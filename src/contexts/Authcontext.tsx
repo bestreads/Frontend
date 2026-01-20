@@ -1,20 +1,16 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from "react"
+import * as authService from "@/api/authService"
+import { getCurrentUser } from "@/api/userService"
+import { type User } from '@/api/userService'
 
-interface User {
-  id: string
-  username: string
-  email: string
-  profilePictureURL: string
-}
 
 interface AuthContextType {
   user: User | null
   isAuthenticated: boolean
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -23,47 +19,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // TODO: Vom backend Daten zum user holen
-  const fetchUserData = async (token: string) => {
-    // TODO: Später echter API-Call
-    console.log(`Userdaten mit ${token} geholt!`)
-    const mockUser: User = {
-      id: "123",
-      username: "MaxiMustimann123",
-      email: "max@example.com",
-      profilePictureURL: "https://image.stern.de/7561920/t/rt/v4/w1440/r1.3333/-/affen-selfie-peta-david-slater.jpg"
-    }
-    setUser(mockUser)
-    setIsLoading(false)
-  }
-
-  // TODO: Token aus localstorage oder so holen
-  useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      fetchUserData(token)
-    } else {
+  async function handleUserdata() {
+    try {
+      const user = await getCurrentUser()
+      setUser(user)
+    } catch {
+      setUser(null)
+    } finally {
       setIsLoading(false)
     }
-  }, [])
-
-  // TODO: Login
-  const login = async (email: string, password: string) => {
-    // TODO: backend aufruf
-
-    // Mock token generieren und setzen
-    console.log('Mock Login:', email, password)
-    const mockToken = "user_" + Math.random().toString(36)
-    localStorage.setItem('token', mockToken)
-
-    // User-Daten passend zum token holen
-    await fetchUserData(mockToken)
   }
 
-  // TODO: Logout
-  const logout = () => {
-    localStorage.removeItem('token')
-    setUser(null)
+  // Einmalig beim Start
+  useEffect(() => {
+    handleUserdata()
+  }, [])
+
+  const login = async (email: string, password: string) => {
+    try {
+      await authService.login({ email, password })
+      handleUserdata()
+    } catch (error) {
+      setUser(null)
+      throw error
+    }
+  }
+
+  const logout = async () => {
+    try {
+      await authService.logout()
+    } finally {
+      setUser(null)
+    }
   }
 
   return (

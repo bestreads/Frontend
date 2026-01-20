@@ -25,9 +25,9 @@ import { BookDetailDialog } from "@/components/BookDetailDialog"
 interface BookCardProps {
   book: BookWithUserData
   readOnly?: boolean
-  onDelete?: (isbn: string) => void
-  onUpdateStatus?: (isbn: string, status: BookState) => void
-  onRate?: (isbn: string, rating: number) => void
+  onDelete?: (id: number) => void
+  onUpdateStatus?: (id: number, status: BookState) => void
+  onRate?: (id: number, rating: number) => void
 }
 
 export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onRate }: BookCardProps) {
@@ -37,17 +37,17 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
 
   const handleStatusChange = (newStatus: BookState) => {
-    onUpdateStatus?.(book.ISBN, newStatus)
+    onUpdateStatus?.(book.ID, newStatus)
     setIsStatusPopoverOpen(false)
   }
 
   const handleRatingClick = (rating: number) => {
-    onRate?.(book.ISBN, rating)
+    onRate?.(book.ID, rating)
     setIsRatingPopoverOpen(false)
   }
 
   const handleDelete = () => {
-    onDelete?.(book.ISBN)
+    onDelete?.(book.ID)
   }
 
   const renderStars = (rating: number, interactive = false) => {
@@ -92,8 +92,8 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
           {/* Buchcover */}
           <div className="shrink-0">
             <img
-              src={book.coverurl || "/placeholder-book.png"}
-              alt={`Cover von ${book.title}`}
+              src={book.CoverURL || "/placeholder-book.png"}
+              alt={`Cover von ${book.Title}`}
               className="w-32 h-48 object-cover rounded-lg shadow-md"
             />
           </div>
@@ -103,8 +103,8 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
             <div className="flex justify-between items-start gap-6">
               <div className="flex-1 min-w-0">
                 <div className="mb-3">
-                  <h2 className="text-2xl font-bold mb-1">{book.title}</h2>
-                  <p className="text-muted-foreground text-base">von {book.author}</p>
+                  <h2 className="text-2xl font-bold mb-1">{book.Title}</h2>
+                  <p className="text-muted-foreground text-base">von {book.Author}</p>
                 </div>
 
                 <div className="flex items-center gap-2 mb-8">
@@ -194,7 +194,7 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
                       <AlertDialogHeader>
                         <AlertDialogTitle>Buch löschen?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Möchtest du "{book.title}" wirklich aus deiner Bibliothek entfernen? Diese Aktion kann nicht rückgängig gemacht werden.
+                          Möchtest du "{book.Title}" wirklich aus deiner Bibliothek entfernen? Diese Aktion kann nicht rückgängig gemacht werden.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -222,7 +222,7 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
         onOpenChange={setIsDetailDialogOpen}
         isInLibrary={!readOnly}
         currentStatus={book.userBook.state}
-        onStatusChange={(_, status) => onUpdateStatus?.(book.ISBN, status)}
+        onStatusChange={(_, status) => onUpdateStatus?.(book.ID, status)}
       />
     </>
   )

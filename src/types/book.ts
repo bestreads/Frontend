@@ -12,15 +12,30 @@ export const bookStateLabelsThirdPerson: Record<BookState, string> = {
   "want-to-read": "möchte lesen",
 }
 
+// Mapping von BookState zu API-Wert (0 = Want to read, 1 = Reading, 2 = Read)
+export const bookStateToApi: Record<BookState, number> = {
+  "want-to-read": 0,
+  "reading": 1,
+  "read": 2,
+}
+
+// Mapping von API-Wert zu BookState
+export const apiToBookState: Record<number, BookState> = {
+  0: "want-to-read",
+  1: "reading",
+  2: "read",
+}
+
 export interface Book {
+  ID: number
   ISBN: string
-  title: string
-  author: string
-  coverurl: string
-  ratingavg: number
-  description: string
-  releasedate: number
-  genre?: string
+  Title: string
+  Author: string
+  CoverURL: string
+  RatingAvg: number
+  Description: string
+  ReleaseDate: number
+  Genre: string
 }
 
 export interface UserBook {

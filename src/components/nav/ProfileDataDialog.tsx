@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Lock, Eye, EyeOff, Mail, Pencil, User, Camera } from "lucide-react";
 import { useAuth } from "@/contexts/Authcontext";
+import { updateUserData } from "@/api/userService";
 
 interface ProfileDialogProps {
   open: boolean;
@@ -17,8 +18,8 @@ interface ProfileDialogProps {
 }
 
 function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
-  const { user } = useAuth();
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const { user, refreshUser } = useAuth();
+  const [isSaving, setIsSaving] = useState(false);
 
   const [editingField, setEditingField] = useState<string | null>(null);
   const [tempUsername, setTempUsername] = useState<string>("");
@@ -31,48 +32,70 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
 
 
   const handleUpdateUsername = async (newUsername: string) => {
-    // TODO: Backend-Integration
-    console.log("Update username:", newUsername);
-  };
-
-  const handleUpdateEmail = async (newEmail: string) => {
-    // TODO: Backend-Integration
-    console.log("Update email:", newEmail);
-  };
-
-  const handleUpdatePassword = async (newPassword: string) => {
-    // TODO: Backend-Integration
-    console.log("Update password:", newPassword);
-  };
-
-  const handleProfileImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result as string);
-        // TODO: Backend-Integration zum Hochladen
-        console.log("Upload profile image:", file);
-      };
-      reader.readAsDataURL(file);
+    setIsSaving(true);
+    try {
+      await updateUserData({ username: newUsername });
+      await refreshUser();
+    } catch (error) {
+      console.error("Fehler beim Aktualisieren des Benutzernamens:", error);
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const handleSave = () => {
+  const handleUpdateEmail = async (newEmail: string) => {
+    setIsSaving(true);
+    try {
+      await updateUserData({ email: newEmail });
+      await refreshUser();
+    } catch (error) {
+      console.error("Fehler beim Aktualisieren der E-Mail:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleUpdatePassword = async (newPassword: string) => {
+    setIsSaving(true);
+    try {
+      await updateUserData({ password: newPassword });
+    } catch (error) {
+      console.error("Fehler beim Aktualisieren des Passworts:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleProfileImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setIsSaving(true);
+      try {
+        await updateUserData({ profilePicture: file });
+        await refreshUser();
+      } catch (error) {
+        console.error("Fehler beim Hochladen des Profilbilds:", error);
+      } finally {
+        setIsSaving(false);
+      }
+    }
+  };
+
+  const handleSave = async () => {
     if (editingField === "username") {
-      handleUpdateUsername(tempUsername);
+      await handleUpdateUsername(tempUsername);
     } else if (editingField === "email") {
-      handleUpdateEmail(tempEmail);
+      await handleUpdateEmail(tempEmail);
     } else if (editingField === "password") {
-      if (tempPassword.length < 8) {
-        setPasswordError("Passwort muss mindestens 8 Zeichen lang sein!");
+      if (tempPassword.length < 12) {
+        setPasswordError("Passwort muss mindestens 12 Zeichen lang sein!");
         return;
       }
       if (tempPassword !== tempPasswordConfirm) {
         setPasswordError("Passwörter stimmen nicht überein!");
         return;
       }
-      handleUpdatePassword(tempPassword);
+      await handleUpdatePassword(tempPassword);
     }
     setEditingField(null);
     setTempUsername("");
@@ -119,9 +142,9 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
         <div className="flex flex-col items-center py-4">
           <div className="relative">
             <div className="w-24 h-24 rounded-full overflow-hidden bg-muted flex items-center justify-center border-2">
-              {user?.profilePictureURL || profileImage ? (
+              {user?.profilePictureURL ? (
                 <img
-                  src={user?.profilePictureURL || profileImage || ""}
+                  src={user.profilePictureURL}
                   alt="Profilbild"
                   className="w-full h-full object-cover"
                 />
@@ -140,6 +163,7 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
                 accept="image/*"
                 className="hidden"
                 onChange={handleProfileImageChange}
+                disabled={isSaving}
               />
             </label>
           </div>
@@ -163,6 +187,7 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => startEditing("username", user?.username || "")}
+                  disabled={isSaving}
                 >
                   <Pencil className="w-4 h-4" />
                 </Button>
@@ -177,11 +202,11 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
                   onChange={(e) => setTempUsername(e.target.value)}
                 />
                 <div className="flex justify-end gap-2">
-                  <Button variant="outline" size="sm" onClick={handleCancel}>
+                  <Button variant="outline" size="sm" onClick={handleCancel} disabled={isSaving}>
                     Abbrechen
                   </Button>
-                  <Button size="sm" onClick={handleSave}>
-                    Speichern
+                  <Button size="sm" onClick={handleSave} disabled={isSaving}>
+                    {isSaving ? "Speichern..." : "Speichern"}
                   </Button>
                 </div>
               </div>
@@ -203,6 +228,7 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => startEditing("email", user?.email || "")}
+                  disabled={isSaving}
                 >
                   <Pencil className="w-4 h-4" />
                 </Button>
@@ -217,11 +243,11 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
                   onChange={(e) => setTempEmail(e.target.value)}
                 />
                 <div className="flex justify-end gap-2">
-                  <Button variant="outline" size="sm" onClick={handleCancel}>
+                  <Button variant="outline" size="sm" onClick={handleCancel} disabled={isSaving}>
                     Abbrechen
                   </Button>
-                  <Button size="sm" onClick={handleSave}>
-                    Speichern
+                  <Button size="sm" onClick={handleSave} disabled={isSaving}>
+                    {isSaving ? "Speichern..." : "Speichern"}
                   </Button>
                 </div>
               </div>
@@ -243,6 +269,7 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => startEditing("password")}
+                  disabled={isSaving}
                 >
                   <Pencil className="w-4 h-4" />
                 </Button>
@@ -296,11 +323,11 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
                   </button>
                 </div>
                 <div className="flex justify-end gap-2">
-                  <Button variant="outline" size="sm" onClick={handleCancel}>
+                  <Button variant="outline" size="sm" onClick={handleCancel} disabled={isSaving}>
                     Abbrechen
                   </Button>
-                  <Button size="sm" onClick={handleSave}>
-                    Speichern
+                  <Button size="sm" onClick={handleSave} disabled={isSaving}>
+                    {isSaving ? "Speichern..." : "Speichern"}
                   </Button>
                 </div>
               </div>

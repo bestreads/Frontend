@@ -34,7 +34,7 @@ function UserProfile() {
           </TabsContent>
 
           <TabsContent value="library" className="mt-6">
-            <ProfileLibrary></ProfileLibrary>
+            <ProfileLibrary userId={userId}></ProfileLibrary>
           </TabsContent>
         </Tabs>
       </div>

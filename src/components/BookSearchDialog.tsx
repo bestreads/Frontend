@@ -10,18 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
 import { BookDetailDialog } from "./BookDetailDialog"
 import type { Book } from "@/types/book"
-
-interface SearchResult {
-  ID: number
-  ISBN: string
-  Title: string
-  Author: string
-  CoverURL: string
-  RatingAvg: number
-  Description: string
-  ReleaseDate: number
-  Genre?: string
-}
+import { searchBooks } from "@/api/bookService"
 
 interface BookSearchDialogProps {
   open: boolean
@@ -30,14 +19,14 @@ interface BookSearchDialogProps {
 
 export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) {
   const [searchQuery, setSearchQuery] = useState("")
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const [searchResults, setSearchResults] = useState<Book[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [selectedBook, setSelectedBook] = useState<Book | null>(null)
   const [bookDetailOpen, setBookDetailOpen] = useState(false)
   const [lastSearchQuery, setLastSearchQuery] = useState("")
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const searchBooks = useCallback(async (query: string) => {
+  const performSearch = useCallback(async (query: string) => {
     if (!query.trim()) {
       setSearchResults([])
       return
@@ -49,15 +38,8 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
 
     setIsLoading(true)
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/v1/books/search?q=${encodeURIComponent(query)}&limit=10`
-      )
-      if (response.ok) {
-        const data: SearchResult[] = await response.json()
-        setSearchResults(data || [])
-      } else {
-        setSearchResults([])
-      }
+      const data = await searchBooks({ q: query, limit: 10 })
+      setSearchResults(data || [])
     } catch (error) {
       console.error("Error during book search:", error)
       setSearchResults([])
@@ -74,9 +56,9 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
       debounceTimerRef.current = null
     }
     if (searchQuery.trim()) {
-      searchBooks(searchQuery)
+      performSearch(searchQuery)
     }
-  }, [searchQuery, searchBooks])
+  }, [searchQuery, performSearch])
 
   // Debounced Suche bei Eingabe
   useEffect(() => {
@@ -86,7 +68,7 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
     }
 
     debounceTimerRef.current = setTimeout(() => {
-      searchBooks(searchQuery)
+      performSearch(searchQuery)
     }, 300)
 
     return () => {
@@ -94,7 +76,7 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
         clearTimeout(debounceTimerRef.current)
       }
     }
-  }, [searchQuery, searchBooks])
+  }, [searchQuery, performSearch])
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -114,15 +96,17 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
     }
   }, [open])
 
-  const handleBookClick = (result: SearchResult) => {
+  const handleBookClick = (result: Book) => {
     const book: Book = {
+      ID: result.ID,
       ISBN: result.ISBN,
-      title: result.Title,
-      author: result.Author,
-      coverurl: result.CoverURL,
-      ratingavg: result.RatingAvg,
-      description: result.Description,
-      releasedate: result.ReleaseDate,
+      Title: result.Title,
+      Author: result.Author,
+      CoverURL: result.CoverURL,
+      RatingAvg: result.RatingAvg,
+      Description: result.Description,
+      ReleaseDate: result.ReleaseDate,
+      Genre: result.Genre,
     }
     setSelectedBook(book)
     setBookDetailOpen(true)

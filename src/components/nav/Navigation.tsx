@@ -96,7 +96,7 @@ function Navigation() {
               </Button>
               <hr className="my-2" />
               <Link
-                to={`/profile/${user?.id}`}
+                to={`/profile/${user?.userId}`}
                 className="px-4 py-2 rounded-md hover:bg-accent text-left flex items-center gap-2"
                 onClick={() => { setMobileMenuOpen(false) }}
               >
@@ -198,7 +198,7 @@ function Navigation() {
                 <ul className="p-2 space-y-2">
                   <li>
                     <Link
-                      to={`/profile/${user?.id}`}
+                      to={`/profile/${user?.userId}`}
                       className="w-full px-3 py-2 text-sm hover:bg-accent rounded-md text-left flex items-center gap-2"
                     >
                       <User className="w-4 h-4" />

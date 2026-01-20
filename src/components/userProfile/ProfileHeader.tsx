@@ -26,7 +26,7 @@ function ProfileHeader({ userId }: { userId: string }) {
   */
   const isFollowing = false
 
-  const canFollow = !isFollowing && (user?.id !== userId);
+  const canFollow = !isFollowing && (user?.userId !== Number(userId));
 
   return (
     <div className="flex flex-col gap-6 px-6 lg:flex-row">

@@ -7,11 +7,14 @@ export interface Post {
   Uid: number
   Book: Book
   Content: string
-  ImageUrl: string
+  CreatedAt: string
+  State: number
+  Rating: number
 }
 
 export interface GetPostsParams {
-  uid?: number
+  userId?: number
+  limit?: number
 }
 
 export interface CreatePostData {
@@ -25,7 +28,7 @@ export interface CreatePostData {
  * @returns Die Response-Daten vom Server
  */
 export const getPosts = async (params: GetPostsParams): Promise<Post[]> => {
-  const response = await apiClient.get<Post[]>("/post", { data: params })
+  const response = await apiClient.get<Post[]>("/post", { params })
   return response.data
 }
 

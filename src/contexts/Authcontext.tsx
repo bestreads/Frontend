@@ -1,18 +1,9 @@
-/* eslint-disable react-hooks/set-state-in-effect */
-import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import * as authService from "@/api/authService"
+import { getCurrentUser } from "@/api/userService"
+import { type User } from '@/api/userService'
+import { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from "react"
-import { getUser, type OwnUserProfile } from "@/api/userService"
-import { login as apiLogin, logout as apiLogout } from "@/api/authService"
 
-interface User {
-  userId: number
-  username: string
-  email: string
-  profilePictureURL: string
-  accountCreatedAtYear: number
-  booksInLibrary: number
-  posts: number
-}
 
 interface AuthContextType {
   user: User | null
@@ -20,73 +11,58 @@ interface AuthContextType {
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
-  refreshUser: () => Promise<void>
+  handleUserData: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
-
-// Transformiert OwnUserProfile zu User
-const mapUserProfile = (profile: OwnUserProfile): User => ({
-  userId: profile.userId,
-  username: profile.username,
-  email: profile.email,
-  profilePictureURL: profile.profilePicture,
-  accountCreatedAtYear: profile.accountCreatedAtYear,
-  booksInLibrary: profile.booksInLibrary,
-  posts: profile.posts,
-})
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Benutzerdaten vom Backend holen
-  const fetchUserData = useCallback(async () => {
+  async function handleUserData() {
     try {
-      const userData = await getUser()
-      setUser(mapUserProfile(userData))
-    } catch (error) {
-      console.error("Fehler beim Laden der Benutzerdaten:", error)
+      const user = await getCurrentUser()
+      setUser(user)
+    } catch {
       setUser(null)
+    } finally {
+      setIsLoading(false)
     }
-  }, [])
-
-  // Beim Start prüfen ob User eingeloggt ist
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const userData = await getUser()
-        setUser(mapUserProfile(userData))
-      } catch {
-        // Nicht eingeloggt oder Token ungültig
-        setUser(null)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    checkAuth()
-  }, [])
-
-  // Login
-  const login = async (email: string, password: string) => {
-    await apiLogin({ email, password })
-    await fetchUserData()
   }
 
-  // Logout
+  // check user & cookie at start
+  useEffect(() => {
+    handleUserData()
+  }, [])
+
+  // check session each 3 min
+  useEffect(() => {
+    if (!user) return
+
+    const timer = setInterval(() => {
+      handleUserData()
+    }, 1000 * 60 * 3) // 3 min
+
+    return () => clearInterval(timer)
+  }, [user])
+
+  const login = async (email: string, password: string) => {
+    try {
+      await authService.login({ email, password })
+      await handleUserData()
+    } catch (error) {
+      setUser(null)
+      throw error
+    }
+  }
+
   const logout = async () => {
     try {
-      await apiLogout()
-    } catch (error) {
-      console.error("Fehler beim Logout:", error)
+      await authService.logout()
     } finally {
       setUser(null)
     }
-  }
-
-  // User-Daten neu laden (z.B. nach Profil-Update)
-  const refreshUser = async () => {
-    await fetchUserData()
   }
 
   return (
@@ -96,7 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading,
       login,
       logout,
-      refreshUser
+      handleUserData
     }}>
       {children}
     </AuthContext.Provider>

@@ -2,120 +2,86 @@
 import type { Post } from "@/types/post"
 import PostCard from "@/components/PostCard"
 import { MessageSquareOff } from "lucide-react"
+import { useEffect, useState } from "react"
+import { getPosts, type Post as ApiPost } from "@/api/postService"
+import { Spinner } from "@/components/ui/spinner"
+import { apiToBookState } from "@/types/book"
+import { Button } from "@/components/ui/button"
 
 const Feed = () => {
-  // TODO: Backend-Aufruf für Feed-Posts
-  // evtl. Limit + Aktualisieren button
-  const posts: Post[] = [
-    {
-      id: "post1",
-      author: {
-        userId: "user456",
-        username: "LeseRatte42",
-        profilePictureURL: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
-      },
-      book: {
-        ID: 1,
-        ISBN: "978-0441013593",
-        Title: "Dune",
-        Author: "Frank Herbert",
-        CoverURL: "https://m.media-amazon.com/images/I/71oSHCZABCL._SY466_.jpg",
-        RatingAvg: 4.2,
-        Description: "Arrakis ist eine tödliche Wüstenwelt und der einzige Fundort der Droge 'Spice', die das Reisen zwischen den Sternen ermöglicht.",
-        ReleaseDate: 1965,
-        Genre: "Science Fiction",
-        userBook: {
-          state: "read",
-          rating: 5,
-        },
-      },
-      content: "Endlich geschafft! Was für ein episches Meisterwerk. Die Welt von Arrakis hat mich komplett in den Bann gezogen. 🏜️",
-      createdAt: "2026-01-08T18:30:00Z",
-      likes: 89,
-      commentCount: 12,
-    },
-    {
-      id: "post2",
-      author: {
-        userId: "user789",
-        username: "BookwormBerlin",
-        profilePictureURL: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
-      },
-      book: {
-        ID: 2,
-        ISBN: "978-0441013594",
-        Title: "Harry Potter und der Stein der Weisen",
-        Author: "J.K. Rowling",
-        CoverURL: "https://images.thalia.media/-/BF2000-2000/94a2302133384639b32d0f09e2e4c0d4/harry-potter-1-and-the-philosopher-s-stone-gebundene-ausgabe-j-k-rowling-englisch.jpeg",
-        RatingAvg: 4.9,
-        Description: "Harry Potter erfährt an seinem elften Geburtstag, dass er ein Zauberer ist.",
-        ReleaseDate: 1997,
-        Genre: "Fantasy",
-        userBook: {
-          state: "reading",
-          rating: 5,
-        },
-      },
-      content: "Lese es zum dritten Mal und entdecke immer noch neue Details! Die Magie lässt einfach nicht nach ✨",
-      createdAt: "2026-01-08T14:15:00Z",
-      likes: 234,
-      commentCount: 28,
-    },
-    {
-      id: "post3",
-      author: {
-        userId: "user101",
-        username: "SciFiFan2000",
-        profilePictureURL: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
-      },
-      book: {
-        ID: 3,
-        ISBN: "978-0451524935",
-        Title: "1984",
-        Author: "George Orwell",
-        CoverURL: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkdK_06hkWyzxuYeEahTKsIebflxohnhRBn6kUaOXjHRvrajtnlJi-ABVug69qtWBn-tpwZKLL2pFZKydGQbpXN3KQht7wyz2sYDNkpg&s=10",
-        RatingAvg: 4.6,
-        Description: "In einem totalitären Überwachungsstaat arbeitet Winston Smith im Ministerium für Wahrheit.",
-        ReleaseDate: 1949,
-        Genre: "Dystopie",
-        userBook: {
-          state: "want-to-read",
-          rating: 0,
-        },
-      },
-      content: "Wurde mir von einem Freund empfohlen. Bin sehr gespannt, ob es wirklich so relevant für heute ist wie alle sagen! 📚",
-      createdAt: "2026-01-07T20:00:00Z",
-      likes: 45,
-      commentCount: 8,
-    },
-    {
-      id: "post4",
-      author: {
-        userId: "user202",
-        username: "FantasyQueen",
-        profilePictureURL: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
-      },
-      book: {
-        ID: 5,
-        ISBN: "978-3608938289",
-        Title: "Der Herr der Ringe: Die Gefährten",
-        Author: "J.R.R. Tolkien",
-        CoverURL: "https://images-eu.ssl-images-amazon.com/images/I/61rTYQFaxPL._AC_UL600_SR600,600_.jpg",
-        RatingAvg: 4.8,
-        Description: "Der junge Hobbit Frodo Beutlin erbt einen magischen Ring.",
-        ReleaseDate: 1954,
-        Genre: "Fantasy",
-        userBook: {
-          state: "read",
-          rating: 5,
-        },
-      },
-      content: "Nach den Filmen endlich auch das Buch gelesen. Die Details sind unglaublich! Tolkien ist ein Genie. 🧙‍♂️💍",
-      createdAt: "2026-01-06T12:30:00Z",
-      likes: 312,
-      commentCount: 41,
-    },
-  ]
+  const [posts, setPosts] = useState<Post[]>([])
+  const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [limit, setLimit] = useState(10)
+  const [hasMore, setHasMore] = useState(true)
+
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        setLoading(true)
+        const data = await getPosts({ limit })
+
+        // Backend-Response zu Frontend-Post-Type mappen
+        const mappedPosts: Post[] = data.map((apiPost: ApiPost) => ({
+          id: `post-${apiPost.Uid}-${apiPost.Book.ID}-${apiPost.CreatedAt}`,  
+          author: {
+            userId: apiPost.Uid.toString(),
+            username: apiPost.Username,
+            profilePictureURL: apiPost.ProfilePicture || undefined,
+          },
+          book: {
+            ...apiPost.Book,
+            userBook: {
+              state: apiToBookState[apiPost.State] || "want-to-read",
+              rating: apiPost.Rating,
+            },
+          },
+          content: apiPost.Content,
+          createdAt: apiPost.CreatedAt
+        }))
+
+        setPosts(mappedPosts)
+        setHasMore(data.length >= limit)
+      } catch (err) {
+        setError("Fehler beim Laden der Beiträge")
+        console.error("Fehler beim Laden der Beiträge:", err)  
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPosts()
+  }, [limit])
+
+  const loadMore = async () => {
+    setLoadingMore(true)
+    setLimit(prev => prev + 10)
+    setLoadingMore(false)
+  }
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold mb-8">Beiträge</h1>
+        <div className="flex justify-center items-center py-16">
+          <Spinner />
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold mb-8">Beiträge</h1>
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <p className="text-destructive text-lg">{error}</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -131,8 +97,22 @@ const Feed = () => {
         ) : (
           <div className="grid gap-4">
             {posts.map((post) => (
-              <PostCard postData={post} key={post.id} />
+              <PostCard postData={post} key={`${post.id}-${post.createdAt}`} />
             ))}
+          </div>
+        )}
+
+        {/* Mehr laden Button */}
+        {posts.length > 0 && hasMore && (
+          <div className="flex justify-center mt-8">
+            <Button
+              onClick={loadMore}
+              disabled={loadingMore}
+              variant="outline"
+              size="lg"
+            >
+              {loadingMore ? <Spinner /> : "Mehr Beiträge laden"}
+            </Button>
           </div>
         )}
       </div>

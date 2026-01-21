@@ -1,5 +1,12 @@
 import apiClient from "./client"
 
+export interface User {
+  userId: number
+  username: string
+  email: string
+  profilePictureURL: string
+}
+
 export interface UserProfile {
   userId: number
   username: string
@@ -17,6 +24,15 @@ export interface OwnUserProfile {
   booksInLibrary: number
   posts: number
   email: string
+}
+
+/**
+ * Holt die Daten des aktuell eingeloggten Benutzers
+ * @returns Die User-Daten vom Server
+ */
+export const getCurrentUser = async (): Promise<User> => {
+  const response = await apiClient.get<User>("/user")
+  return response.data
 }
 
 /**

@@ -7,6 +7,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Search } from "lucide-react"
 import { BookDetailDialog } from "./BookDetailDialog"
 import type { Book } from "@/types/book"
@@ -24,6 +31,7 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
   const [selectedBook, setSelectedBook] = useState<Book | null>(null)
   const [bookDetailOpen, setBookDetailOpen] = useState(false)
   const [lastSearchQuery, setLastSearchQuery] = useState("")
+  const [searchType, setSearchType] = useState<"title" | "author">("title")
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const performSearch = useCallback(async (query: string) => {
@@ -38,7 +46,11 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
 
     setIsLoading(true)
     try {
-      const data = await searchBooks({ q: query, limit: 10 })
+      const data = await searchBooks({ 
+        q: query, 
+        author: searchType === "author" || undefined,
+        limit: 10 
+      })
       setSearchResults(data || [])
     } catch (error) {
       console.error("Error during book search:", error)
@@ -46,7 +58,7 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
     } finally {
       setIsLoading(false)
     }
-  }, [lastSearchQuery])
+  }, [lastSearchQuery, searchType])
 
   // Sofortige Suche (bei Enter oder Blur)
   const handleImmediateSearch = useCallback(() => {
@@ -125,18 +137,30 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
             </DialogDescription>
           </DialogHeader>
 
-          {/* Suchfeld */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Nach Titel oder Autor suchen..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              onBlur={handleImmediateSearch}
-              className="pl-10 h-12 text-base border-2 focus-visible:border-primary focus-visible:ring-primary/20"
-            />
+          {/* Suchfeld mit Dropdown */}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder={searchType === "title" ? "Nach Titel suchen..." : "Nach Autor suchen..."}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onBlur={handleImmediateSearch}
+                className="pl-10 h-12 text-base border-2 focus-visible:border-primary focus-visible:ring-primary/20"
+              />
+            </div>
+            
+            <Select value={searchType} onValueChange={(value: "title" | "author") => setSearchType(value)}>
+              <SelectTrigger className="w-[130px] h-12 border-2">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="title">Titel</SelectItem>
+                <SelectItem value="author">Autor</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Ergebnisanzahl */}

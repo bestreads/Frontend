@@ -54,7 +54,7 @@ function Navigation() {
                   <Avatar className="border-2 h-20 w-20">
                     <AvatarImage src={user?.profilePictureURL} />
                     <AvatarFallback>
-                      <User className="h-4 w-4 inline mr-2" />
+                      <User className="h-4 w-4 inline" />
                     </AvatarFallback>
                   </Avatar>
                   <h1 className="text-xl font-semibold">
@@ -182,12 +182,11 @@ function Navigation() {
             </NavigationMenuItem>
 
             <NavigationMenuItem className="relative">
-              <NavigationMenuTrigger className="flex gap-2 items-center">
-
+              <NavigationMenuTrigger className="group flex gap-2 items-center">
                 <Avatar className="border-2">
                   <AvatarImage src={user?.profilePictureURL} />
                   <AvatarFallback>
-                    <User className="h-4 w-4 inline mr-2" />
+                    <User className="h-4 w-4 inline transition-colors group-hover:text-accent" />
                   </AvatarFallback>
                 </Avatar>
                 <h1 className=" hidden lg:flex">

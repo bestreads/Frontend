@@ -2,22 +2,36 @@ import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Link, useNavigate, Navigate } from "react-router"
+import { Link, Navigate } from "react-router"
 import { Mail, Lock, Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 import logoSvg from "@/assets/images/logo_text_untereinander.svg"
 import { useAuth } from "@/contexts/Authcontext"
+import { Spinner } from "@/components/ui/spinner"
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
   const { login, isAuthenticated } = useAuth()
-  const navigate = useNavigate();
 
   // Redirect wenn bereits eingeloggt
   if (isAuthenticated) {
     return <Navigate to="/" replace />
+  }
+
+  const handleLogin = async (email: string, password: string) => {
+    setError(null)
+    setIsLoading(true)
+    try {
+      await login(email, password)
+    } catch {
+      setError("Login fehlgeschlagen. Bitte überprüfe deine Zugangsdaten.")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -34,10 +48,14 @@ function Login() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {error && (
+                <div className="mb-4 p-3 text-sm text-red-500 bg-red-50 dark:bg-red-950 rounded-md">
+                  {error}
+                </div>
+              )}
               <form onSubmit={async (e) => {
                 e.preventDefault()
-                await login(email, password)
-                navigate("/")
+                await handleLogin(email, password)
               }}>
                 <FieldGroup>
                   <Field>
@@ -60,12 +78,6 @@ function Login() {
                         <Lock className="h-4 w-4 inline mr-2" />
                         Passwort
                       </FieldLabel>
-                      <Link
-                        to="/reset-password"
-                        className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                      >
-                        Passwort vergessen?
-                      </Link>
                     </div>
                     <div className="relative">
                       <Input
@@ -87,25 +99,16 @@ function Login() {
                     </div>
                   </Field>
                   <Field>
-                    <Button type="submit">Login</Button>
+                    <Button type="submit" disabled={isLoading}>
+                      {isLoading && <Spinner />}
+                      {isLoading ? "Anmelden..." : "Login"}
+                    </Button>
                     <FieldDescription className="text-center">
                       Noch kein Account? <Link to="/signup">Jetzt Registrieren!</Link>
                     </FieldDescription>
                   </Field>
                 </FieldGroup>
               </form>
-
-              {/*TODO: entfernen */}
-              <button
-                onClick={async () => {
-                  await login("test@example.com", "password123")
-                  navigate("/")
-                }}
-                className="mt-4 w-full px-4 py-2 text-sm text-muted-foreground border border-dashed rounded hover:bg-muted"
-                type="button"
-              >
-                Schnell Login (Entwicklung)
-              </button>
             </CardContent>
           </Card>
         </div>

@@ -18,7 +18,7 @@ interface ProfileDialogProps {
 }
 
 function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
-  const { user, refreshUser } = useAuth();
+  const { user, handleUserData } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
 
   const [editingField, setEditingField] = useState<string | null>(null);
@@ -35,7 +35,7 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
     setIsSaving(true);
     try {
       await updateUserData({ username: newUsername });
-      await refreshUser();
+      await handleUserData();
     } catch (error) {
       console.error("Fehler beim Aktualisieren des Benutzernamens:", error);
     } finally {
@@ -47,7 +47,7 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
     setIsSaving(true);
     try {
       await updateUserData({ email: newEmail });
-      await refreshUser();
+      await handleUserData();
     } catch (error) {
       console.error("Fehler beim Aktualisieren der E-Mail:", error);
     } finally {
@@ -72,7 +72,7 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
       setIsSaving(true);
       try {
         await updateUserData({ profilePicture: file });
-        await refreshUser();
+        await handleUserData();
       } catch (error) {
         console.error("Fehler beim Hochladen des Profilbilds:", error);
       } finally {

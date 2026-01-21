@@ -14,6 +14,7 @@ import UserProfile from './pages/UserProfile.tsx';
 
 import { ThemeProvider } from './components/theme-provider.tsx';
 import { AuthProvider } from './contexts/Authcontext.tsx';
+import { LibraryProvider } from './contexts/LibraryContext.tsx';
 
 const router = createBrowserRouter([
   {
@@ -56,9 +57,11 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
-      <ThemeProvider storageKey="vite-ui-theme">
-        <RouterProvider router={router} />
-      </ThemeProvider>
+      <LibraryProvider>
+        <ThemeProvider storageKey="vite-ui-theme">
+          <RouterProvider router={router} />
+        </ThemeProvider>
+      </LibraryProvider>
     </AuthProvider>
   </StrictMode>,
 )

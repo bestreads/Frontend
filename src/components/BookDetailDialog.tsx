@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,7 @@ import { Plus, X, RefreshCw } from "lucide-react"
 import { bookStateLabels, bookStateToApi } from "@/types/book"
 import type { Book, BookState } from "@/types/book"
 import { updateBookState, addBookToLibrary } from "@/api/libraryService"
+import { useLibrary } from "@/contexts/LibraryContext"
 
 interface BookDetailDialogProps {
   book: Book | null
@@ -54,11 +55,32 @@ export function BookDetailDialog({
   onStatusChange,
 }: BookDetailDialogProps) {
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState(false)
+  const [localIsInLibrary, setLocalIsInLibrary] = useState(isInLibrary)
+  const [localCurrentStatus, setLocalCurrentStatus] = useState<BookState | undefined>(currentStatus)
+  
+  const { addBookToLocalLibrary, updateBookInLocalLibrary } = useLibrary()
+
+  // Synchronisiere lokalen State mit Props wenn sich das Buch ändert
+  useEffect(() => {
+    setLocalIsInLibrary(isInLibrary)
+    setLocalCurrentStatus(currentStatus)
+  }, [book?.ID, isInLibrary, currentStatus])
 
   if (!book) return null
 
   const handleStatusSelect = async (status: BookState) => {
-    await updateBookStatus(book, status, isInLibrary)
+    await updateBookStatus(book, status, localIsInLibrary)
+    
+    // Aktualisiere lokalen State sofort
+    setLocalIsInLibrary(true)
+    setLocalCurrentStatus(status)
+    
+    // Aktualisiere die globale Bibliothek
+    if (localIsInLibrary) {
+      updateBookInLocalLibrary(book.ID, status)
+    } else {
+      addBookToLocalLibrary(book, status)
+    }
     
     if (onStatusChange) {
       onStatusChange(book, status)
@@ -84,7 +106,7 @@ export function BookDetailDialog({
             {/* Status-Button: + für Hinzufügen, RefreshCw für Update */}
             <Popover open={isStatusPopoverOpen} onOpenChange={setIsStatusPopoverOpen}>
               <PopoverTrigger asChild>
-                {isInLibrary ? (
+                {localIsInLibrary ? (
                   <Button
                     variant="ghost"
                     size="icon"
@@ -107,10 +129,10 @@ export function BookDetailDialog({
               <PopoverContent className="w-auto p-2" align="end">
                 <div className="flex flex-col gap-1">
                   <p className="text-sm font-medium px-2 py-1 text-muted-foreground">
-                    {isInLibrary ? "Status ändern" : "Zur Bibliothek hinzufügen"}
+                    {localIsInLibrary ? "Status ändern" : "Zur Bibliothek hinzufügen"}
                   </p>
                   <Button
-                    variant={currentStatus === "want-to-read" ? "default" : "ghost"}
+                    variant={localCurrentStatus === "want-to-read" ? "default" : "ghost"}
                     className="justify-start"
                     size="sm"
                     onClick={() => handleStatusSelect("want-to-read")}
@@ -118,7 +140,7 @@ export function BookDetailDialog({
                     {bookStateLabels["want-to-read"]}
                   </Button>
                   <Button
-                    variant={currentStatus === "reading" ? "default" : "ghost"}
+                    variant={localCurrentStatus === "reading" ? "default" : "ghost"}
                     className="justify-start"
                     size="sm"
                     onClick={() => handleStatusSelect("reading")}
@@ -126,7 +148,7 @@ export function BookDetailDialog({
                     {bookStateLabels["reading"]}
                   </Button>
                   <Button
-                    variant={currentStatus === "read" ? "default" : "ghost"}
+                    variant={localCurrentStatus === "read" ? "default" : "ghost"}
                     className="justify-start"
                     size="sm"
                     onClick={() => handleStatusSelect("read")}

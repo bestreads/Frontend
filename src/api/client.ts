@@ -15,9 +15,7 @@ apiClient.interceptors.response.use(
     const url = originalRequest.url || ""
 
     // skip refresh 
-    const skipRefresh =
-      url.includes("/auth/") ||
-      url === "/user" 
+    const skipRefresh = url.includes("/auth/") || (url.includes("/user") && window.location.pathname === "/login")
 
     if (
       error.response?.status === 401 &&
@@ -29,8 +27,8 @@ apiClient.interceptors.response.use(
       try {
         await apiClient.post("/auth/refresh")
         return apiClient(originalRequest)
-      } catch {
-        // refresh failed -> login
+      } catch (error){
+        console.log(`Error beim refreshen: ${error}`)
         window.location.href = "/login"
         return Promise.reject(error)
       }

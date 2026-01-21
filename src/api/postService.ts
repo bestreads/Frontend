@@ -7,7 +7,6 @@ export interface Post {
   Uid: number
   Book: Book
   Content: string
-  ImageUrl: string
 }
 
 export interface GetPostsParams {

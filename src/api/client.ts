@@ -7,17 +7,17 @@ const apiClient = axios.create({
   withCredentials: true,
 })
 
-// Einfacher Interceptor: Bei 401 → Refresh versuchen
+// Interceptor: 401 anywhere → try to refresh
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config
     const url = originalRequest.url || ""
 
-    // Diese Routen sollen NICHT refreshen (Auth-Check, Login, etc.)
+    // skip refresh 
     const skipRefresh =
       url.includes("/auth/") ||
-      url === "/user" // getCurrentUser beim App-Start
+      url === "/user" 
 
     if (
       error.response?.status === 401 &&
@@ -30,7 +30,7 @@ apiClient.interceptors.response.use(
         await apiClient.post("/auth/refresh")
         return apiClient(originalRequest)
       } catch {
-        // Refresh fehlgeschlagen → zur Login-Seite
+        // refresh failed -> login
         window.location.href = "/login"
         return Promise.reject(error)
       }

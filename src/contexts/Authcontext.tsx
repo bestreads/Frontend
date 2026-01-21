@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  async function handleUserdata() {
+  async function handleUserData() {
     try {
       const user = await getCurrentUser()
       setUser(user)
@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // check user & cookie at start
   useEffect(() => {
-    handleUserdata()
+    handleUserData()
   }, [])
 
   // check session each 3 min
@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user) return
 
     const timer = setInterval(() => {
-      handleUserdata()
+      handleUserData()
     }, 1000 * 60 * 3) // 3 min
 
     return () => clearInterval(timer)
@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     try {
       await authService.login({ email, password })
-      handleUserdata()
+      await handleUserData()
     } catch (error) {
       setUser(null)
       throw error

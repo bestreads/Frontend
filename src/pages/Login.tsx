@@ -27,9 +27,8 @@ function Login() {
     setIsLoading(true)
     try {
       await login(email, password)
-    } catch (error) {
+    } catch {
       setError("Login fehlgeschlagen. Bitte überprüfe deine Zugangsdaten.")
-      console.log(error)
     } finally {
       setIsLoading(false)
     }

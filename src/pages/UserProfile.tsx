@@ -8,7 +8,7 @@ import { Library, MessagesSquare } from "lucide-react";
 
 function UserProfile() {
   const { userId } = useParams(); // userId aus Adresse bekommen
-  if (!userId) { // TODO: Falsche id im Link abfangen
+  if (!userId) {
     return <Errorpage />
   }
 

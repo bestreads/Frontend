@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const timer = setInterval(() => {
       handleUserData()
       console.log("check session...")
-    }, 1000 * 10 * 1) // 3 min
+    }, 1000 * 60 * 3) // 3 min
 
     return () => clearInterval(timer)
   }, [user])

@@ -11,52 +11,36 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { BookCard } from "@/components/BookCard"
-import type { BookWithUserData, BookState } from "@/types/book"
-import { apiToBookState, bookStateToApi } from "@/types/book"
-import { getLibrary, removeBookFromLibrary, updateBookState, updateRating } from "@/api/libraryService"
+import type { BookState } from "@/types/book"
+import { bookStateToApi } from "@/types/book"
+import { removeBookFromLibrary, updateBookState, updateRating } from "@/api/libraryService"
+import { useLibrary } from "@/contexts/LibraryContext"
 
 function Library() {
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("title")
   const [filterTab, setFilterTab] = useState("all")
-  const [books, setBooks] = useState<BookWithUserData[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  
+  const { 
+    libraryBooks: books, 
+    isLoading, 
+    error, 
+    refreshLibrary,
+    removeBookFromLocalLibrary,
+    updateBookInLocalLibrary,
+    updateBookRating: updateLocalRating
+  } = useLibrary()
 
   // Bücher beim Laden der Komponente abrufen
   useEffect(() => {
-    const fetchLibrary = async () => {
-      try {
-        setIsLoading(true)
-        setError(null)
-        const libraryBooks = await getLibrary()
-        
-        // LibraryBook zu BookWithUserData transformieren
-        const transformedBooks: BookWithUserData[] = libraryBooks.map((lb) => ({
-          ...lb.Book,
-          userBook: {
-            state: apiToBookState[lb.State] || "want-to-read",
-            rating: lb.Rating,
-          },
-        }))
-        
-        setBooks(transformedBooks)
-      } catch (err) {
-        console.error("Fehler beim Laden der Bibliothek:", err)
-        setError("Fehler beim Laden der Bibliothek")
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchLibrary()
-  }, [])
+    refreshLibrary()
+  }, [refreshLibrary])
 
   // API-Funktionen
   const handleDeleteBook = async (id: number) => {
     try {
       await removeBookFromLibrary(id)
-      setBooks(books.filter((book) => book.ID !== id))
+      removeBookFromLocalLibrary(id)
     } catch (err) {
       console.error("Fehler beim Löschen:", err)
     }
@@ -65,13 +49,7 @@ function Library() {
   const handleUpdateStatus = async (id: number, status: BookState) => {
     try {
       await updateBookState(id, bookStateToApi[status])
-      setBooks(
-        books.map((book) =>
-          book.ID === id
-            ? { ...book, userBook: { ...book.userBook, state: status } }
-            : book
-        )
-      )
+      updateBookInLocalLibrary(id, status)
     } catch (err) {
       console.error("Fehler beim Status-Update:", err)
     }
@@ -80,13 +58,7 @@ function Library() {
   const handleRateBook = async (id: number, rating: number) => {
     try {
       await updateRating(id, rating)
-      setBooks(
-        books.map((book) =>
-          book.ID === id
-            ? { ...book, userBook: { ...book.userBook, rating } }
-            : book
-        )
-      )
+      updateLocalRating(id, rating)
     } catch (err) {
       console.error("Fehler beim Bewerten:", err)
     }

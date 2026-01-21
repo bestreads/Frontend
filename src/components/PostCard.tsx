@@ -1,7 +1,7 @@
 import type { Post } from "@/types/post"
-import { Card, CardContent, CardHeader, CardFooter } from "./ui/card"
+import { Card, CardContent, CardHeader } from "./ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
-import { User, Star, Heart, MessageSquare } from "lucide-react"
+import { User, Star } from "lucide-react"
 import { bookStateLabelsThirdPerson } from "../types/book"
 import { BookDetailDialog } from "@/components/BookDetailDialog"
 import { useState } from "react"
@@ -9,28 +9,9 @@ import { Link, useLocation } from "react-router"
 
 function PostCard({ postData }: { postData: Post }) {
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
-  const [isLiked, setIsLiked] = useState(false)
-  const [likeCount, setLikeCount] = useState(postData.likes || 0)
   const location = useLocation()
 
-  // Prüft ob man sich bereits auf dem Profil des Post-Autors befindet
   const isAlreadyOnProfile = location.pathname === `/profile/${postData.author.userId}`
-
-  //TODO: Funktion für Like
-  const handleLike = () => {
-    if (isLiked) {
-      setLikeCount(prev => prev - 1)
-      setIsLiked(false)
-    } else {
-      setLikeCount(prev => prev + 1)
-      setIsLiked(true)
-    }
-  }
-
-  // TODO: Funktion für Kommentar
-  const handleComment = () => {
-    alert("Kommentar schreiben...?")
-  }
 
   const renderStars = (rating: number) => {
     return (
@@ -97,18 +78,18 @@ function PostCard({ postData }: { postData: Post }) {
 
         {/* Buchinformationen */}
         <div
-          className="flex gap-6 cursor-pointer hover:shadow transition-colors rounded-sm p-4"
+          className="group flex gap-6 cursor-pointer rounded-sm p-4"
           onClick={() => setIsDetailDialogOpen(true)}
         >
           <img
             src={postData.book.CoverURL || "/placeholder-book.png"}
             alt={`Cover von ${postData.book.Title}`}
-            className="w-24 lg:w-auto max-w-[30%] aspect-2/3  object-cover rounded-lg shadow-md self-start"
+            className="w-24 lg:w-auto max-w-[30%] aspect-2/3 object-cover rounded-lg shadow-md self-start border-4 border-transparent transition-colors group-hover:border-accent"
           />
           <div className="flex-1 ">
             <div className="mb-3 flex items-start justify-between gap-6 lg:flex-col">
               <div>
-                <h2 className="text-2xl font-bold mr-auto">{postData.book.Title}</h2>
+                <h2 className="text-2xl font-bold mr-auto transition-colors group-hover:text-accent">{postData.book.Title}</h2>
                 <p className="text-muted-foreground text-base">von {postData.book.Author}</p>
               </div>
               <div>
@@ -131,7 +112,7 @@ function PostCard({ postData }: { postData: Post }) {
         </div>
 
         {/* Beitrag */}
-        <CardContent className="bg-secondary-foreground p-4 rounded-sm col-span-2">
+        <CardContent className="bg-accent-foreground p-4 rounded-sm col-span-2">
           <div className="flex items-center justify-between">
             {/* Nutzerbewertung */}
             <div className="flex items-center gap-2">
@@ -162,27 +143,6 @@ function PostCard({ postData }: { postData: Post }) {
           </div>
           <p className="text-lg my-4">{postData.content}</p>
         </CardContent>
-
-        {/* Likes und Kommentare */}
-        <CardFooter className="flex items-center justify-end gap-4 p-0 col-span-3">
-          <button
-            className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
-            onClick={handleLike}
-            title={isLiked ? "Like entfernen" : "Liken"}
-          >
-            <Heart className={`w-5 h-5 transition-all ${isLiked ? "fill-red-500 text-red-500" : ""}`} />
-            <span className="text-sm">{likeCount}</span>
-          </button>
-          <button
-            className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
-            onClick={handleComment}
-            title="Kommentieren"
-          >
-            <MessageSquare className="w-5 h-5" />
-            <span className="text-sm">{postData.commentCount || 0}</span>
-          </button>
-        </CardFooter>
-
       </Card >
 
       {/* Book Detail Dialog */}

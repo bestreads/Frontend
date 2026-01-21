@@ -25,9 +25,9 @@ import { BookDetailDialog } from "@/components/BookDetailDialog"
 interface BookCardProps {
   book: BookWithUserData
   readOnly?: boolean
-  onDelete?: (isbn: string) => void
-  onUpdateStatus?: (isbn: string, status: BookState) => void
-  onRate?: (isbn: string, rating: number) => void
+  onDelete?: (id: number) => void
+  onUpdateStatus?: (id: number, status: BookState) => void
+  onRate?: (id: number, rating: number) => void
 }
 
 export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onRate }: BookCardProps) {
@@ -37,17 +37,17 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
 
   const handleStatusChange = (newStatus: BookState) => {
-    onUpdateStatus?.(book.ISBN, newStatus)
+    onUpdateStatus?.(book.ID, newStatus)
     setIsStatusPopoverOpen(false)
   }
 
   const handleRatingClick = (rating: number) => {
-    onRate?.(book.ISBN, rating)
+    onRate?.(book.ID, rating)
     setIsRatingPopoverOpen(false)
   }
 
   const handleDelete = () => {
-    onDelete?.(book.ISBN)
+    onDelete?.(book.ID)
   }
 
   const renderStars = (rating: number, interactive = false) => {
@@ -222,7 +222,7 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
         onOpenChange={setIsDetailDialogOpen}
         isInLibrary={!readOnly}
         currentStatus={book.userBook.state}
-        onStatusChange={(_, status) => onUpdateStatus?.(book.ISBN, status)}
+        onStatusChange={(_, status) => onUpdateStatus?.(book.ID, status)}
       />
     </>
   )

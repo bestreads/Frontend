@@ -14,8 +14,9 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { Plus, X, RefreshCw } from "lucide-react"
-import { bookStateLabels } from "@/types/book"
+import { bookStateLabels, bookStateToApi } from "@/types/book"
 import type { Book, BookState } from "@/types/book"
+import { updateBookState, addBookToLibrary } from "@/api/libraryService"
 
 interface BookDetailDialogProps {
   book: Book | null
@@ -32,19 +33,16 @@ interface BookDetailDialogProps {
  * @param status - Der gewählte Status
  * @param isUpdate - Ob es ein Update (true) oder ein Hinzufügen (false) ist
  */
-async function updateBookStatus(book: Book, status: BookState, isUpdate: boolean): Promise<void> {
-  // TODO: Backend-Integration mit axios
-  // if (isUpdate) {
-  //   await axios.put(`/api/library/${book.ISBN}`, { status })
-  // } else {
-  //   await axios.post('/api/library', { isbn: book.ISBN, status })
-  // }
+async function updateBookStatus(book: Book, state: BookState, isUpdate: boolean): Promise<void> {
+  const apiState = bookStateToApi[state]
   
-  console.log(isUpdate ? "Update Buchstatus:" : "Buch zur Bibliothek hinzufügen:", {
-    isbn: book.ISBN,
-    title: book.Title,
-    status: status,
-  })
+  if (isUpdate) {
+    // Buch ist bereits in der Bibliothek -> Status aktualisieren
+    await updateBookState(book.ID, apiState)
+  } else {
+    // Buch ist noch nicht in der Bibliothek -> hinzufügen
+    await addBookToLibrary(book.ID, apiState)
+  }
 }
 
 export function BookDetailDialog({

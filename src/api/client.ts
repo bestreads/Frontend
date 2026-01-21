@@ -27,10 +27,10 @@ apiClient.interceptors.response.use(
       try {
         await apiClient.post("/auth/refresh")
         return apiClient(originalRequest)
-      } catch (error){
-        console.log(`Error beim refreshen: ${error}`)
+      } catch (refreshError){
+        console.log(`Error refreshing token: ${refreshError}`)
         window.location.href = "/login"
-        return Promise.reject(error)
+        return Promise.reject(refreshError)
       }
     }
 

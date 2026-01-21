@@ -30,7 +30,7 @@ function ProfileFeed({ userId }: { userId: string }) {
 
         // Backend-Response zu Frontend-Post-Type mappen
         const mappedPosts: Post[] = data.map((apiPost: ApiPost) => ({
-          id: `post-${apiPost.Uid}-${apiPost.Book.ID}`,
+          id: `post-${apiPost.Uid}-${apiPost.Book.ID}-${apiPost.CreatedAt}`,  
           author: {
             userId: apiPost.Uid.toString(),
             username: apiPost.Username,
@@ -45,12 +45,11 @@ function ProfileFeed({ userId }: { userId: string }) {
           },
           content: apiPost.Content,
           createdAt: apiPost.CreatedAt,
-          likes: 0,
-          commentCount: 0,
         }))
 
         setPosts(mappedPosts)
-      } catch {
+      } catch (error) {  
+        console.error("Error fetching posts for ProfileFeed:", error)  
         setError("Fehler beim Laden der Beiträge")
       } finally {
         setLoading(false)
@@ -127,8 +126,6 @@ function ProfileFeed({ userId }: { userId: string }) {
               <SelectContent>
                 <SelectItem value="date">Nach Datum sortieren</SelectItem>
                 <SelectItem value="title">Nach Titel sortieren</SelectItem>
-                <SelectItem value="likes">Nach Likes sortieren</SelectItem>
-                <SelectItem value="comments">Nach Kommentaren sortieren</SelectItem>
               </SelectContent>
             </Select>
           </div>

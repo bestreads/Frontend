@@ -25,7 +25,7 @@ const Feed = () => {
 
         // Backend-Response zu Frontend-Post-Type mappen
         const mappedPosts: Post[] = data.map((apiPost: ApiPost) => ({
-          id: `post-${apiPost.Uid}-${apiPost.Book.ID}`,
+          id: `post-${apiPost.Uid}-${apiPost.Book.ID}-${apiPost.CreatedAt}`,  
           author: {
             userId: apiPost.Uid.toString(),
             username: apiPost.Username,
@@ -46,7 +46,7 @@ const Feed = () => {
         setHasMore(data.length >= limit)
       } catch (err) {
         setError("Fehler beim Laden der Beiträge")
-        console.error(err)
+        console.error("Fehler beim Laden der Beiträge:", err)  
       } finally {
         setLoading(false)
       }

@@ -30,20 +30,18 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
   const [content, setContent] = useState("")
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [loadError, setLoadError] = useState<string | null>(null)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   // Lade Bücher aus der Bibliothek wenn Dialog geöffnet wird
   useEffect(() => {
     if (open) {
       const fetchLibrary = async () => {
         setLoading(true)
-        setLoadError(null)
         try {
           const books = await getLibrary()
           setLibraryBooks(books)
         } catch (error) {
           console.error("Fehler beim Laden der Bibliothek:", error)
-          setLoadError("Fehler beim Laden der Bibliothek. Bitte versuchen Sie es später erneut.")
         } finally {
           setLoading(false)
         }
@@ -57,6 +55,7 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
     if (!open) {
       setSelectedBookId("")
       setContent("")
+      setSubmitError(null)
     }
   }, [open])
 
@@ -99,6 +98,7 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
     if (!selectedBookId || !content.trim()) return
 
     setSubmitting(true)
+    setSubmitError(null)
     try {
       await createPost({
         bid: parseInt(selectedBookId),
@@ -108,6 +108,7 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
       onPostCreated?.()
     } catch (error) {
       console.error("Fehler beim Erstellen des Beitrags:", error)
+      setSubmitError("Beitrag konnte nicht erstellt werden. Bitte nochmal versuchen.")
     } finally {
       setSubmitting(false)
     }
@@ -206,6 +207,13 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
               onChange={(e) => setContent(e.target.value)}
             />
           </div>
+
+          {/* Fehlermeldung anzeigen */}
+          {submitError && (
+            <div className="text-sm text-destructive font-medium">
+              {submitError}
+            </div>
+          )}
         </div>
 
         <DialogFooter>

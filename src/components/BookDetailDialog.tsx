@@ -87,6 +87,7 @@ export function BookDetailDialog({
     }
     
     setIsStatusPopoverOpen(false)
+    onOpenChange(false)
   }
 
   return (

@@ -142,9 +142,9 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
         <div className="flex flex-col items-center py-4">
           <div className="relative">
             <div className="w-24 h-24 rounded-full overflow-hidden bg-muted flex items-center justify-center border-2">
-              {user?.profilePictureURL ? (
+              {user?.profilePicture ? (
                 <img
-                  src={user.profilePictureURL}
+                  src={user.profilePicture}
                   alt="Profilbild"
                   className="w-full h-full object-cover"
                 />

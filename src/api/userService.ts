@@ -4,7 +4,7 @@ export interface User {
   userId: number
   username: string
   email: string
-  profilePictureURL: string
+  profilePicture: string
 }
 
 export interface UserProfile {

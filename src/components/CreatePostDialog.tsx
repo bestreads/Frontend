@@ -121,7 +121,7 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
           <MessageSquare className="w-10 h-10" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[90vw]! sm:w-[50vw]! max-w-[50vw]!">
+      <DialogContent className="!w-[90vw] sm:!w-[50vw] !max-w-[50vw]">
         <DialogHeader>
           <DialogTitle className="text-xl">Neuer Beitrag</DialogTitle>
         </DialogHeader>

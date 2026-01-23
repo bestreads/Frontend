@@ -2,11 +2,12 @@
 import type { Post } from "@/types/post"
 import PostCard from "@/components/PostCard"
 import { MessageSquareOff } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { getPosts, type Post as ApiPost } from "@/api/postService"
 import { Spinner } from "@/components/ui/spinner"
 import { apiToBookState } from "@/types/book"
 import { Button } from "@/components/ui/button"
+import { CreatePostDialog } from "@/components/CreatePostDialog"
 
 const Feed = () => {
   const [posts, setPosts] = useState<Post[]>([])
@@ -16,44 +17,43 @@ const Feed = () => {
   const [limit, setLimit] = useState(10)
   const [hasMore, setHasMore] = useState(true)
 
+  const fetchPosts = useCallback(async () => {
+    try {
+      setLoading(true)
+      const data = await getPosts({ limit })
+
+      // Backend-Response zu Frontend-Post-Type mappen
+      const mappedPosts: Post[] = data.map((apiPost: ApiPost) => ({
+        id: `post-${apiPost.Uid}-${apiPost.Book.ID}-${apiPost.CreatedAt}`,  
+        author: {
+          userId: apiPost.Uid.toString(),
+          username: apiPost.Username,
+          profilePictureURL: apiPost.ProfilePicture || undefined,
+        },
+        book: {
+          ...apiPost.Book,
+          userBook: {
+            state: apiToBookState[apiPost.State] || "want-to-read",
+            rating: apiPost.Rating,
+          },
+        },
+        content: apiPost.Content,
+        createdAt: apiPost.CreatedAt
+      }))
+
+      setPosts(mappedPosts)
+      setHasMore(data.length >= limit)
+    } catch (err) {
+      setError("Fehler beim Laden der Beiträge")
+      console.error("Fehler beim Laden der Beiträge:", err)  
+    } finally {
+      setLoading(false)
+    }
+  }, [limit])
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setLoading(true)
-        const data = await getPosts({ limit })
-
-        // Backend-Response zu Frontend-Post-Type mappen
-        const mappedPosts: Post[] = data.map((apiPost: ApiPost) => ({
-          id: `post-${apiPost.Uid}-${apiPost.Book.ID}-${apiPost.CreatedAt}`,  
-          author: {
-            userId: apiPost.Uid.toString(),
-            username: apiPost.Username,
-            profilePictureURL: apiPost.ProfilePicture || undefined,
-          },
-          book: {
-            ...apiPost.Book,
-            userBook: {
-              state: apiToBookState[apiPost.State] || "want-to-read",
-              rating: apiPost.Rating,
-            },
-          },
-          content: apiPost.Content,
-          createdAt: apiPost.CreatedAt
-        }))
-
-        setPosts(mappedPosts)
-        setHasMore(data.length >= limit)
-      } catch (err) {
-        setError("Fehler beim Laden der Beiträge")
-        console.error("Fehler beim Laden der Beiträge:", err)  
-      } finally {
-        setLoading(false)
-      }
-    }
-
     fetchPosts()
-  }, [limit])
+  }, [fetchPosts])
 
   const loadMore = async () => {
     setLoadingMore(true)
@@ -116,6 +116,9 @@ const Feed = () => {
           </div>
         )}
       </div>
+
+      {/* Neuer Beitrag Button */}
+      <CreatePostDialog onPostCreated={fetchPosts} />
     </div>
   )
 }

@@ -4,7 +4,7 @@ import type { Book } from "../types/book"
 export interface SearchBooksParams {
   q: string
   author?: boolean
-  limit?: number
+  offset?: number
 }
 
 /**

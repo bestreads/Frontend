@@ -30,17 +30,20 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
   const [content, setContent] = useState("")
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   // Lade Bücher aus der Bibliothek wenn Dialog geöffnet wird
   useEffect(() => {
     if (open) {
       const fetchLibrary = async () => {
         setLoading(true)
+        setLoadError(null)
         try {
           const books = await getLibrary()
           setLibraryBooks(books)
         } catch (error) {
           console.error("Fehler beim Laden der Bibliothek:", error)
+          setLoadError("Fehler beim Laden der Bibliothek. Bitte versuchen Sie es später erneut.")
         } finally {
           setLoading(false)
         }

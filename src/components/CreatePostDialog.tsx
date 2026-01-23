@@ -106,8 +106,17 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
       })
       setOpen(false)
       onPostCreated?.()
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Fehler beim Erstellen des Beitrags:", error)
+      const message =
+        typeof error === "object" && error !== null && "message" in error
+          ? String((error as { message?: unknown }).message) || undefined
+          : undefined
+      window.alert(
+        message
+          ? `Der Beitrag konnte nicht erstellt werden:\n${message}`
+          : "Der Beitrag konnte nicht erstellt werden. Bitte versuche es erneut."
+      )
     } finally {
       setSubmitting(false)
     }

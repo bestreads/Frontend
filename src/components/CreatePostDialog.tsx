@@ -106,17 +106,8 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
       })
       setOpen(false)
       onPostCreated?.()
-    } catch (error: unknown) {
+    } catch (error) {
       console.error("Fehler beim Erstellen des Beitrags:", error)
-      const message =
-        typeof error === "object" && error !== null && "message" in error
-          ? String((error as { message?: unknown }).message) || undefined
-          : undefined
-      window.alert(
-        message
-          ? `Der Beitrag konnte nicht erstellt werden:\n${message}`
-          : "Der Beitrag konnte nicht erstellt werden. Bitte versuche es erneut."
-      )
     } finally {
       setSubmitting(false)
     }
@@ -133,7 +124,7 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
           <MessageSquare className="w-10 h-10" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="!w-[90vw] sm:!w-[50vw] !max-w-[50vw]">
+      <DialogContent className="w-[90vw]! sm:w-[50vw]! max-w-[50vw]!">
         <DialogHeader>
           <DialogTitle className="text-xl">Neuer Beitrag</DialogTitle>
         </DialogHeader>

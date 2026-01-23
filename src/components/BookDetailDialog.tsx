@@ -87,6 +87,7 @@ export function BookDetailDialog({
     }
     
     setIsStatusPopoverOpen(false)
+    onOpenChange(false)
   }
 
   return (
@@ -216,7 +217,7 @@ export function BookDetailDialog({
         {/* Beschreibung */}
         <div>
           <h3 className="text-lg font-semibold mb-2">Beschreibung</h3>
-          <p className="text-muted-foreground leading-relaxed">
+          <p className="text-muted-foreground leading-relaxed wrap-break-word">
             {book.Description || "Keine Beschreibung verfügbar."}
           </p>
         </div>

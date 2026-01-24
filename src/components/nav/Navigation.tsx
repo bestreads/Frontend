@@ -181,12 +181,12 @@ function Navigation() {
               </Button>
             </NavigationMenuItem>
 
-            <NavigationMenuItem className="relative">
-              <NavigationMenuTrigger className="group flex gap-2 items-center">
+            <NavigationMenuItem className="relative group/trigger">
+              <NavigationMenuTrigger className="flex gap-2 items-center ">
                 <Avatar className="border-2">
                   <AvatarImage src={user?.profilePictureURL} />
                   <AvatarFallback>
-                    <User className="h-4 w-4 inline transition-colors group-hover:text-accent" />
+                    <User className="h-4 w-4 inline transition-colors group-hover/trigger:text-accent" />
                   </AvatarFallback>
                 </Avatar>
                 <h1 className=" hidden lg:flex">

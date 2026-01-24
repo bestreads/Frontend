@@ -2,7 +2,7 @@
 import type { Post } from "@/types/post"
 import PostCard from "@/components/PostCard"
 import { MessageSquareOff } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { getPosts, type Post as ApiPost } from "@/api/postService"
 import { Spinner } from "@/components/ui/spinner"
 import { apiToBookState } from "@/types/book"
@@ -15,6 +15,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+import { CreatePostDialog } from "@/components/CreatePostDialog"
 
 const POSTS_PER_PAGE = 25
 
@@ -25,50 +26,50 @@ const Feed = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setLoading(true)
-        const offset = (currentPage - 1) * POSTS_PER_PAGE
-        const data = await getPosts({ offset })
+  const fetchPosts = useCallback(async () => {
+    try {
+      setLoading(true)
+      const offset = (currentPage - 1) * POSTS_PER_PAGE
+      const data = await getPosts({ offset })
 
-        // Backend-Response zu Frontend-Post-Type mappen
-        const mappedPosts: Post[] = data.map((apiPost: ApiPost) => ({
-          id: `post-${apiPost.Uid}-${apiPost.Book.ID}-${apiPost.CreatedAt}`,
-          author: {
-            userId: apiPost.Uid.toString(),
-            username: apiPost.Username,
-            profilePictureURL: apiPost.ProfilePicture || undefined,
+      // Backend-Response zu Frontend-Post-Type mappen
+      const mappedPosts: Post[] = data.map((apiPost: ApiPost) => ({
+        id: `post-${apiPost.Uid}-${apiPost.Book.ID}-${apiPost.CreatedAt}`,
+        author: {
+          userId: apiPost.Uid.toString(),
+          username: apiPost.Username,
+          profilePictureURL: apiPost.ProfilePicture || undefined,
+        },
+        book: {
+          ...apiPost.Book,
+          userBook: {
+            state: apiToBookState[apiPost.State] || "want-to-read",
+            rating: apiPost.Rating,
           },
-          book: {
-            ...apiPost.Book,
-            userBook: {
-              state: apiToBookState[apiPost.State] || "want-to-read",
-              rating: apiPost.Rating,
-            },
-          },
-          content: apiPost.Content,
-          createdAt: apiPost.CreatedAt
-        }))
+        },
+        content: apiPost.Content,
+        createdAt: apiPost.CreatedAt
+      }))
 
-        setPosts(mappedPosts)
-        // Wenn weniger als POSTS_PER_PAGE zurückkommen, sind wir auf der letzten Seite
-        if (data.length < POSTS_PER_PAGE) {
-          setTotalPages(currentPage)
-        } else {
-          // Ansonsten gibt es mindestens eine weitere Seite
-          setTotalPages(Math.max(totalPages, currentPage + 1))
-        }
-      } catch (err) {
-        setError("Fehler beim Laden der Beiträge")
-        console.error("Fehler beim Laden der Beiträge:", err)
-      } finally {
-        setLoading(false)
+      setPosts(mappedPosts)
+      // Wenn weniger als POSTS_PER_PAGE zurückkommen, sind wir auf der letzten Seite
+      if (data.length < POSTS_PER_PAGE) {
+        setTotalPages(currentPage)
+      } else {
+        // Ansonsten gibt es mindestens eine weitere Seite
+        setTotalPages(prev => Math.max(prev, currentPage + 1))
       }
+    } catch (err) {
+      setError("Fehler beim Laden der Beiträge")
+      console.error("Fehler beim Laden der Beiträge:", err)
+    } finally {
+      setLoading(false)
     }
-
-    fetchPosts()
   }, [currentPage])
+
+  useEffect(() => {
+    fetchPosts()
+  }, [fetchPosts])
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -201,6 +202,9 @@ const Feed = () => {
           </Pagination>
         )}
       </div>
+
+      {/* Neuer Beitrag Button */}
+      <CreatePostDialog onPostCreated={fetchPosts} />
     </div>
   )
 }

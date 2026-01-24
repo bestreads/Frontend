@@ -52,7 +52,7 @@ function Navigation() {
               <SheetTitle>
                 <div className="flex flex-col items-center justify-center gap-4">
                   <Avatar className="border-2 h-20 w-20">
-                    <AvatarImage src={user?.profilePictureURL} />
+                    <AvatarImage src={user?.profilePicture} />
                     <AvatarFallback>
                       <User className="h-4 w-4 inline" />
                     </AvatarFallback>
@@ -184,7 +184,7 @@ function Navigation() {
             <NavigationMenuItem className="relative group/trigger">
               <NavigationMenuTrigger className="flex gap-2 items-center ">
                 <Avatar className="border-2">
-                  <AvatarImage src={user?.profilePictureURL} />
+                  <AvatarImage src={user?.profilePicture} />
                   <AvatarFallback>
                     <User className="h-4 w-4 inline transition-colors group-hover/trigger:text-accent" />
                   </AvatarFallback>

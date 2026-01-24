@@ -6,25 +6,35 @@ import { useEffect, useState, useCallback } from "react"
 import { getPosts, type Post as ApiPost } from "@/api/postService"
 import { Spinner } from "@/components/ui/spinner"
 import { apiToBookState } from "@/types/book"
-import { Button } from "@/components/ui/button"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 import { CreatePostDialog } from "@/components/CreatePostDialog"
+
+const POSTS_PER_PAGE = 25
 
 const Feed = () => {
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
-  const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [limit, setLimit] = useState(10)
-  const [hasMore, setHasMore] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
 
   const fetchPosts = useCallback(async () => {
     try {
       setLoading(true)
-      const data = await getPosts({ limit })
+      const offset = (currentPage - 1) * POSTS_PER_PAGE
+      const data = await getPosts({ offset })
 
       // Backend-Response zu Frontend-Post-Type mappen
       const mappedPosts: Post[] = data.map((apiPost: ApiPost) => ({
-        id: `post-${apiPost.Uid}-${apiPost.Book.ID}-${apiPost.CreatedAt}`,  
+        id: `post-${apiPost.Uid}-${apiPost.Book.ID}-${apiPost.CreatedAt}`,
         author: {
           userId: apiPost.Uid.toString(),
           username: apiPost.Username,
@@ -42,23 +52,92 @@ const Feed = () => {
       }))
 
       setPosts(mappedPosts)
-      setHasMore(data.length >= limit)
+      // Wenn weniger als POSTS_PER_PAGE zurückkommen, sind wir auf der letzten Seite
+      if (data.length < POSTS_PER_PAGE) {
+        setTotalPages(currentPage)
+      } else {
+        // Ansonsten gibt es mindestens eine weitere Seite
+        setTotalPages(prev => Math.max(prev, currentPage + 1))
+      }
     } catch (err) {
       setError("Fehler beim Laden der Beiträge")
-      console.error("Fehler beim Laden der Beiträge:", err)  
+      console.error("Fehler beim Laden der Beiträge:", err)
     } finally {
       setLoading(false)
     }
-  }, [limit])
+  }, [currentPage])
 
   useEffect(() => {
     fetchPosts()
   }, [fetchPosts])
 
-  const loadMore = async () => {
-    setLoadingMore(true)
-    setLimit(prev => prev + 10)
-    setLoadingMore(false)
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+
+  const renderPaginationItems = () => {
+    const items = []
+    const maxVisiblePages = 5
+
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2))
+    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1)
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1)
+    }
+
+    if (startPage > 1) {
+      items.push(
+        <PaginationItem key={1}>
+          <PaginationLink onClick={() => handlePageChange(1)} className="cursor-pointer">
+            1
+          </PaginationLink>
+        </PaginationItem>
+      )
+      if (startPage > 2) {
+        items.push(
+          <PaginationItem key="ellipsis-start">
+            <PaginationEllipsis />
+          </PaginationItem>
+        )
+      }
+    }
+
+    for (let page = startPage; page <= endPage; page++) {
+      items.push(
+        <PaginationItem key={page}>
+          <PaginationLink
+            isActive={page === currentPage}
+            onClick={() => handlePageChange(page)}
+            className="cursor-pointer"
+          >
+            {page}
+          </PaginationLink>
+        </PaginationItem>
+      )
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        items.push(
+          <PaginationItem key="ellipsis-end">
+            <PaginationEllipsis />
+          </PaginationItem>
+        )
+      }
+      items.push(
+        <PaginationItem key={totalPages}>
+          <PaginationLink onClick={() => handlePageChange(totalPages)} className="cursor-pointer">
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      )
+    }
+
+    return items
   }
 
   if (loading) {
@@ -102,18 +181,25 @@ const Feed = () => {
           </div>
         )}
 
-        {/* Mehr laden Button */}
-        {posts.length > 0 && hasMore && (
-          <div className="flex justify-center mt-8">
-            <Button
-              onClick={loadMore}
-              disabled={loadingMore}
-              variant="outline"
-              size="lg"
-            >
-              {loadingMore ? <Spinner /> : "Mehr Beiträge laden"}
-            </Button>
-          </div>
+        {/* Pagination */}
+        {posts.length > 0 && totalPages > 1 && (
+          <Pagination className="mt-8">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+              {renderPaginationItems()}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         )}
       </div>
 

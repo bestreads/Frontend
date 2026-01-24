@@ -49,7 +49,6 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
       const data = await searchBooks({ 
         q: query, 
         author: searchType === "author" || undefined,
-        limit: 10 
       })
       setSearchResults(data || [])
     } catch (error) {

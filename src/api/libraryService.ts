@@ -12,13 +12,14 @@ export interface LibraryBook {
  * Holt alle Bücher aus der Bibliothek eines Benutzers.
  * @param userId - Die ID des Benutzers (optional, wenn leer wird die eigene Bibliothek geladen)
  * @param limit - Maximale Anzahl der Bücher (optional)
+ * @param offset - Offset für Pagination (optional)
  * @returns Die Bücher in der Bibliothek
  */
-export const getLibrary = async (userId?: number, limit?: number): Promise<LibraryBook[]> => {
+export const getLibrary = async (userId?: number, offset?: number): Promise<LibraryBook[]> => {
   const params = new URLSearchParams()
   if (userId) params.append("userId", userId.toString())
-  if (limit) params.append("limit", limit.toString())
-  
+  if (offset !== undefined && offset !== null) params.append("offset", offset.toString())
+
   const queryString = params.toString()
   const response = await apiClient.get<LibraryBook[]>(`/lib${queryString ? `?${queryString}` : ""}`)
   return response.data
@@ -31,7 +32,7 @@ export const getLibrary = async (userId?: number, limit?: number): Promise<Libra
  * @returns Die Response-Daten vom Server
  */
 export const addBookToLibrary = async (bid: number, state: number): Promise<LibraryBook> => {
-  const response = await apiClient.post<LibraryBook>(`/lib`, {bid, state})
+  const response = await apiClient.post<LibraryBook>(`/lib`, { bid, state })
   return response.data
 }
 

@@ -120,9 +120,9 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          className="fixed bottom-8 right-8 rounded-full w-20 h-20 shadow-xl z-50 hover:scale-105 transition-transform"
+          className="fixed bottom-8 right-8 rounded-full size-20 shadow-xl z-50 hover:scale-105 transition-transform"
         >
-          <MessageSquare className="w-10 h-10" />
+          <MessageSquare className="size-10" />
         </Button>
       </DialogTrigger>
       <DialogContent className="w-[90vw]! sm:w-[50vw]! max-w-[50vw]!">

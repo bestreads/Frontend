@@ -81,15 +81,17 @@ function PostCard({ postData }: { postData: Post }) {
           className="group flex gap-6 cursor-pointer rounded-sm p-4"
           onClick={() => setIsDetailDialogOpen(true)}
         >
-          <img
-            src={postData.book.CoverURL || "/placeholder-book.png"}
-            alt={`Cover von ${postData.book.Title}`}
-            className="w-24 lg:w-auto max-w-[30%] aspect-2/3 object-cover rounded-lg shadow-md self-start border-4 border-transparent transition-colors group-hover:border-accent"
-          />
+          <div className="w-30 aspect-2/3">
+            <img
+              src={postData.book.CoverURL || "/placeholder-book.png"}
+              alt={`Cover von ${postData.book.Title}`}
+              className="w-24 lg:w-auto aspect-2/3 object-cover rounded-lg shadow-md self-start border-4 border-transparent transition-colors group-hover:border-accent"
+            />
+          </div>
           <div className="flex-1 ">
             <div className="mb-3 flex items-start justify-between gap-6 lg:flex-col">
               <div>
-                <h2 className="text-2xl font-bold mr-auto transition-colors group-hover:text-accent">{postData.book.Title}</h2>
+                <h2 className="text-2xl font-bold mr-auto transition-colors group-hover:text-accent wrap-break-word">{postData.book.Title}</h2>
                 <p className="text-muted-foreground text-base">von {postData.book.Author}</p>
               </div>
               <div>

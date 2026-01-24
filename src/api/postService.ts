@@ -14,7 +14,7 @@ export interface Post {
 
 export interface GetPostsParams {
   userId?: number
-  limit?: number
+  offset?: number
 }
 
 export interface CreatePostData {

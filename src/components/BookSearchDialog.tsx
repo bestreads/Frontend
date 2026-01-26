@@ -79,10 +79,27 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
     }
   }, [open])
 
-  // Bei Wechsel des Suchtyps: erneute Suche ermöglichen
-  useEffect(() => {
+  // Handler für Suchtyp-Wechsel: direkt neu suchen
+  const handleSearchTypeChange = async (newType: "title" | "author") => {
+    setSearchType(newType)
     setLastSearchQuery("")
-  }, [searchType])
+    if (searchQuery.trim()) {
+      setIsLoading(true)
+      try {
+        const data = await searchBooks({
+          q: searchQuery,
+          author: newType === "author" || undefined,
+        })
+        setSearchResults(data || [])
+        setLastSearchQuery(searchQuery)
+      } catch (error) {
+        console.error("Error during book search:", error)
+        setSearchResults([])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+  }
 
   const handleBookClick = (result: Book) => {
     const book: Book = {
@@ -127,7 +144,7 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
               />
             </div>
             
-            <Select value={searchType} onValueChange={(value: "title" | "author") => setSearchType(value)}>
+            <Select value={searchType} onValueChange={handleSearchTypeChange}>
               <SelectTrigger className="w-[130px] h-12 border-2">
                 <SelectValue />
               </SelectTrigger>

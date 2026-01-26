@@ -220,8 +220,6 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
         book={book}
         open={isDetailDialogOpen}
         onOpenChange={setIsDetailDialogOpen}
-        isInLibrary={!readOnly}
-        currentStatus={book.userBook.state}
         onStatusChange={(_, status) => onUpdateStatus?.(book.ID, status)}
       />
     </>

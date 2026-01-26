@@ -148,13 +148,10 @@ function PostCard({ postData }: { postData: Post }) {
       </Card >
 
       {/* Book Detail Dialog */}
-      {/* TODO*/}
-      < BookDetailDialog
+      <BookDetailDialog
         book={postData.book}
         open={isDetailDialogOpen}
         onOpenChange={setIsDetailDialogOpen}
-        isInLibrary={postData.book.userBook.state ? true : false}
-        currentStatus={postData.book.userBook.state}
       />
     </>
   )

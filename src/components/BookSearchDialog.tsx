@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback } from "react"
 import {
   Dialog,
   DialogContent,
@@ -32,7 +32,6 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
   const [bookDetailOpen, setBookDetailOpen] = useState(false)
   const [lastSearchQuery, setLastSearchQuery] = useState("")
   const [searchType, setSearchType] = useState<"title" | "author">("title")
-  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const performSearch = useCallback(async (query: string) => {
     if (!query.trim()) {
@@ -59,39 +58,15 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
     }
   }, [lastSearchQuery, searchType])
 
-  // Sofortige Suche (bei Enter oder Blur)
-  const handleImmediateSearch = useCallback(() => {
-    // Debounce-Timer abbrechen, da wir sofort suchen
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current)
-      debounceTimerRef.current = null
-    }
+  const handleSearch = useCallback(() => {
     if (searchQuery.trim()) {
       performSearch(searchQuery)
     }
   }, [searchQuery, performSearch])
 
-  // Debounced Suche bei Eingabe
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setSearchResults([])
-      return
-    }
-
-    debounceTimerRef.current = setTimeout(() => {
-      performSearch(searchQuery)
-    }, 300)
-
-    return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current)
-      }
-    }
-  }, [searchQuery, performSearch])
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      handleImmediateSearch()
+      handleSearch()
     }
   }
 
@@ -101,11 +76,13 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
       setSearchQuery("")
       setSearchResults([])
       setLastSearchQuery("")
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current)
-      }
     }
   }, [open])
+
+  // Bei Wechsel des Suchtyps: erneute Suche ermöglichen
+  useEffect(() => {
+    setLastSearchQuery("")
+  }, [searchType])
 
   const handleBookClick = (result: Book) => {
     const book: Book = {
@@ -146,7 +123,6 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
-                onBlur={handleImmediateSearch}
                 className="pl-10 h-12 text-base border-2 focus-visible:border-primary focus-visible:ring-primary/20"
               />
             </div>

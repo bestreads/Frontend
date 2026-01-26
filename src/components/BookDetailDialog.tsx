@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import {
   Dialog,
   DialogContent,
@@ -23,8 +23,6 @@ interface BookDetailDialogProps {
   book: Book | null
   open: boolean
   onOpenChange: (open: boolean) => void
-  isInLibrary?: boolean
-  currentStatus?: BookState
   onStatusChange?: (book: Book, status: BookState) => void
 }
 
@@ -50,42 +48,33 @@ export function BookDetailDialog({
   book,
   open,
   onOpenChange,
-  isInLibrary = false,
-  currentStatus,
   onStatusChange,
 }: BookDetailDialogProps) {
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState(false)
-  const [localIsInLibrary, setLocalIsInLibrary] = useState(isInLibrary)
-  const [localCurrentStatus, setLocalCurrentStatus] = useState<BookState | undefined>(currentStatus)
-  
-  const { addBookToLocalLibrary, updateBookInLocalLibrary } = useLibrary()
 
-  // Synchronisiere lokalen State mit Props wenn sich das Buch ändert
-  useEffect(() => {
-    setLocalIsInLibrary(isInLibrary)
-    setLocalCurrentStatus(currentStatus)
-  }, [book?.ID, isInLibrary, currentStatus])
+  const { libraryBooks, addBookToLocalLibrary, updateBookInLocalLibrary } = useLibrary()
+
+  // Prüfe ob das Buch in der Bibliothek ist und hole den aktuellen Status
+  const libraryEntry = book ? libraryBooks.find(b => b.ID === book.ID) : null
+  const isInLibrary = !!libraryEntry
+  const currentStatus = libraryEntry?.userBook.state
 
   if (!book) return null
 
   const handleStatusSelect = async (status: BookState) => {
-    await updateBookStatus(book, status, localIsInLibrary)
-    
-    // Aktualisiere lokalen State sofort
-    setLocalIsInLibrary(true)
-    setLocalCurrentStatus(status)
-    
+    await updateBookStatus(book, status, isInLibrary)
+
     // Aktualisiere die globale Bibliothek
-    if (localIsInLibrary) {
+    if (isInLibrary) {
       updateBookInLocalLibrary(book.ID, status)
     } else {
       addBookToLocalLibrary(book, status)
     }
-    
+
     if (onStatusChange) {
       onStatusChange(book, status)
     }
-    
+
     setIsStatusPopoverOpen(false)
     onOpenChange(false)
   }
@@ -107,7 +96,7 @@ export function BookDetailDialog({
             {/* Status-Button: + für Hinzufügen, RefreshCw für Update */}
             <Popover open={isStatusPopoverOpen} onOpenChange={setIsStatusPopoverOpen}>
               <PopoverTrigger asChild>
-                {localIsInLibrary ? (
+                {isInLibrary ? (
                   <Button
                     variant="ghost"
                     size="icon"
@@ -130,10 +119,10 @@ export function BookDetailDialog({
               <PopoverContent className="w-auto p-2" align="end">
                 <div className="flex flex-col gap-1">
                   <p className="text-sm font-medium px-2 py-1 text-muted-foreground">
-                    {localIsInLibrary ? "Status ändern" : "Zur Bibliothek hinzufügen"}
+                    {isInLibrary ? "Status ändern" : "Zur Bibliothek hinzufügen"}
                   </p>
                   <Button
-                    variant={localCurrentStatus === "want-to-read" ? "default" : "ghost"}
+                    variant={currentStatus === "want-to-read" ? "default" : "ghost"}
                     className="justify-start"
                     size="sm"
                     onClick={() => handleStatusSelect("want-to-read")}
@@ -141,7 +130,7 @@ export function BookDetailDialog({
                     {bookStateLabels["want-to-read"]}
                   </Button>
                   <Button
-                    variant={localCurrentStatus === "reading" ? "default" : "ghost"}
+                    variant={currentStatus === "reading" ? "default" : "ghost"}
                     className="justify-start"
                     size="sm"
                     onClick={() => handleStatusSelect("reading")}
@@ -149,7 +138,7 @@ export function BookDetailDialog({
                     {bookStateLabels["reading"]}
                   </Button>
                   <Button
-                    variant={localCurrentStatus === "read" ? "default" : "ghost"}
+                    variant={currentStatus === "read" ? "default" : "ghost"}
                     className="justify-start"
                     size="sm"
                     onClick={() => handleStatusSelect("read")}

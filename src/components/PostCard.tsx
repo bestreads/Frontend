@@ -57,7 +57,7 @@ function PostCard({ postData }: { postData: Post }) {
     <>
       <Card className="flex flex-col p-6 gap-6 lg:grid grid-cols-3 grid-row2">
         {/* Beitrags Autor */}
-        <CardHeader className="flex flex-wrap items-center px-4 col-span-3">
+        <CardHeader className="flex flex-wrap items-center justify-start col-span-3 p-0">
           <Link
             to={isAlreadyOnProfile ? "#" : `/profile/${postData.author.userId}`}
             className={`group flex items-center gap-2 rounded-xl ${isAlreadyOnProfile ? "cursor-default" : "transition-colors"}`}
@@ -78,25 +78,27 @@ function PostCard({ postData }: { postData: Post }) {
 
         {/* Buchinformationen */}
         <div
-          className="group flex gap-6 cursor-pointer rounded-sm p-4"
+          className="group flex flex-row flex-wrap gap-6 cursor-pointer rounded-sm "
           onClick={() => setIsDetailDialogOpen(true)}
         >
-          <div className="w-30 aspect-2/3">
+          {/* Cover */}
+          <div className="w-30 aspect-2/3 hidden sm:flex items-center justify-center m-auto">
             <img
               src={postData.book.CoverURL || "/placeholder-book.png"}
               alt={`Cover von ${postData.book.Title}`}
               className="w-24 lg:w-auto aspect-2/3 object-cover rounded-lg shadow-md self-start border-4 border-transparent transition-colors group-hover:border-accent"
             />
           </div>
-          <div className="flex-1 ">
-            <div className="mb-3 flex items-start justify-between gap-6 lg:flex-col">
-              <div>
-                <h2 className="text-2xl font-bold mr-auto transition-colors group-hover:text-accent wrap-break-word">{postData.book.Title}</h2>
-                <p className="text-muted-foreground text-base">von {postData.book.Author}</p>
-              </div>
-              <div>
+          <div className="flex-1">
+            <div className="mb-3 flex flex-col items-start justify-between gap-2">
+
+              {/* Buchtitel & Autor */}
+              <h2 className="text-xl sm:text-2xl font-bold mr-auto transition-colors group-hover:text-accent wrap-anywhere">{postData.book.Title}</h2>
+              <p className="text-muted-foreground text-base"> <span className="text-xs text-muted-foreground italic">von</span> {postData.book.Author}</p>
+
+              <div className="flex gap-2 content-center">
                 {/* Buch Bewertung */}
-                <p className="mb-1 text-xs text-muted-foreground italic text-center lg:text-left">Gesamtbewertung</p>
+                <p className="mb-1 text-xs text-muted-foreground italic">Gesamtbewertung</p>
                 <div className="flex items-center gap-2">
                   <Star className={`w-5 h-5 fill-primary text-primary sm:hidden`} />
                   <span className="hidden sm:flex gap-2 items-center">
@@ -111,6 +113,8 @@ function PostCard({ postData }: { postData: Post }) {
               </div>
             </div>
           </div>
+
+
         </div>
 
         {/* Beitrag */}

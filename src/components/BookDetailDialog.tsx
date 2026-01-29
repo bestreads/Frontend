@@ -82,7 +82,7 @@ export function BookDetailDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto"
+        className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto p-4 md:p-6"
         showCloseButton={false}
       >
         <DialogHeader className="flex-row items-start justify-between gap-4">
@@ -161,9 +161,9 @@ export function BookDetailDialog({
         </DialogHeader>
 
         {/* Buch-Informationen */}
-        <div className="flex gap-6">
+        <div className="flex gap-6 flex-col-reverse sm:flex-row">
           {/* Buchcover */}
-          <div className="shrink-0">
+          <div className="shrink-0 self-center">
             <img
               src={book.CoverURL || "/placeholder-book.png"}
               alt={`Cover von ${book.Title}`}

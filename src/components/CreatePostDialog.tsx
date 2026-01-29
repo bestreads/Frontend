@@ -120,7 +120,7 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
     <Dialog open={open} onOpenChange={setOpen} >
       <DialogTrigger asChild>
         <Button
-          className="fixed bottom-8 right-8 rounded-full size-20 shadow-xl z-50 hover:scale-105 transition-transform"
+          className="fixed bottom-2 right-2 sm:bottom-8 sm:right-8 rounded-full size-20 shadow-xl z-50 hover:scale-105 transition-transform"
         >
           <MessageSquare className="size-10" />
         </Button>
@@ -172,7 +172,7 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
                 className="w-20 h-28 object-cover rounded shadow-sm shrink-0 hidden sm:flex"
               />
               <div className="flex-1 flex flex-col justify-center gap-1 shrink-0">
-                <h3 className="font-semibold  bg-red-50">
+                <h3 className="font-semibold">
                   {selectedBook.Book.Title}
                 </h3>
                 <p className="text-sm text-muted-foreground">

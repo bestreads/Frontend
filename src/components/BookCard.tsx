@@ -69,10 +69,10 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
             >
               <Star
                 className={`w-5 h-5 transition-colors ${isActive
-                    ? isHovered
-                      ? "fill-primary/80 text-primary/80"
-                      : "fill-primary text-primary"
-                    : "fill-gray-300 text-gray-300"
+                  ? isHovered
+                    ? "fill-primary/80 text-primary/80"
+                    : "fill-primary text-primary"
+                  : "fill-gray-300 text-gray-300"
                   }`}
               />
             </button>
@@ -88,26 +88,26 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
         className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
         onClick={() => setIsDetailDialogOpen(true)}
       >
-        <div className="flex gap-6">
+        <div className="flex gap-6 flex-col-reverse sm:flex-row">
           {/* Buchcover */}
           <div className="shrink-0">
             <img
               src={book.CoverURL || "/placeholder-book.png"}
               alt={`Cover von ${book.Title}`}
-              className="w-32 h-48 object-cover rounded-lg shadow-md"
+              className="w-32 h-48 object-cover rounded-lg shadow-md justify-self-center"
             />
           </div>
 
           {/* Buchinformationen */}
           <div className="flex-1 min-w-0">
-            <div className="flex justify-between items-start gap-6">
-              <div className="flex-1 min-w-0">
-                <div className="mb-3">
+            <div className="flex gap-2 flex-col-reverse sm:flex-row">
+              <div className="flex-1 min-w-0 flex flex-col gap-2">
+                <div className="">
                   <h2 className="text-2xl font-bold mb-1">{book.Title}</h2>
                   <p className="text-muted-foreground text-base">von {book.Author}</p>
                 </div>
 
-                <div className="flex items-center gap-2 mb-8">
+                <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">Status:</span>
                   <span className="text-sm font-medium">{bookStateLabels[book.userBook.state]}</span>
                 </div>
@@ -119,7 +119,7 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
 
               {/* Action Buttons */}
               {!readOnly && (
-                <div className="flex gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
+                <div className="flex gap-2 shrink-0 self-end sm:self-start " onClick={(e) => e.stopPropagation()}>
                   {/* Bewertung Popover */}
                   <Popover open={isRatingPopoverOpen} onOpenChange={setIsRatingPopoverOpen}>
                     <PopoverTrigger asChild>

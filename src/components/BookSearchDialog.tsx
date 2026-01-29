@@ -45,8 +45,8 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
 
     setIsLoading(true)
     try {
-      const data = await searchBooks({ 
-        q: query, 
+      const data = await searchBooks({
+        q: query,
         author: searchType === "author" || undefined,
       })
       setSearchResults(data || [])
@@ -132,7 +132,7 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
 
           {/* Suchfeld mit Dropdown */}
           <div className="flex gap-2">
-            <div className="relative flex-1">
+            <div className="relative flex-2">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
@@ -143,9 +143,9 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
                 className="pl-10 h-12 text-base border-2 focus-visible:border-primary focus-visible:ring-primary/20"
               />
             </div>
-            
+
             <Select value={searchType} onValueChange={handleSearchTypeChange}>
-              <SelectTrigger className="w-[130px] h-12 border-2">
+              <SelectTrigger className="w-[130px] h-12 border-2 flex-1">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

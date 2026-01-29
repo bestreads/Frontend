@@ -117,15 +117,15 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
   const canSubmit = selectedBookId && content.trim().length > 0
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={setOpen} >
       <DialogTrigger asChild>
         <Button
-          className="fixed bottom-8 right-8 rounded-full size-20 shadow-xl z-50 hover:scale-105 transition-transform"
+          className="fixed bottom-2 right-2 sm:bottom-8 sm:right-8 rounded-full size-20 shadow-xl z-50 hover:scale-105 transition-transform"
         >
           <MessageSquare className="size-10" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[90vw]! sm:w-[50vw]! max-w-[50vw]!">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-xl">Neuer Beitrag</DialogTitle>
         </DialogHeader>
@@ -143,7 +143,7 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
                 <SelectTrigger id="book-select">
                   <SelectValue placeholder="Wähle ein Buch aus deiner Bibliothek" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="item-aligned">
                   {libraryBooks.length === 0 ? (
                     <div className="py-2 px-2 text-sm text-muted-foreground">
                       Keine Bücher in deiner Bibliothek
@@ -169,10 +169,12 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
               <img
                 src={selectedBook.Book.CoverURL || "/placeholder-book.png"}
                 alt={`Cover von ${selectedBook.Book.Title}`}
-                className="w-20 h-28 object-cover rounded shadow-sm shrink-0"
+                className="w-20 h-28 object-cover rounded shadow-sm shrink-0 hidden sm:flex"
               />
-              <div className="flex flex-col justify-center gap-1 shrink-0">
-                <h3 className="font-semibold">{selectedBook.Book.Title}</h3>
+              <div className="flex-1 flex flex-col justify-center gap-1 shrink-0">
+                <h3 className="font-semibold">
+                  {selectedBook.Book.Title}
+                </h3>
                 <p className="text-sm text-muted-foreground">
                   {selectedBook.Book.Author}
                 </p>
@@ -185,15 +187,6 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
                   {renderStars(selectedBook.Rating)}
                 </div>
               </div>
-              {/* Beschreibung rechts */}
-              {selectedBook.Book.Description && (
-                <div className="flex-1 min-w-0 border-l pl-4 ml-2">
-                  <p className="text-xs text-muted-foreground mb-1">Beschreibung</p>
-                  <p className="text-sm text-muted-foreground line-clamp-4">
-                    {selectedBook.Book.Description}
-                  </p>
-                </div>
-              )}
             </div>
           )}
 

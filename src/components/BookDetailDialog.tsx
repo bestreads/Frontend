@@ -62,13 +62,14 @@ export function BookDetailDialog({
 
   // Prüfe ob das Buch in der Bibliothek ist und hole den aktuellen Status
   const libraryEntry = book ? libraryBooks.find(b => b.ID === book.ID) : null
-  const isInLibrary = !!libraryEntry || (book?.userBook?.state !== undefined)
+  const isInLibrary = !!libraryEntry
 
   // Synchronisiere lokalen State mit Props
   useEffect(() => {
     if (!book) return
-    const rating = libraryEntry?.userBook?.rating ?? book.userBook?.rating ?? 0
-    const status = libraryEntry?.userBook?.state ?? book.userBook?.state
+    // Wenn in Bibliothek, nutze Bibliotheks-Daten, sonst die vom Buch-Objekt (z.B. vom Post-Autor)
+    const rating = libraryEntry?.userBook?.rating ?? 0
+    const status = libraryEntry?.userBook?.state
 
     // Nur setzen, wenn sich der Wert tatsächlich ändert, um unnötige renders zu vermeiden
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -219,6 +220,24 @@ export function BookDetailDialog({
             </Button>
           </div>
         </DialogHeader>
+
+        {/* Bibliotheks-Status Banner */}
+        {isInLibrary && currentStatus && (
+          <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 flex items-center gap-2">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-primary">
+                {currentStatus === "want-to-read" && "Du möchtest dieses Buch lesen."}
+                {currentStatus === "reading" && "Du liest dieses Buch gerade."}
+                {currentStatus === "read" && "Du hast dieses Buch gelesen."}
+                {currentRating > 0 && (
+                  <span className="ml-1">
+                    {`Du hast es mit ${currentRating === 1 ? "einem Stern" : `${currentRating} Sternen`} bewertet.`}
+                  </span>
+                )}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Buch-Informationen */}
         <div className="flex gap-6 flex-col-reverse sm:flex-row">

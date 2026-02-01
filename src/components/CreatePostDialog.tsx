@@ -149,14 +149,14 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
           )}
 
           {/* Beitrag Text */}
-          <div className="space-y-2 w-full ">
+          <div className="space-y-2 w-full">
             <Label htmlFor="post-content">Dein Beitrag</Label>
             <Textarea
               id="post-content"
               placeholder="Was möchtest du über dieses Buch sagen?"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="w-full min-h-[100px] resize-none bg-accent-foreground"
+              className="w-full min-h-[100px] resize-none"
             />
           </div>
 

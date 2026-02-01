@@ -10,7 +10,7 @@ import { StarRating } from "./libraryOptions/StarRating"
 
 function PostCard({ postData, onRatingChange }: { postData: Post, onRatingChange?: () => void }) {
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
-  const [currentRating, setCurrentRating] = useState(postData.book.userBook.rating)
+  const [currentRating, setCurrentRating] = useState(postData.book.userBook.rating ? postData.book.userBook.rating : 0)
   const [hasChanges, setHasChanges] = useState(false)
   const location = useLocation()
 
@@ -54,7 +54,7 @@ function PostCard({ postData, onRatingChange }: { postData: Post, onRatingChange
               {postData.author.username}
             </span>
           </Link>
-          <p className="text-lg">{bookStateLabelsThirdPerson[postData.book.userBook.state]}</p>
+          <p className="text-lg">{postData.book.userBook.state ? bookStateLabelsThirdPerson[postData.book.userBook.state] : null}</p>
         </CardHeader>
 
         {/* Buchinformationen */}

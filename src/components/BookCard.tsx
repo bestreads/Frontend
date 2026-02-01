@@ -64,7 +64,7 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
             <img
               src={book.CoverURL || "/placeholder-book.png"}
               alt={`Cover von ${book.Title}`}
-              className="w-20 h-30 sm:w-24 sm:h-36 md:w-32 md:h-48 object-cover rounded-lg shadow-md"
+              className="w-20 h-32 sm:w-24 sm:h-36 md:w-32 md:h-48 object-cover rounded-lg shadow-md"
             />
           </div>
 
@@ -79,7 +79,7 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
 
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-sm text-muted-foreground shrink-0">Status:</span>
-                  <span className="text-sm font-medium truncate min-w-0">{bookStateLabels[book.userBook.state]}</span>
+                  <span className="text-sm font-medium truncate min-w-0">{book.userBook.state? bookStateLabels[book.userBook.state] : null}</span>
                 </div>
 
                 <div className="flex items-center gap-2 min-w-0">

@@ -39,8 +39,8 @@ export interface Book {
 }
 
 export interface UserBook {
-  state: BookState
-  rating: number
+  state?: BookState
+  rating?: number
 }
 
 export interface BookWithUserData extends Book {

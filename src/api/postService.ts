@@ -52,18 +52,18 @@ export const createPost = async (data: CreatePostData): Promise<Post> => {
  * Löscht einen Post.
  * @param id - Id des zu löschenden Posts
  */
-//TODO 
+// TODO 
 export const deletePost = async (id: number): Promise<void> => {
-  // const response = await apiClient.put<Post>(`/post`, id)
+  // const response = await apiClient.delete<Post>(`/post`, id)
   // return response.data
   console.log(`Post ${id} gelöscht!`)
 }
 
 /**
- * Löscht einen Post.
- * @param id - Id des zu löschenden Posts
+ * Aktualisiert einen Post.  
+ * @param data - Die Daten zum Aktualisieren des Posts  
  */
-// TODO 
+// TODO
 export const updatePost = async (data: UpdatePost): Promise<void> => {
   // const response = await apiClient.put<Post>(`/post`, id)
   // return response.data

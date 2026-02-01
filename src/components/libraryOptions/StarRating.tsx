@@ -2,13 +2,13 @@ import { Star } from "lucide-react"
 import { useState } from "react"
 
 interface StarRatingProps {
-  rating: number
+  rating?: number
   interactive?: boolean
   onRatingChange?: (rating: number) => void
   starIconSize?: number
 }
 
-export function StarRating({ rating, interactive = false, onRatingChange, starIconSize = 6 }: StarRatingProps) {
+export function StarRating({ rating = 0, interactive = false, onRatingChange, starIconSize = 6 }: StarRatingProps) {
 
   const [hoverRating, setHoverRating] = useState(0)
 

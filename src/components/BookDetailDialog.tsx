@@ -65,16 +65,16 @@ export function BookDetailDialog({
   const isInLibrary = !!libraryEntry || (book?.userBook?.state !== undefined)
 
   // Synchronisiere lokalen State mit Props
-    useEffect(() => {
-      if (!book) return
-      const rating = libraryEntry?.userBook?.rating ?? book.userBook?.rating ?? 0
-      const status = libraryEntry?.userBook?.state ?? book.userBook?.state
-  
-      // Nur setzen, wenn sich der Wert tatsächlich ändert, um unnötige renders zu vermeiden
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setCurrentRating((prev) => (prev === rating ? prev : rating))
-      setCurrentStatus((prev) => (prev === status ? prev : status))
-    }, [book, libraryEntry])
+  useEffect(() => {
+    if (!book) return
+    const rating = libraryEntry?.userBook?.rating ?? book.userBook?.rating ?? 0
+    const status = libraryEntry?.userBook?.state ?? book.userBook?.state
+
+    // Nur setzen, wenn sich der Wert tatsächlich ändert, um unnötige renders zu vermeiden
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCurrentRating((prev) => (prev === rating ? prev : rating))
+    setCurrentStatus((prev) => (prev === status ? prev : status))
+  }, [book, libraryEntry])
 
   if (!book) return null
 

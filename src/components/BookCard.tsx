@@ -58,7 +58,7 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
         className="p-4 sm:p-6 cursor-pointer hover:shadow-lg transition-shadow overflow-hidden"
         onClick={() => setIsDetailDialogOpen(true)}
       >
-        <div className="flex gap-4 sm:gap-6 flex-col-reverse sm:flex-row">
+        <div className="flex gap-4 sm:gap-6 flex-col-reverse sm:flex-row min-w-0">
           {/* Buchcover */}
           <div className="shrink-0 self-center sm:self-start">
             <img
@@ -70,19 +70,19 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
 
           {/* Buchinformationen */}
           <div className="flex-1 min-w-0 overflow-hidden">
-            <div className="flex gap-2 flex-col-reverse sm:flex-row">
-              <div className="flex-1 min-w-0 flex flex-col gap-2 overflow-hidden">
-                <div className="overflow-hidden">
+            <div className="flex gap-2 flex-col-reverse sm:flex-row min-w-0">
+              <div className="flex-1 min-w-0 flex flex-col gap-2">
+                <div className="min-w-0">
                   <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 truncate">{book.Title}</h2>
                   <p className="text-muted-foreground text-sm sm:text-base truncate">von {book.Author}</p>
                 </div>
 
-                <div className="flex items-center gap-2 overflow-hidden">
+                <div className="flex items-center gap-2 min-w-0">
                   <span className="text-sm text-muted-foreground shrink-0">Status:</span>
-                  <span className="text-sm font-medium truncate">{bookStateLabels[book.userBook.state]}</span>
+                  <span className="text-sm font-medium truncate min-w-0">{bookStateLabels[book.userBook.state]}</span>
                 </div>
 
-                <div className="flex items-center gap-2 overflow-hidden">
+                <div className="flex items-center gap-2 min-w-0">
                   <StarRating rating={book.userBook.rating} />
                 </div>
               </div>
@@ -190,7 +190,9 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
         book={book}
         open={isDetailDialogOpen}
         onOpenChange={setIsDetailDialogOpen}
-        onStatusChange={(_, status) => onUpdateStatus?.(book.ID, status)}
+        onStatusChange={(id, status) => {
+          onUpdateStatus?.(id, status)
+        }}
       />
     </>
   )

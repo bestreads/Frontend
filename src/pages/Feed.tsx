@@ -176,7 +176,7 @@ const Feed = () => {
         ) : (
           <div className="grid gap-4">
             {posts.map((post) => (
-              <PostCard postData={post} key={`${post.id}-${post.createdAt}`} />
+              <PostCard postData={post} key={`${post.id}-${post.createdAt}`} onRatingChange={fetchPosts} />
             ))}
           </div>
         )}

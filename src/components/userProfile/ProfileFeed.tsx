@@ -1,7 +1,7 @@
 import type { Post } from "@/types/post"
 import PostCard from "../PostCard"
 import { MessageSquareOff } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { getPosts, type Post as ApiPost } from "@/api/postService"
 import { Spinner } from "@/components/ui/spinner"
 import { apiToBookState } from "@/types/book"
@@ -24,50 +24,50 @@ function ProfileFeed({ userId }: { userId: string }) {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setLoading(true)
-        const offset = (currentPage - 1) * POSTS_PER_PAGE
-        const data = await getPosts({ userId: Number(userId), offset })
+  const fetchPosts = useCallback(async () => {
+    try {
+      setLoading(true)
+      const offset = (currentPage - 1) * POSTS_PER_PAGE
+      const data = await getPosts({ userId: Number(userId), offset })
 
-        // Backend-Response zu Frontend-Post-Type mappen
-        const mappedPosts: Post[] = data.map((apiPost: ApiPost) => ({
-          id: `post-${apiPost.Uid}-${apiPost.Book.ID}-${apiPost.CreatedAt}`,
-          author: {
-            userId: apiPost.Uid.toString(),
-            username: apiPost.Username,
-            profilePictureURL: apiPost.ProfilePicture || undefined,
+      // Backend-Response zu Frontend-Post-Type mappen
+      const mappedPosts: Post[] = data.map((apiPost: ApiPost) => ({
+        id: `post-${apiPost.Uid}-${apiPost.Book.ID}-${apiPost.CreatedAt}`,
+        author: {
+          userId: apiPost.Uid.toString(),
+          username: apiPost.Username,
+          profilePictureURL: apiPost.ProfilePicture || undefined,
+        },
+        book: {
+          ...apiPost.Book,
+          userBook: {
+            state: apiToBookState[apiPost.State] || "want-to-read",
+            rating: apiPost.Rating,
           },
-          book: {
-            ...apiPost.Book,
-            userBook: {
-              state: apiToBookState[apiPost.State] || "want-to-read",
-              rating: apiPost.Rating,
-            },
-          },
-          content: apiPost.Content,
-          createdAt: apiPost.CreatedAt,
-        }))
+        },
+        content: apiPost.Content,
+        createdAt: apiPost.CreatedAt,
+      }))
 
-        setPosts(mappedPosts)
-        // Wenn weniger als POSTS_PER_PAGE zurückkommen, sind wir auf der letzten Seite
-        if (data.length < POSTS_PER_PAGE) {
-          setTotalPages(currentPage)
-        } else {
-          // Ansonsten gibt es mindestens eine weitere Seite
-          setTotalPages((prev) => Math.max(prev, currentPage + 1))
-        }
-      } catch (error) {
-        console.error("Error fetching posts for ProfileFeed:", error)
-        setError("Fehler beim Laden der Beiträge")
-      } finally {
-        setLoading(false)
+      setPosts(mappedPosts)
+      // Wenn weniger als POSTS_PER_PAGE zurückkommen, sind wir auf der letzten Seite
+      if (data.length < POSTS_PER_PAGE) {
+        setTotalPages(currentPage)
+      } else {
+        // Ansonsten gibt es mindestens eine weitere Seite
+        setTotalPages((prev) => Math.max(prev, currentPage + 1))
       }
+    } catch (error) {
+      console.error("Error fetching posts for ProfileFeed:", error)
+      setError("Fehler beim Laden der Beiträge")
+    } finally {
+      setLoading(false)
     }
-
-    fetchPosts()
   }, [userId, currentPage])
+
+  useEffect(() => {
+    fetchPosts()
+  }, [fetchPosts])
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -87,7 +87,7 @@ function ProfileFeed({ userId }: { userId: string }) {
       startPage = Math.max(1, endPage - maxVisiblePages + 1)
     }
 
-    if (startPage > 1) {  
+    if (startPage > 1) {
       items.push(
         <PaginationItem key={1}>
           <PaginationLink onClick={() => handlePageChange(1)} className="cursor-pointer">
@@ -163,7 +163,7 @@ function ProfileFeed({ userId }: { userId: string }) {
               <>
                 <div className="grid gap-4">
                   {posts.map((post) => (
-                    <PostCard postData={post} key={`${post.id}-${post.createdAt}`} />
+                    <PostCard postData={post} key={`${post.id}-${post.createdAt}`} onRatingChange={fetchPosts} />
                   ))}
                 </div>
 

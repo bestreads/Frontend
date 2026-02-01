@@ -8,17 +8,37 @@ import { useState } from "react"
 import { Link, useLocation } from "react-router"
 import { StarRating } from "./libraryOptions/StarRating"
 
-function PostCard({ postData }: { postData: Post }) {
+function PostCard({ postData, onRatingChange }: { postData: Post, onRatingChange?: () => void }) {
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
+  const [currentRating, setCurrentRating] = useState(postData.book.userBook.rating)
+  const [hasChanges, setHasChanges] = useState(false)
   const location = useLocation()
 
   const isAlreadyOnProfile = location.pathname === `/profile/${postData.author.userId}`
+
+  const handleRatingChange = (rating: number) => {
+    setCurrentRating(rating)
+    setHasChanges(true)
+  }
+
+  const handleStatusChange = () => {
+    setHasChanges(true)
+  }
+
+  const handleDialogClose = (open: boolean) => {
+    setIsDetailDialogOpen(open)
+    // Wenn Dialog geschlossen wird und es Änderungen gab, lade Posts neu
+    if (!open && hasChanges) {
+      onRatingChange?.()
+      setHasChanges(false)
+    }
+  }
 
   return (
     <>
       <Card className="flex flex-col p-6 gap-6 lg:grid grid-cols-3 grid-row2">
         {/* Beitrags Autor */}
-        <CardHeader className="flex flex-wrap items-center justify-start col-span-3 p-0">
+        <CardHeader className="flex flex-wrap items-center gap-2 justify-start col-span-3 p-0">
           <Link
             to={isAlreadyOnProfile ? "#" : `/profile/${postData.author.userId}`}
             className={`group flex items-center gap-2 rounded-xl ${isAlreadyOnProfile ? "cursor-default" : "transition-colors"}`}
@@ -85,11 +105,11 @@ function PostCard({ postData }: { postData: Post }) {
             <div className="flex items-center gap-2">
               <Star className={`w-5 h-5 fill-primary text-primary sm:hidden`} />
               <span className="hidden sm:flex gap-2 items-center">
-                <StarRating rating={postData.book.userBook.rating} starIconSize={5} />
+                <StarRating rating={currentRating} starIconSize={5} />
               </span>
 
               <span className="text-sm text-muted-foreground">
-                ({postData.book.userBook.rating.toFixed(1)}/5)
+                ({currentRating.toFixed(1)}/5)
               </span>
             </div>
 
@@ -116,7 +136,9 @@ function PostCard({ postData }: { postData: Post }) {
       <BookDetailDialog
         book={postData.book}
         open={isDetailDialogOpen}
-        onOpenChange={setIsDetailDialogOpen}
+        onOpenChange={handleDialogClose}
+        onRatingChange={handleRatingChange}
+        onStatusChange={handleStatusChange}
       />
     </>
   )

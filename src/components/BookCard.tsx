@@ -21,6 +21,7 @@ import { useState } from "react"
 import { bookStateLabels } from "@/types/book"
 import type { BookWithUserData, BookState } from "@/types/book"
 import { BookDetailDialog } from "@/components/BookDetailDialog"
+import { StarRating } from "./libraryOptions/StarRating"
 
 interface BookCardProps {
   book: BookWithUserData
@@ -31,7 +32,7 @@ interface BookCardProps {
 }
 
 export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onRate }: BookCardProps) {
-  const [hoverRating, setHoverRating] = useState(0)
+
   const [isRatingPopoverOpen, setIsRatingPopoverOpen] = useState(false)
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState(false)
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
@@ -41,46 +42,15 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
     setIsStatusPopoverOpen(false)
   }
 
+  const handleDelete = () => {
+    onDelete?.(book.ID)
+  }
+
   const handleRatingClick = (rating: number) => {
     onRate?.(book.ID, rating)
     setIsRatingPopoverOpen(false)
   }
 
-  const handleDelete = () => {
-    onDelete?.(book.ID)
-  }
-
-  const renderStars = (rating: number, interactive = false) => {
-    return (
-      <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((star) => {
-          const isActive = star <= (interactive ? (hoverRating || rating) : rating)
-          const isHovered = interactive && hoverRating >= star
-
-          return (
-            <button
-              key={star}
-              type="button"
-              disabled={!interactive}
-              onClick={() => interactive && handleRatingClick(star)}
-              onMouseEnter={() => interactive && setHoverRating(star)}
-              onMouseLeave={() => interactive && setHoverRating(0)}
-              className={interactive ? "cursor-pointer transition-transform hover:scale-110" : ""}
-            >
-              <Star
-                className={`w-5 h-5 transition-colors ${isActive
-                  ? isHovered
-                    ? "fill-primary/80 text-primary/80"
-                    : "fill-primary text-primary"
-                  : "fill-gray-300 text-gray-300"
-                  }`}
-              />
-            </button>
-          )
-        })}
-      </div>
-    )
-  }
 
   return (
     <>
@@ -113,7 +83,7 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {renderStars(book.userBook.rating)}
+                  <StarRating rating={book.userBook.rating} />
                 </div>
               </div>
 
@@ -134,7 +104,7 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
                     <PopoverContent className="w-auto p-4" align="end">
                       <div className="space-y-2">
                         <p className="text-sm font-medium">Bewertung</p>
-                        {renderStars(book.userBook.rating, true)}
+                        <StarRating rating={book.userBook.rating} interactive={true} onRatingChange={handleRatingClick} />
                       </div>
                     </PopoverContent>
                   </Popover>

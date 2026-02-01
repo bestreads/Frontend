@@ -6,52 +6,13 @@ import { bookStateLabelsThirdPerson } from "../types/book"
 import { BookDetailDialog } from "@/components/BookDetailDialog"
 import { useState } from "react"
 import { Link, useLocation } from "react-router"
+import { StarRating } from "./libraryOptions/StarRating"
 
 function PostCard({ postData }: { postData: Post }) {
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
   const location = useLocation()
 
   const isAlreadyOnProfile = location.pathname === `/profile/${postData.author.userId}`
-
-  const renderStars = (rating: number) => {
-    return (
-      <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((star) => {
-          const diff = rating - (star - 1)
-          let fillClass = ""
-
-          if (diff >= 1) {
-            // Voller Stern
-            fillClass = "fill-primary text-primary"
-          } else if (diff > 0) {
-            // Teilweise gefüllter Stern
-            fillClass = "text-primary"
-            return (
-              <div key={star} className="relative w-5 h-5">
-                <Star className="w-5 h-5 fill-gray-300 text-gray-300 absolute" />
-                <div
-                  className="overflow-hidden absolute"
-                  style={{ width: `${diff * 100}%` }}
-                >
-                  <Star className="w-5 h-5 fill-primary text-primary" />
-                </div>
-              </div>
-            )
-          } else {
-            // Leerer Stern
-            fillClass = "fill-gray-300 text-gray-300"
-          }
-
-          return (
-            <Star
-              key={star}
-              className={`w-5 h-5 ${fillClass}`}
-            />
-          )
-        })}
-      </div>
-    )
-  }
 
   return (
     <>
@@ -102,7 +63,7 @@ function PostCard({ postData }: { postData: Post }) {
                 <div className="flex items-center gap-2">
                   <Star className={`w-5 h-5 fill-primary text-primary sm:hidden`} />
                   <span className="hidden sm:flex gap-2 items-center">
-                    {renderStars(postData.book.RatingAvg)}
+                    <StarRating rating={postData.book.RatingAvg} starIconSize={5} />
                   </span>
 
                   <span className="text-sm text-muted-foreground">
@@ -124,7 +85,7 @@ function PostCard({ postData }: { postData: Post }) {
             <div className="flex items-center gap-2">
               <Star className={`w-5 h-5 fill-primary text-primary sm:hidden`} />
               <span className="hidden sm:flex gap-2 items-center">
-                {renderStars(postData.book.userBook.rating)}
+                <StarRating rating={postData.book.userBook.rating} starIconSize={5} />
               </span>
 
               <span className="text-sm text-muted-foreground">

@@ -12,6 +12,11 @@ export interface Post {
   Rating: number
 }
 
+export interface UpdatePost {
+  Uid: number
+  Content: string
+}
+
 export interface GetPostsParams {
   userId?: number
   offset?: number
@@ -41,4 +46,26 @@ export const getPosts = async (params: GetPostsParams): Promise<Post[]> => {
 export const createPost = async (data: CreatePostData): Promise<Post> => {
   const response = await apiClient.post<Post>(`/post`, data)
   return response.data
+}
+
+/**
+ * Löscht einen Post.
+ * @param id - Id des zu löschenden Posts
+ */
+//TODO 
+export const deletePost = async (id: number): Promise<void> => {
+  // const response = await apiClient.put<Post>(`/post`, id)
+  // return response.data
+  console.log(`Post ${id} gelöscht!`)
+}
+
+/**
+ * Löscht einen Post.
+ * @param id - Id des zu löschenden Posts
+ */
+// TODO 
+export const updatePost = async (data: UpdatePost): Promise<void> => {
+  // const response = await apiClient.put<Post>(`/post`, id)
+  // return response.data
+  console.log(`Post ${data.Uid} geupdatet!`)
 }

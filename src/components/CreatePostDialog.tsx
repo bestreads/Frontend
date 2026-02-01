@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { MessageSquare, Star } from "lucide-react"
+import { MessageSquare } from "lucide-react"
 import { Button } from "./ui/button"
 import {
   Dialog,
@@ -22,6 +22,7 @@ import { Spinner } from "./ui/spinner"
 import { getLibrary, type LibraryBook } from "@/api/libraryService"
 import { createPost } from "@/api/postService"
 import { apiToBookState, bookStateLabels, type BookState } from "@/types/book"
+import { StarRating } from "./libraryOptions/StarRating"
 
 export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void }) {
   const [open, setOpen] = useState(false)
@@ -62,37 +63,6 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
   const selectedBook = libraryBooks.find(
     (book) => book.Book.ID.toString() === selectedBookId
   )
-
-  const renderStars = (rating: number) => {
-    return (
-      <div className="flex gap-0.5">
-        {[1, 2, 3, 4, 5].map((star) => {
-          const diff = rating - (star - 1)
-          let fillClass = ""
-
-          if (diff >= 1) {
-            fillClass = "fill-primary text-primary"
-          } else if (diff > 0) {
-            return (
-              <div key={star} className="relative w-4 h-4">
-                <Star className="w-4 h-4 fill-gray-300 text-gray-300 absolute" />
-                <div
-                  className="overflow-hidden absolute"
-                  style={{ width: `${diff * 100}%` }}
-                >
-                  <Star className="w-4 h-4 fill-primary text-primary" />
-                </div>
-              </div>
-            )
-          } else {
-            fillClass = "fill-gray-300 text-gray-300"
-          }
-
-          return <Star key={star} className={`w-4 h-4 ${fillClass}`} />
-        })}
-      </div>
-    )
-  }
 
   const handleSubmit = async () => {
     if (!selectedBookId || !content.trim()) return
@@ -184,7 +154,7 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
                 </p>
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
                   <span>Deine Bewertung:</span>
-                  {renderStars(selectedBook.Rating)}
+                  {<StarRating rating={selectedBook.Rating} starIconSize={4}/>}
                 </div>
               </div>
             </div>

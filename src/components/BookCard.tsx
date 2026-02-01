@@ -55,41 +55,41 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
   return (
     <>
       <Card
-        className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
+        className="p-4 sm:p-6 cursor-pointer hover:shadow-lg transition-shadow overflow-hidden"
         onClick={() => setIsDetailDialogOpen(true)}
       >
-        <div className="flex gap-6 flex-col-reverse sm:flex-row">
+        <div className="flex gap-4 sm:gap-6 flex-col-reverse sm:flex-row">
           {/* Buchcover */}
-          <div className="shrink-0">
+          <div className="shrink-0 self-center sm:self-start">
             <img
               src={book.CoverURL || "/placeholder-book.png"}
               alt={`Cover von ${book.Title}`}
-              className="w-32 h-48 object-cover rounded-lg shadow-md justify-self-center"
+              className="w-20 h-30 sm:w-24 sm:h-36 md:w-32 md:h-48 object-cover rounded-lg shadow-md"
             />
           </div>
 
           {/* Buchinformationen */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 overflow-hidden">
             <div className="flex gap-2 flex-col-reverse sm:flex-row">
-              <div className="flex-1 min-w-0 flex flex-col gap-2">
-                <div className="">
-                  <h2 className="text-2xl font-bold mb-1">{book.Title}</h2>
-                  <p className="text-muted-foreground text-base">von {book.Author}</p>
+              <div className="flex-1 min-w-0 flex flex-col gap-2 overflow-hidden">
+                <div className="overflow-hidden">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 truncate">{book.Title}</h2>
+                  <p className="text-muted-foreground text-sm sm:text-base truncate">von {book.Author}</p>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Status:</span>
-                  <span className="text-sm font-medium">{bookStateLabels[book.userBook.state]}</span>
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <span className="text-sm text-muted-foreground shrink-0">Status:</span>
+                  <span className="text-sm font-medium truncate">{bookStateLabels[book.userBook.state]}</span>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 overflow-hidden">
                   <StarRating rating={book.userBook.rating} />
                 </div>
               </div>
 
               {/* Action Buttons */}
               {!readOnly && (
-                <div className="flex gap-2 shrink-0 self-end sm:self-start " onClick={(e) => e.stopPropagation()}>
+                <div className="flex gap-1 sm:gap-2 shrink-0 self-end sm:self-start" onClick={(e) => e.stopPropagation()}>
                   {/* Bewertung Popover */}
                   <Popover open={isRatingPopoverOpen} onOpenChange={setIsRatingPopoverOpen}>
                     <PopoverTrigger asChild>

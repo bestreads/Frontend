@@ -59,7 +59,7 @@ function PostCard({ postData }: { postData: Post }) {
 
               <div className="flex gap-2 content-center">
                 {/* Buch Bewertung */}
-                <p className="mb-1 text-xs text-muted-foreground italic">Gesamtbewertung</p>
+                <p className="text-xs text-muted-foreground italic">Gesamtbewertung</p>
                 <div className="flex items-center gap-2">
                   <Star className={`w-5 h-5 fill-primary text-primary sm:hidden`} />
                   <span className="hidden sm:flex gap-2 items-center">

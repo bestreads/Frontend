@@ -17,7 +17,7 @@ export function StarRating({ rating, interactive = false, onRatingChange, starIc
   }
 
   return (
-    <div className="flex gap-1">
+    <div className="flex gap-1 flex-1">
       {[1, 2, 3, 4, 5].map((star) => {
         const isActive = star <= (interactive ? (hoverRating || rating) : rating)
         const isHovered = interactive && hoverRating >= star

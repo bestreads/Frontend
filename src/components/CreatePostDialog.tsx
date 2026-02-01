@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { MessageSquare, Star } from "lucide-react"
+import { MessageSquare } from "lucide-react"
 import { Button } from "./ui/button"
 import {
   Dialog,
@@ -19,36 +19,27 @@ import {
 import { Textarea } from "./ui/textarea"
 import { Label } from "./ui/label"
 import { Spinner } from "./ui/spinner"
-import { getLibrary, type LibraryBook } from "@/api/libraryService"
 import { createPost } from "@/api/postService"
-import { apiToBookState, bookStateLabels, type BookState } from "@/types/book"
+import { bookStateToApi, type BookState } from "@/types/book"
+import { BookCard } from "./BookCard"
+import { useLibrary } from "@/contexts/LibraryContext"
+import { updateBookState } from "@/api/libraryService"
 
 export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void }) {
   const [open, setOpen] = useState(false)
-  const [libraryBooks, setLibraryBooks] = useState<LibraryBook[]>([])
   const [selectedBookId, setSelectedBookId] = useState<string>("")
   const [content, setContent] = useState("")
-  const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
-  // Lade Bücher aus der Bibliothek wenn Dialog geöffnet wird
+  const { libraryBooks, refreshLibrary, updateBookInLocalLibrary, isLoading } = useLibrary()
+
+  // Lade Bücher wenn Dialog geöffnet wird
   useEffect(() => {
     if (open) {
-      const fetchLibrary = async () => {
-        setLoading(true)
-        try {
-          const books = await getLibrary()
-          setLibraryBooks(books)
-        } catch (error) {
-          console.error("Fehler beim Laden der Bibliothek:", error)
-        } finally {
-          setLoading(false)
-        }
-      }
-      fetchLibrary()
+      refreshLibrary()
     }
-  }, [open])
+  }, [open, refreshLibrary])
 
   // Reset wenn Dialog geschlossen wird
   useEffect(() => {
@@ -60,38 +51,21 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
   }, [open])
 
   const selectedBook = libraryBooks.find(
-    (book) => book.Book.ID.toString() === selectedBookId
+    (book) => book.ID.toString() === selectedBookId
   )
 
-  const renderStars = (rating: number) => {
-    return (
-      <div className="flex gap-0.5">
-        {[1, 2, 3, 4, 5].map((star) => {
-          const diff = rating - (star - 1)
-          let fillClass = ""
+  const handleUpdateStatus = async (bookId: number, status: BookState) => {
+    try {
+      // API Call - verwende bookStateToApi Helper
+      const apiState = bookStateToApi[status]
 
-          if (diff >= 1) {
-            fillClass = "fill-primary text-primary"
-          } else if (diff > 0) {
-            return (
-              <div key={star} className="relative w-4 h-4">
-                <Star className="w-4 h-4 fill-gray-300 text-gray-300 absolute" />
-                <div
-                  className="overflow-hidden absolute"
-                  style={{ width: `${diff * 100}%` }}
-                >
-                  <Star className="w-4 h-4 fill-primary text-primary" />
-                </div>
-              </div>
-            )
-          } else {
-            fillClass = "fill-gray-300 text-gray-300"
-          }
+      await updateBookState(bookId, apiState)
 
-          return <Star key={star} className={`w-4 h-4 ${fillClass}`} />
-        })}
-      </div>
-    )
+      // Lokale Bibliothek aktualisieren
+      updateBookInLocalLibrary(bookId, status)
+    } catch (error) {
+      console.error("Fehler beim Aktualisieren des Status:", error)
+    }
   }
 
   const handleSubmit = async () => {
@@ -117,7 +91,7 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
   const canSubmit = selectedBookId && content.trim().length > 0
 
   return (
-    <Dialog open={open} onOpenChange={setOpen} >
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           className="fixed bottom-2 right-2 sm:bottom-8 sm:right-8 rounded-full size-20 shadow-xl z-50 hover:scale-105 transition-transform"
@@ -125,25 +99,25 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
           <MessageSquare className="size-10" />
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-xl">Neuer Beitrag</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 py-4 overflow-y-auto flex-1 p-4">
           {/* Buch auswählen */}
-          <div className="space-y-2">
+          <div className="space-y-2 w-full">
             <Label htmlFor="book-select">Buch auswählen</Label>
-            {loading ? (
+            {isLoading ? (
               <div className="flex justify-center py-4">
                 <Spinner />
               </div>
             ) : (
               <Select value={selectedBookId} onValueChange={setSelectedBookId}>
-                <SelectTrigger id="book-select">
+                <SelectTrigger id="book-select" className="w-full">
                   <SelectValue placeholder="Wähle ein Buch aus deiner Bibliothek" />
                 </SelectTrigger>
-                <SelectContent position="item-aligned">
+                <SelectContent>
                   {libraryBooks.length === 0 ? (
                     <div className="py-2 px-2 text-sm text-muted-foreground">
                       Keine Bücher in deiner Bibliothek
@@ -151,10 +125,10 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
                   ) : (
                     libraryBooks.map((libraryBook) => (
                       <SelectItem
-                        key={libraryBook.Book.ID}
-                        value={libraryBook.Book.ID.toString()}
+                        key={libraryBook.ID}
+                        value={libraryBook.ID.toString()}
                       >
-                        {libraryBook.Book.Title}
+                        {libraryBook.Title}
                       </SelectItem>
                     ))
                   )}
@@ -165,45 +139,30 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
 
           {/* Ausgewähltes Buch anzeigen */}
           {selectedBook && (
-            <div className="flex gap-4 p-4 bg-accent/50 rounded-lg">
-              <img
-                src={selectedBook.Book.CoverURL || "/placeholder-book.png"}
-                alt={`Cover von ${selectedBook.Book.Title}`}
-                className="w-20 h-28 object-cover rounded shadow-sm shrink-0 hidden sm:flex"
+            <div className="w-full">
+              <BookCard
+                book={selectedBook}
+                readOnly={true}
+                onUpdateStatus={handleUpdateStatus}
               />
-              <div className="flex-1 flex flex-col justify-center gap-1 shrink-0">
-                <h3 className="font-semibold">
-                  {selectedBook.Book.Title}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {selectedBook.Book.Author}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Status:{" "}
-                  {bookStateLabels[apiToBookState[selectedBook.State] as BookState]}
-                </p>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <span>Deine Bewertung:</span>
-                  {renderStars(selectedBook.Rating)}
-                </div>
-              </div>
             </div>
           )}
 
           {/* Beitrag Text */}
-          <div className="space-y-2">
+          <div className="space-y-2 w-full">
             <Label htmlFor="post-content">Dein Beitrag</Label>
             <Textarea
               id="post-content"
               placeholder="Was möchtest du über dieses Buch sagen?"
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              className="w-full min-h-[100px] resize-none"
             />
           </div>
 
           {/* Fehlermeldung anzeigen */}
           {submitError && (
-            <div className="text-sm text-destructive font-medium">
+            <div className="text-sm text-destructive font-medium w-full">
               {submitError}
             </div>
           )}

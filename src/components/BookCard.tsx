@@ -21,6 +21,7 @@ import { useState } from "react"
 import { bookStateLabels } from "@/types/book"
 import type { BookWithUserData, BookState } from "@/types/book"
 import { BookDetailDialog } from "@/components/BookDetailDialog"
+import { StarRating } from "./libraryOptions/StarRating"
 
 interface BookCardProps {
   book: BookWithUserData
@@ -31,7 +32,7 @@ interface BookCardProps {
 }
 
 export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onRate }: BookCardProps) {
-  const [hoverRating, setHoverRating] = useState(0)
+
   const [isRatingPopoverOpen, setIsRatingPopoverOpen] = useState(false)
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState(false)
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
@@ -41,85 +42,54 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
     setIsStatusPopoverOpen(false)
   }
 
+  const handleDelete = () => {
+    onDelete?.(book.ID)
+  }
+
   const handleRatingClick = (rating: number) => {
     onRate?.(book.ID, rating)
     setIsRatingPopoverOpen(false)
   }
 
-  const handleDelete = () => {
-    onDelete?.(book.ID)
-  }
-
-  const renderStars = (rating: number, interactive = false) => {
-    return (
-      <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((star) => {
-          const isActive = star <= (interactive ? (hoverRating || rating) : rating)
-          const isHovered = interactive && hoverRating >= star
-
-          return (
-            <button
-              key={star}
-              type="button"
-              disabled={!interactive}
-              onClick={() => interactive && handleRatingClick(star)}
-              onMouseEnter={() => interactive && setHoverRating(star)}
-              onMouseLeave={() => interactive && setHoverRating(0)}
-              className={interactive ? "cursor-pointer transition-transform hover:scale-110" : ""}
-            >
-              <Star
-                className={`w-5 h-5 transition-colors ${isActive
-                  ? isHovered
-                    ? "fill-primary/80 text-primary/80"
-                    : "fill-primary text-primary"
-                  : "fill-gray-300 text-gray-300"
-                  }`}
-              />
-            </button>
-          )
-        })}
-      </div>
-    )
-  }
 
   return (
     <>
       <Card
-        className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
+        className="p-4 sm:p-6 cursor-pointer hover:shadow-lg transition-shadow overflow-hidden"
         onClick={() => setIsDetailDialogOpen(true)}
       >
-        <div className="flex gap-6 flex-col-reverse sm:flex-row">
+        <div className="flex gap-4 sm:gap-6 flex-col-reverse sm:flex-row min-w-0">
           {/* Buchcover */}
-          <div className="shrink-0">
+          <div className="shrink-0 self-center sm:self-start">
             <img
               src={book.CoverURL || "/placeholder-book.png"}
               alt={`Cover von ${book.Title}`}
-              className="w-32 h-48 object-cover rounded-lg shadow-md justify-self-center"
+              className="w-20 h-32 sm:w-24 sm:h-36 md:w-32 md:h-48 object-cover rounded-lg shadow-md"
             />
           </div>
 
           {/* Buchinformationen */}
-          <div className="flex-1 min-w-0">
-            <div className="flex gap-2 flex-col-reverse sm:flex-row">
+          <div className="flex-1 min-w-0 overflow-hidden">
+            <div className="flex gap-2 flex-col-reverse sm:flex-row min-w-0">
               <div className="flex-1 min-w-0 flex flex-col gap-2">
-                <div className="">
-                  <h2 className="text-2xl font-bold mb-1">{book.Title}</h2>
-                  <p className="text-muted-foreground text-base">von {book.Author}</p>
+                <div className="min-w-0">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 truncate">{book.Title}</h2>
+                  <p className="text-muted-foreground text-sm sm:text-base truncate">von {book.Author}</p>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Status:</span>
-                  <span className="text-sm font-medium">{bookStateLabels[book.userBook.state]}</span>
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-sm text-muted-foreground shrink-0">Status:</span>
+                  <span className="text-sm font-medium truncate min-w-0">{book.userBook.state? bookStateLabels[book.userBook.state] : null}</span>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  {renderStars(book.userBook.rating)}
+                <div className="flex items-center gap-2 min-w-0">
+                  <StarRating rating={book.userBook.rating} />
                 </div>
               </div>
 
               {/* Action Buttons */}
               {!readOnly && (
-                <div className="flex gap-2 shrink-0 self-end sm:self-start " onClick={(e) => e.stopPropagation()}>
+                <div className="flex gap-1 sm:gap-2 shrink-0 self-end sm:self-start" onClick={(e) => e.stopPropagation()}>
                   {/* Bewertung Popover */}
                   <Popover open={isRatingPopoverOpen} onOpenChange={setIsRatingPopoverOpen}>
                     <PopoverTrigger asChild>
@@ -134,7 +104,7 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
                     <PopoverContent className="w-auto p-4" align="end">
                       <div className="space-y-2">
                         <p className="text-sm font-medium">Bewertung</p>
-                        {renderStars(book.userBook.rating, true)}
+                        <StarRating rating={book.userBook.rating} interactive={true} onRatingChange={handleRatingClick} />
                       </div>
                     </PopoverContent>
                   </Popover>
@@ -220,7 +190,9 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
         book={book}
         open={isDetailDialogOpen}
         onOpenChange={setIsDetailDialogOpen}
-        onStatusChange={(_, status) => onUpdateStatus?.(book.ID, status)}
+        onStatusChange={(id, status) => {
+          onUpdateStatus?.(id, status)
+        }}
       />
     </>
   )

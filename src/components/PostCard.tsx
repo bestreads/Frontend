@@ -6,58 +6,39 @@ import { bookStateLabelsThirdPerson } from "../types/book"
 import { BookDetailDialog } from "@/components/BookDetailDialog"
 import { useState } from "react"
 import { Link, useLocation } from "react-router"
+import { StarRating } from "./libraryOptions/StarRating"
 
-function PostCard({ postData }: { postData: Post }) {
+function PostCard({ postData, onRatingChange }: { postData: Post, onRatingChange?: () => void }) {
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
+  const [currentRating, setCurrentRating] = useState(postData.book.userBook.rating ? postData.book.userBook.rating : 0)
+  const [hasChanges, setHasChanges] = useState(false)
   const location = useLocation()
 
   const isAlreadyOnProfile = location.pathname === `/profile/${postData.author.userId}`
 
-  const renderStars = (rating: number) => {
-    return (
-      <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((star) => {
-          const diff = rating - (star - 1)
-          let fillClass = ""
+  const handleRatingChange = (rating: number) => {
+    setCurrentRating(rating)
+    setHasChanges(true)
+  }
 
-          if (diff >= 1) {
-            // Voller Stern
-            fillClass = "fill-primary text-primary"
-          } else if (diff > 0) {
-            // Teilweise gefüllter Stern
-            fillClass = "text-primary"
-            return (
-              <div key={star} className="relative w-5 h-5">
-                <Star className="w-5 h-5 fill-gray-300 text-gray-300 absolute" />
-                <div
-                  className="overflow-hidden absolute"
-                  style={{ width: `${diff * 100}%` }}
-                >
-                  <Star className="w-5 h-5 fill-primary text-primary" />
-                </div>
-              </div>
-            )
-          } else {
-            // Leerer Stern
-            fillClass = "fill-gray-300 text-gray-300"
-          }
+  const handleStatusChange = () => {
+    setHasChanges(true)
+  }
 
-          return (
-            <Star
-              key={star}
-              className={`w-5 h-5 ${fillClass}`}
-            />
-          )
-        })}
-      </div>
-    )
+  const handleDialogClose = (open: boolean) => {
+    setIsDetailDialogOpen(open)
+    // Wenn Dialog geschlossen wird und es Änderungen gab, lade Posts neu
+    if (!open && hasChanges) {
+      onRatingChange?.()
+      setHasChanges(false)
+    }
   }
 
   return (
     <>
       <Card className="flex flex-col p-6 gap-6 lg:grid grid-cols-3 grid-row2">
         {/* Beitrags Autor */}
-        <CardHeader className="flex flex-wrap items-center justify-start col-span-3 p-0">
+        <CardHeader className="flex flex-wrap items-center gap-2 justify-start col-span-3 p-0">
           <Link
             to={isAlreadyOnProfile ? "#" : `/profile/${postData.author.userId}`}
             className={`group flex items-center gap-2 rounded-xl ${isAlreadyOnProfile ? "cursor-default" : "transition-colors"}`}
@@ -73,7 +54,7 @@ function PostCard({ postData }: { postData: Post }) {
               {postData.author.username}
             </span>
           </Link>
-          <p className="text-lg">{bookStateLabelsThirdPerson[postData.book.userBook.state]}</p>
+          <p className="text-lg">{postData.book.userBook.state ? bookStateLabelsThirdPerson[postData.book.userBook.state] : null}</p>
         </CardHeader>
 
         {/* Buchinformationen */}
@@ -98,11 +79,11 @@ function PostCard({ postData }: { postData: Post }) {
 
               <div className="flex gap-2 content-center">
                 {/* Buch Bewertung */}
-                <p className="mb-1 text-xs text-muted-foreground italic">Gesamtbewertung</p>
+                <p className="text-xs text-muted-foreground italic">Gesamtbewertung</p>
                 <div className="flex items-center gap-2">
                   <Star className={`w-5 h-5 fill-primary text-primary sm:hidden`} />
                   <span className="hidden sm:flex gap-2 items-center">
-                    {renderStars(postData.book.RatingAvg)}
+                    <StarRating rating={postData.book.RatingAvg} starIconSize={5} />
                   </span>
 
                   <span className="text-sm text-muted-foreground">
@@ -124,11 +105,11 @@ function PostCard({ postData }: { postData: Post }) {
             <div className="flex items-center gap-2">
               <Star className={`w-5 h-5 fill-primary text-primary sm:hidden`} />
               <span className="hidden sm:flex gap-2 items-center">
-                {renderStars(postData.book.userBook.rating)}
+                <StarRating rating={currentRating} starIconSize={5} />
               </span>
 
               <span className="text-sm text-muted-foreground">
-                ({postData.book.userBook.rating.toFixed(1)}/5)
+                ({currentRating.toFixed(1)}/5)
               </span>
             </div>
 
@@ -155,7 +136,9 @@ function PostCard({ postData }: { postData: Post }) {
       <BookDetailDialog
         book={postData.book}
         open={isDetailDialogOpen}
-        onOpenChange={setIsDetailDialogOpen}
+        onOpenChange={handleDialogClose}
+        onRatingChange={handleRatingChange}
+        onStatusChange={handleStatusChange}
       />
     </>
   )

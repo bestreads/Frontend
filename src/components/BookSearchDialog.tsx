@@ -226,7 +226,13 @@ export function BookSearchDialog({ open, onOpenChange }: BookSearchDialogProps) 
 
       {/* BookDetailDialog */}
       <BookDetailDialog
-        book={selectedBook}
+        book={selectedBook ? {
+          ...selectedBook,
+          userBook: {
+            state: undefined,
+            rating: undefined,
+          },
+        } : null}
         open={bookDetailOpen}
         onOpenChange={setBookDetailOpen}
       />

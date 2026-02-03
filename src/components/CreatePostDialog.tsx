@@ -33,15 +33,22 @@ interface CreatePostDialogProps {
   initialBookId?: number
   onInitialBookIdChange?: (id: number | undefined) => void
   showButton?: boolean
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 export function CreatePostDialog({
   onPostCreated,
   initialBookId,
   onInitialBookIdChange,
-  showButton = true
+  showButton = true,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange
 }: CreatePostDialogProps) {
-  const [open, setOpen] = useState(false)
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen
+  const setOpen = controlledOnOpenChange || setInternalOpen
+
   const [selectedBookId, setSelectedBookId] = useState<string>("")
   const [content, setContent] = useState("")
   const [submitting, setSubmitting] = useState(false)
@@ -51,16 +58,14 @@ export function CreatePostDialog({
   const [userPosts, setUserPosts] = useState<Post[]>([])
   const { user } = useAuth()
 
-  // Berechne ob es ein Update ist basierend auf existierenden Posts
   const existingPost = userPosts.find((post) => post.Book.ID === Number(selectedBookId))
   const isPostUpdate = !!existingPost
 
-  // Öffne Dialog wenn initialBookId gesetzt wird
-  useEffect(() => {
-    if (initialBookId) {
-      setOpen(true)
-    }
-  }, [initialBookId])
+  const selectedBook = libraryBooks.find(
+    (book) => book.ID.toString() === selectedBookId
+  )
+
+  const canSubmit = selectedBookId && content.trim().length > 0
 
   // Lade Bücher & Posts wenn Dialog geöffnet wird
   useEffect(() => {
@@ -102,10 +107,6 @@ export function CreatePostDialog({
       onInitialBookIdChange?.(undefined)
     }
   }, [open, onInitialBookIdChange])
-
-  const selectedBook = libraryBooks.find(
-    (book) => book.ID.toString() === selectedBookId
-  )
 
   const handleUpdateStatus = async (bookId: number, status: BookState) => {
     try {
@@ -156,9 +157,6 @@ export function CreatePostDialog({
     setSelectedBookId(bookId)
     // Content wird automatisch durch useEffect gesetzt
   }
-
-
-  const canSubmit = selectedBookId && content.trim().length > 0
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

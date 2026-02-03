@@ -25,6 +25,7 @@ function ProfileFeed({ userId }: { userId: string }) {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [initialBookId, setInitialBookId] = useState<number | undefined>(undefined)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -73,6 +74,14 @@ function ProfileFeed({ userId }: { userId: string }) {
 
   const handleEditPost = (post: Post) => {
     setInitialBookId(post.book.ID)
+    setIsDialogOpen(true)
+  }
+
+  const handleDialogClose = (open: boolean) => {
+    setIsDialogOpen(open)
+    if (!open) {
+      setInitialBookId(undefined)
+    }
   }
 
   const handlePageChange = (page: number) => {
@@ -206,6 +215,8 @@ function ProfileFeed({ userId }: { userId: string }) {
 
       {/* Edit Post Dialog */}
       <CreatePostDialog
+        open={isDialogOpen}
+        onOpenChange={handleDialogClose}
         onPostCreated={fetchPosts}
         initialBookId={initialBookId}
         onInitialBookIdChange={setInitialBookId}

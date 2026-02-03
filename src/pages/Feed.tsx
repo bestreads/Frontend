@@ -26,6 +26,7 @@ const Feed = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [initialBookId, setInitialBookId] = useState<number | undefined>(undefined)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -74,6 +75,14 @@ const Feed = () => {
 
   const handleEditPost = (post: Post) => {
     setInitialBookId(post.book.ID)
+    setIsDialogOpen(true)
+  }
+
+  const handleDialogClose = (open: boolean) => {
+    setIsDialogOpen(open)
+    if (!open) {
+      setInitialBookId(undefined)
+    }
   }
 
   const handlePageChange = (page: number) => {
@@ -215,10 +224,11 @@ const Feed = () => {
 
       {/* Neuer Beitrag Button */}
       <CreatePostDialog
+        open={isDialogOpen}
+        onOpenChange={handleDialogClose}
         onPostCreated={fetchPosts}
         initialBookId={initialBookId}
         onInitialBookIdChange={setInitialBookId}
-        
       />
     </div>
   )

@@ -63,9 +63,7 @@ export const deletePost = async (id: number): Promise<void> => {
  * Aktualisiert einen Post.  
  * @param data - Die Daten zum Aktualisieren des Posts  
  */
-// TODO
 export const updatePost = async (data: UpdatePost): Promise<Post> => {
   const response = await apiClient.put<Post>(`/post`, data)
-  console.log(`Post ${data.bid} geupdatet!`)
   return response.data
 }

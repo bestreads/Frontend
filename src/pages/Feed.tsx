@@ -78,9 +78,9 @@ const Feed = () => {
     setIsDialogOpen(true)
   }
 
-  const handleDialogClose = (open: boolean) => {
-    setIsDialogOpen(open)
-    if (!open) {
+  const handleDialogClose = (isOpen: boolean) => {
+    setIsDialogOpen(isOpen)
+    if (!isOpen) {
       setInitialBookId(undefined)
     }
   }

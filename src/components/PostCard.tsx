@@ -68,7 +68,8 @@ function PostCard({ postData, onRatingChange, onEditPost }: { postData: Post, on
               <Button
                 type="button"
                 variant={"ghost"}
-                onClick={handlePostEdit}>
+                onClick={handlePostEdit}
+                aria-label="Beitrag bearbeiten">  
                 <Pencil className="w-4 h-4" />
               </Button>
             }

@@ -153,20 +153,19 @@ export function CreatePostDialog({
     }
   }
 
-  const handleBookSelection = async (bookId: string) => {
+  const handleBookSelection = (bookId: string) => {
     setSelectedBookId(bookId)
-    // Content wird automatisch durch useEffect gesetzt
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {showButton && <Button
+      {showButton && <DialogTrigger asChild>
+        <Button
           className="fixed bottom-2 right-2 sm:bottom-8 sm:right-8 rounded-full size-20 shadow-xl z-50 hover:scale-105 transition-transform"
         >
           <MessageSquare className="size-10" />
-        </Button>}
-      </DialogTrigger>
+        </Button>
+      </DialogTrigger>}
       <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-xl">{isPostUpdate ? `Beitrag bearbeiten` : "Neuer Beitrag"}</DialogTitle>

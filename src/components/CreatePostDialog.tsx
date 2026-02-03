@@ -19,11 +19,13 @@ import {
 import { Textarea } from "./ui/textarea"
 import { Label } from "./ui/label"
 import { Spinner } from "./ui/spinner"
-import { createPost } from "@/api/postService"
+import { createPost, getPosts, updatePost } from "@/api/postService"
 import { bookStateToApi, type BookState } from "@/types/book"
 import { BookCard } from "./BookCard"
 import { useLibrary } from "@/contexts/LibraryContext"
 import { updateBookState } from "@/api/libraryService"
+import { useAuth } from "@/contexts/Authcontext"
+import type { Post } from "@/api/postService"
 
 export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void }) {
   const [open, setOpen] = useState(false)
@@ -31,15 +33,30 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
   const [content, setContent] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [isPostUpdate, setIsPostUpdate] = useState<boolean>(false)
 
   const { libraryBooks, refreshLibrary, updateBookInLocalLibrary, isLoading } = useLibrary()
+  const [userPosts, setUserPosts] = useState<Post[]>([])
+  const { user } = useAuth()
 
-  // Lade Bücher wenn Dialog geöffnet wird
+  // Lade Bücher & Posts wenn Dialog geöffnet wird
   useEffect(() => {
+    const loadUserPosts = async () => {
+      try {
+        const posts = await getPosts({ userId: user?.userId })
+        setUserPosts(posts)
+      } catch (error) {
+        console.error("Fehler beim Laden der Posts:", error)
+      }
+    }
+
     if (open) {
       refreshLibrary()
+      loadUserPosts()
     }
-  }, [open, refreshLibrary])
+  }, [open, refreshLibrary, user])
+
+
 
   // Reset wenn Dialog geschlossen wird
   useEffect(() => {
@@ -47,6 +64,7 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
       setSelectedBookId("")
       setContent("")
       setSubmitError(null)
+      setIsPostUpdate(false)
     }
   }, [open])
 
@@ -73,20 +91,45 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
 
     setSubmitting(true)
     setSubmitError(null)
+
     try {
-      await createPost({
-        bid: parseInt(selectedBookId),
-        content: content.trim(),
-      })
+      const existingPost = userPosts.find((post) => post.Book.ID === Number(selectedBookId))
+
+      if (existingPost) {
+        // Post existiert bereits -> Update
+        await updatePost({
+          bid: parseInt(selectedBookId),
+          content: content.trim(),
+        })
+      } else {
+        // Kein Post vorhanden -> Neu erstellen
+        await createPost({
+          bid: parseInt(selectedBookId),
+          content: content.trim(),
+        })
+      }
+
       setOpen(false)
       onPostCreated?.()
     } catch (error) {
-      console.error("Fehler beim Erstellen des Beitrags:", error)
-      setSubmitError("Beitrag konnte nicht erstellt werden. Bitte nochmal versuchen.")
+      console.error("Fehler beim Speichern des Beitrags:", error)
+      setSubmitError("Beitrag konnte nicht gespeichert werden. Bitte nochmal versuchen.")
     } finally {
       setSubmitting(false)
     }
   }
+
+  const handleBookSelection = async (bookId: string) => {
+    setSelectedBookId(bookId)
+
+    // Suche bereits erstellt Posts zu diesem Buch & setzte content
+    const matchingPost = userPosts.find((post) => post.Book.ID === Number(bookId))
+    if (matchingPost) {
+      setIsPostUpdate(true)
+    }
+    setContent(matchingPost?.Content ?? "")
+  }
+
 
   const canSubmit = selectedBookId && content.trim().length > 0
 
@@ -113,7 +156,7 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
                 <Spinner />
               </div>
             ) : (
-              <Select value={selectedBookId} onValueChange={setSelectedBookId}>
+              <Select value={selectedBookId} onValueChange={handleBookSelection}>
                 <SelectTrigger id="book-select" className="w-full">
                   <SelectValue placeholder="Wähle ein Buch aus deiner Bibliothek" />
                 </SelectTrigger>
@@ -173,7 +216,7 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
             Abbrechen
           </Button>
           <Button onClick={handleSubmit} disabled={!canSubmit || submitting}>
-            {submitting ? <Spinner /> : "Posten"}
+            {submitting ? <Spinner /> : isPostUpdate ? "Post aktualisieren" : "Posten"}
           </Button>
         </DialogFooter>
       </DialogContent>

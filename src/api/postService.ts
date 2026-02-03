@@ -12,17 +12,17 @@ export interface Post {
   Rating: number
 }
 
-export interface UpdatePost {
-  Uid: number
-  Content: string
-}
-
 export interface GetPostsParams {
   userId?: number
   offset?: number
 }
 
 export interface CreatePostData {
+  bid: number
+  content: string
+}
+
+export interface UpdatePost {
   bid: number
   content: string
 }
@@ -64,8 +64,8 @@ export const deletePost = async (id: number): Promise<void> => {
  * @param data - Die Daten zum Aktualisieren des Posts  
  */
 // TODO
-export const updatePost = async (data: UpdatePost): Promise<void> => {
-  // const response = await apiClient.put<Post>(`/post`, id)
-  // return response.data
-  console.log(`Post ${data.Uid} geupdatet!`)
+export const updatePost = async (data: UpdatePost): Promise<Post> => {
+  const response = await apiClient.put<Post>(`/post`, data)
+  console.log(`Post ${data.bid} geupdatet!`)
+  return response.data
 }

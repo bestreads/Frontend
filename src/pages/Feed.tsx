@@ -25,6 +25,7 @@ const Feed = () => {
   const [error, setError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [initialBookId, setInitialBookId] = useState<number | undefined>(undefined)
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -70,6 +71,10 @@ const Feed = () => {
   useEffect(() => {
     fetchPosts()
   }, [fetchPosts])
+
+  const handleEditPost = (post: Post) => {
+    setInitialBookId(post.book.ID)
+  }
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -176,7 +181,12 @@ const Feed = () => {
         ) : (
           <div className="grid gap-4">
             {posts.map((post) => (
-              <PostCard postData={post} key={`${post.id}-${post.createdAt}`} onRatingChange={fetchPosts} />
+              <PostCard
+                postData={post}
+                key={`${post.id}-${post.createdAt}`}
+                onRatingChange={fetchPosts}
+                onEditPost={handleEditPost}
+              />
             ))}
           </div>
         )}
@@ -204,7 +214,12 @@ const Feed = () => {
       </div>
 
       {/* Neuer Beitrag Button */}
-      <CreatePostDialog onPostCreated={fetchPosts} />
+      <CreatePostDialog
+        onPostCreated={fetchPosts}
+        initialBookId={initialBookId}
+        onInitialBookIdChange={setInitialBookId}
+        
+      />
     </div>
   )
 }

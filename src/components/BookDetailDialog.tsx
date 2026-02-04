@@ -19,6 +19,7 @@ import type { BookWithUserData, BookState } from "@/types/book"
 import { updateBookState, addBookToLibrary, updateRating } from "@/api/libraryService"
 import { useLibrary } from "@/contexts/LibraryContext"
 import { StarRating } from "./libraryOptions/StarRating"
+import { AvgRating } from "./AvgRating"
 
 interface BookDetailDialogProps {
   book: BookWithUserData | null
@@ -266,6 +267,10 @@ export function BookDetailDialog({
               <span className="text-sm text-muted-foreground">Erscheinungsjahr</span>
               <p className="text-base">{book.ReleaseDate}</p>
             </div>
+
+            {book.Rating && (
+              <AvgRating avg={book.Rating.Avg} count={book.Rating.Count} />
+            )}
 
             {book.Genre && (
               <div>

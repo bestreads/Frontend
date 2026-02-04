@@ -7,6 +7,7 @@ import { BookDetailDialog } from "@/components/BookDetailDialog"
 import { useState } from "react"
 import { Link, useLocation } from "react-router"
 import { StarRating } from "./libraryOptions/StarRating"
+import { AvgRating } from "./AvgRating"
 import { useAuth } from "@/contexts/Authcontext"
 import { Button } from "./ui/button"
 
@@ -96,21 +97,13 @@ function PostCard({ postData, onRatingChange, onEditPost }: { postData: Post, on
               <h2 className="text-xl sm:text-2xl font-bold mr-auto transition-colors group-hover:text-accent wrap-anywhere">{postData.book.Title}</h2>
               <p className="text-muted-foreground text-base"> <span className="text-xs text-muted-foreground italic">von</span> {postData.book.Author}</p>
 
-              <div className="flex gap-2 content-center">
-                {/* Buch Bewertung */}
-                <p className="text-xs text-muted-foreground italic">Gesamtbewertung</p>
-                <div className="flex items-center gap-2">
-                  <Star className={`w-5 h-5 fill-primary text-primary sm:hidden`} />
-                  <span className="hidden sm:flex gap-2 items-center">
-                    <StarRating rating={postData.book.RatingAvg} starIconSize={5} />
-                  </span>
-
-                  <span className="text-sm text-muted-foreground">
-                    ({postData.book.RatingAvg.toFixed(1)}/5)
-                  </span>
-
-                </div>
-              </div>
+              {postData.book.Rating && (
+                <AvgRating 
+                  avg={postData.book.Rating.Avg} 
+                  count={postData.book.Rating.Count} 
+                  showLabel={false}
+                />
+              )}
             </div>
           </div>
 

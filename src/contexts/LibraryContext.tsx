@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import type { ReactNode } from "react"
 import type { Book, BookState, BookWithUserData } from "@/types/book"
 import { apiToBookState } from "@/types/book"
@@ -27,7 +27,7 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
       setIsLoading(true)
       setError(null)
       const libraryData = await getLibrary()
-      
+
       const transformedBooks: BookWithUserData[] = libraryData.map((lb) => ({
         ...lb.Book,
         userBook: {
@@ -35,7 +35,7 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
           rating: lb.Rating,
         },
       }))
-      
+
       setLibraryBooks(transformedBooks)
     } catch (err) {
       console.error("Fehler beim Laden der Bibliothek:", err)
@@ -84,6 +84,11 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
       )
     )
   }, [])
+
+  // Lade die Bibliothek beim ersten Rendern
+  useEffect(() => {
+    refreshLibrary()
+  }, [refreshLibrary])
 
   return (
     <LibraryContext.Provider

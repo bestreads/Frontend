@@ -25,6 +25,8 @@ const Feed = () => {
   const [error, setError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [initialBookId, setInitialBookId] = useState<number | undefined>(undefined)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -70,6 +72,18 @@ const Feed = () => {
   useEffect(() => {
     fetchPosts()
   }, [fetchPosts])
+
+  const handleEditPost = (post: Post) => {
+    setInitialBookId(post.book.ID)
+    setIsDialogOpen(true)
+  }
+
+  const handleDialogClose = (isOpen: boolean) => {
+    setIsDialogOpen(isOpen)
+    if (!isOpen) {
+      setInitialBookId(undefined)
+    }
+  }
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -176,7 +190,12 @@ const Feed = () => {
         ) : (
           <div className="grid gap-4">
             {posts.map((post) => (
-              <PostCard postData={post} key={`${post.id}-${post.createdAt}`} onRatingChange={fetchPosts} />
+              <PostCard
+                postData={post}
+                key={`${post.id}-${post.createdAt}`}
+                onRatingChange={fetchPosts}
+                onEditPost={handleEditPost}
+              />
             ))}
           </div>
         )}
@@ -204,7 +223,13 @@ const Feed = () => {
       </div>
 
       {/* Neuer Beitrag Button */}
-      <CreatePostDialog onPostCreated={fetchPosts} />
+      <CreatePostDialog
+        open={isDialogOpen}
+        onOpenChange={handleDialogClose}
+        onPostCreated={fetchPosts}
+        initialBookId={initialBookId}
+        onInitialBookIdChange={setInitialBookId}
+      />
     </div>
   )
 }

@@ -1,20 +1,24 @@
 import type { Post } from "@/types/post"
 import { Card, CardContent, CardHeader } from "./ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
-import { User, Star } from "lucide-react"
+import { User, Star, Pencil } from "lucide-react"
 import { bookStateLabelsThirdPerson } from "../types/book"
 import { BookDetailDialog } from "@/components/BookDetailDialog"
 import { useState } from "react"
 import { Link, useLocation } from "react-router"
 import { StarRating } from "./libraryOptions/StarRating"
+import { useAuth } from "@/contexts/Authcontext"
+import { Button } from "./ui/button"
 
-function PostCard({ postData, onRatingChange }: { postData: Post, onRatingChange?: () => void }) {
+function PostCard({ postData, onRatingChange, onEditPost }: { postData: Post, onRatingChange?: () => void, onEditPost?: (post: Post) => void }) {
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
   const [currentRating, setCurrentRating] = useState(postData.book.userBook.rating ? postData.book.userBook.rating : 0)
   const [hasChanges, setHasChanges] = useState(false)
   const location = useLocation()
+  const { user } = useAuth()
 
   const isAlreadyOnProfile = location.pathname === `/profile/${postData.author.userId}`
+  const isOwnPost = String(user?.userId) === postData.author.userId
 
   const handleRatingChange = (rating: number) => {
     setCurrentRating(rating)
@@ -32,6 +36,10 @@ function PostCard({ postData, onRatingChange }: { postData: Post, onRatingChange
       onRatingChange?.()
       setHasChanges(false)
     }
+  }
+
+  const handlePostEdit = () => {
+    onEditPost?.(postData)
   }
 
   return (
@@ -55,6 +63,17 @@ function PostCard({ postData, onRatingChange }: { postData: Post, onRatingChange
             </span>
           </Link>
           <p className="text-lg">{postData.book.userBook.state ? bookStateLabelsThirdPerson[postData.book.userBook.state] : null}</p>
+          <div className="ml-auto">
+            {isOwnPost &&
+              <Button
+                type="button"
+                variant={"ghost"}
+                onClick={handlePostEdit}
+                aria-label="Beitrag bearbeiten">  
+                <Pencil className="w-4 h-4" />
+              </Button>
+            }
+          </div>
         </CardHeader>
 
         {/* Buchinformationen */}

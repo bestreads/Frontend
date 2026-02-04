@@ -4,6 +4,7 @@ import { Button } from "./ui/button"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -19,27 +20,83 @@ import {
 import { Textarea } from "./ui/textarea"
 import { Label } from "./ui/label"
 import { Spinner } from "./ui/spinner"
-import { createPost } from "@/api/postService"
+import { createPost, getPosts, updatePost } from "@/api/postService"
 import { bookStateToApi, type BookState } from "@/types/book"
 import { BookCard } from "./BookCard"
 import { useLibrary } from "@/contexts/LibraryContext"
 import { updateBookState } from "@/api/libraryService"
+import { useAuth } from "@/contexts/Authcontext"
+import type { Post } from "@/api/postService"
 
-export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void }) {
-  const [open, setOpen] = useState(false)
+interface CreatePostDialogProps {
+  onPostCreated?: () => void
+  initialBookId?: number
+  onInitialBookIdChange?: (id: number | undefined) => void
+  showButton?: boolean
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+}
+
+export function CreatePostDialog({
+  onPostCreated,
+  initialBookId,
+  onInitialBookIdChange,
+  showButton = true,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange
+}: CreatePostDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen
+  const setOpen = controlledOnOpenChange || setInternalOpen
+
   const [selectedBookId, setSelectedBookId] = useState<string>("")
   const [content, setContent] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const { libraryBooks, refreshLibrary, updateBookInLocalLibrary, isLoading } = useLibrary()
+  const [userPosts, setUserPosts] = useState<Post[]>([])
+  const { user } = useAuth()
 
-  // Lade Bücher wenn Dialog geöffnet wird
+  const existingPost = userPosts.find((post) => post.Book.ID === Number(selectedBookId))
+  const isPostUpdate = !!existingPost
+
+  const selectedBook = libraryBooks.find(
+    (book) => book.ID.toString() === selectedBookId
+  )
+
+  const canSubmit = selectedBookId && content.trim().length > 0
+
+  // Lade Bücher & Posts wenn Dialog geöffnet wird
   useEffect(() => {
+    const loadUserPosts = async () => {
+      try {
+        const posts = await getPosts({ userId: user?.userId })
+        setUserPosts(posts)
+
+        // Setze Buch nachdem Posts geladen wurden
+        if (initialBookId) {
+          setSelectedBookId(initialBookId.toString())
+        }
+      } catch (error) {
+        console.error("Fehler beim Laden der Posts:", error)
+      }
+    }
+
     if (open) {
       refreshLibrary()
+      loadUserPosts()
     }
-  }, [open, refreshLibrary])
+  }, [open, refreshLibrary, user, initialBookId])
+
+  // Lade Content wenn ein Buch ausgewählt wird, das bereits einen Post hat
+  useEffect(() => {
+    if (selectedBookId && existingPost) {
+      setContent(existingPost.Content ?? "")
+    } else if (selectedBookId && !existingPost) {
+      setContent("")
+    }
+  }, [selectedBookId, existingPost])
 
   // Reset wenn Dialog geschlossen wird
   useEffect(() => {
@@ -47,12 +104,9 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
       setSelectedBookId("")
       setContent("")
       setSubmitError(null)
+      onInitialBookIdChange?.(undefined)
     }
-  }, [open])
-
-  const selectedBook = libraryBooks.find(
-    (book) => book.ID.toString() === selectedBookId
-  )
+  }, [open, onInitialBookIdChange])
 
   const handleUpdateStatus = async (bookId: number, status: BookState) => {
     try {
@@ -73,38 +127,54 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
 
     setSubmitting(true)
     setSubmitError(null)
+
     try {
-      await createPost({
-        bid: parseInt(selectedBookId),
-        content: content.trim(),
-      })
+      if (isPostUpdate) {
+        // Post existiert bereits -> Update
+        await updatePost({
+          bid: parseInt(selectedBookId),
+          content: content.trim(),
+        })
+      } else {
+        // Kein Post vorhanden -> Neu erstellen
+        await createPost({
+          bid: parseInt(selectedBookId),
+          content: content.trim(),
+        })
+      }
+
       setOpen(false)
       onPostCreated?.()
     } catch (error) {
-      console.error("Fehler beim Erstellen des Beitrags:", error)
-      setSubmitError("Beitrag konnte nicht erstellt werden. Bitte nochmal versuchen.")
+      console.error("Fehler beim Speichern des Beitrags:", error)
+      setSubmitError("Beitrag konnte nicht gespeichert werden. Bitte nochmal versuchen.")
     } finally {
       setSubmitting(false)
     }
   }
 
-  const canSubmit = selectedBookId && content.trim().length > 0
+  const handleBookSelection = (bookId: string) => {
+    setSelectedBookId(bookId)
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      {showButton && <DialogTrigger asChild>
         <Button
           className="fixed bottom-2 right-2 sm:bottom-8 sm:right-8 rounded-full size-20 shadow-xl z-50 hover:scale-105 transition-transform"
         >
           <MessageSquare className="size-10" />
         </Button>
-      </DialogTrigger>
+      </DialogTrigger>}
       <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-xl">Neuer Beitrag</DialogTitle>
+          <DialogTitle className="text-xl">{isPostUpdate ? `Beitrag bearbeiten` : "Neuer Beitrag"}</DialogTitle>
+          <DialogDescription>
+            Teile deine Gedanken zu einem Buch aus deiner Bibliothek.
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4 overflow-y-auto flex-1 p-4">
+        <div className="space-y-4 py-4 overflow-y-auto flex-1">
           {/* Buch auswählen */}
           <div className="space-y-2 w-full">
             <Label htmlFor="book-select">Buch auswählen</Label>
@@ -113,7 +183,7 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
                 <Spinner />
               </div>
             ) : (
-              <Select value={selectedBookId} onValueChange={setSelectedBookId}>
+              <Select value={selectedBookId} onValueChange={handleBookSelection}>
                 <SelectTrigger id="book-select" className="w-full">
                   <SelectValue placeholder="Wähle ein Buch aus deiner Bibliothek" />
                 </SelectTrigger>
@@ -173,7 +243,7 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
             Abbrechen
           </Button>
           <Button onClick={handleSubmit} disabled={!canSubmit || submitting}>
-            {submitting ? <Spinner /> : "Posten"}
+            {submitting ? <Spinner /> : isPostUpdate ? "Post aktualisieren" : "Posten"}
           </Button>
         </DialogFooter>
       </DialogContent>

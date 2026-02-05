@@ -14,7 +14,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
-import { CreatePostDialog } from "@/components/CreatePostDialog"
+import { usePostDialog } from "@/contexts/PostDialogContext"
 
 const POSTS_PER_PAGE = 25
 
@@ -24,8 +24,8 @@ function ProfileFeed({ userId }: { userId: string }) {
   const [error, setError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [initialBookId, setInitialBookId] = useState<number | undefined>(undefined)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  
+  const { openDialog, registerRefreshCallback, unregisterRefreshCallback } = usePostDialog()
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -72,16 +72,14 @@ function ProfileFeed({ userId }: { userId: string }) {
     fetchPosts()
   }, [fetchPosts])
 
-  const handleEditPost = (post: Post) => {
-    setInitialBookId(post.book.ID)
-    setIsDialogOpen(true)
-  }
+  // Registriere fetchPosts als Refresh-Callback für den PostDialog
+  useEffect(() => {
+    registerRefreshCallback(fetchPosts)
+    return () => unregisterRefreshCallback(fetchPosts)
+  }, [fetchPosts, registerRefreshCallback, unregisterRefreshCallback])
 
-  const handleDialogClose = (isOpen: boolean) => {
-    setIsDialogOpen(isOpen)
-    if (!isOpen) {
-      setInitialBookId(undefined)
-    }
+  const handleEditPost = (post: Post) => {
+    openDialog(post.book.ID)
   }
 
   const handlePageChange = (page: number) => {
@@ -212,15 +210,6 @@ function ProfileFeed({ userId }: { userId: string }) {
           </div>
         </>
       )}
-
-      {/* Edit Post Dialog */}
-      <CreatePostDialog
-        open={isDialogOpen}
-        onOpenChange={handleDialogClose}
-        onPostCreated={fetchPosts}
-        initialBookId={initialBookId}
-        onInitialBookIdChange={setInitialBookId}
-      />
     </>
   )
 }

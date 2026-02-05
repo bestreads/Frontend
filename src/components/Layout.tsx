@@ -1,7 +1,17 @@
 import { Outlet } from "react-router";
 import Navigation from "./nav/Navigation";
+import { CreatePostDialog } from "./CreatePostDialog";
+import { PostDialogProvider, usePostDialog } from "@/contexts/PostDialogContext";
 
-function Layout() {
+function LayoutContent() {
+  const { isOpen, setIsOpen, initialBookId, setInitialBookId, triggerRefresh } = usePostDialog();
+
+  const handleDialogClose = (open: boolean) => {
+    setIsOpen(open);
+    if (!open) {
+      setInitialBookId(undefined);
+    }
+  };
 
   return (
     <div className="h-screen flex flex-col">
@@ -14,7 +24,25 @@ function Layout() {
       </main>
       <footer>
       </footer>
+
+      {/* Global Post Dialog */}
+      <CreatePostDialog
+        open={isOpen}
+        onOpenChange={handleDialogClose}
+        onPostCreated={triggerRefresh}
+        initialBookId={initialBookId}
+        onInitialBookIdChange={setInitialBookId}
+        showButton={true}
+      />
     </div>
+  );
+}
+
+function Layout() {
+  return (
+    <PostDialogProvider>
+      <LayoutContent />
+    </PostDialogProvider>
   );
 }
 

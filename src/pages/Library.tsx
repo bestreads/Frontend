@@ -20,11 +20,11 @@ function Library() {
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("title")
   const [filterTab, setFilterTab] = useState("all")
-  
-  const { 
-    libraryBooks: books, 
-    isLoading, 
-    error, 
+
+  const {
+    libraryBooks: books,
+    isLoading,
+    error,
     refreshLibrary,
     removeBookFromLocalLibrary,
     updateBookInLocalLibrary,
@@ -71,7 +71,7 @@ function Library() {
       if (filterTab !== "all" && book.userBook.state !== filterTab) {
         return false
       }
-      
+
       // Filter nach Suchbegriff
       if (searchQuery) {
         const query = searchQuery.toLowerCase()
@@ -80,7 +80,7 @@ function Library() {
           book.Author.toLowerCase().includes(query)
         )
       }
-      
+
       return true
     })
     .sort((a, b) => {
@@ -119,92 +119,92 @@ function Library() {
       {/* Suchleiste mit Filter-Dropdown */}
       {!isLoading && !error && (
         <>
-        <div className="flex gap-2 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Nach Titel oder Autor suchen..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
+          <div className="flex gap-2 mb-6 flex-col sm:flex-row">
+            <div className="relative flex-2">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Nach Titel oder Autor suchen..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder="Sortieren nach" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="title">Nach Titel sortieren</SelectItem>
+                <SelectItem value="author">Nach Autor sortieren</SelectItem>
+                <SelectItem value="rating">Nach Bewertung sortieren</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[220px]">
-              <SelectValue placeholder="Sortieren nach" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="title">Nach Titel sortieren</SelectItem>
-              <SelectItem value="author">Nach Autor sortieren</SelectItem>
-              <SelectItem value="rating">Nach Bewertung sortieren</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
 
-        {/* Filter-Tabs */}
-        <div className="flex gap-2 mb-8">
-          <Button
-            variant={filterTab === "all" ? "default" : "outline"}
-            onClick={() => setFilterTab("all")}
-          >
-            Alle
-          </Button>
-          <Button
-            variant={filterTab === "read" ? "default" : "outline"}
-            onClick={() => setFilterTab("read")}
-          >
-            Gelesen
-          </Button>
-          <Button
-            variant={filterTab === "reading" ? "default" : "outline"}
-            onClick={() => setFilterTab("reading")}
-          >
-            Lese ich gerade
-          </Button>
-          <Button
-            variant={filterTab === "want-to-read" ? "default" : "outline"}
-            onClick={() => setFilterTab("want-to-read")}
-          >
-            Möchte ich lesen
-          </Button>
-        </div>
+          {/* Filter-Tabs */}
+          <div className="flex gap-2 mb-8 flex-wrap">
+            <Button
+              variant={filterTab === "all" ? "default" : "outline"}
+              onClick={() => setFilterTab("all")}
+            >
+              Alle
+            </Button>
+            <Button
+              variant={filterTab === "read" ? "default" : "outline"}
+              onClick={() => setFilterTab("read")}
+            >
+              Gelesen
+            </Button>
+            <Button
+              variant={filterTab === "reading" ? "default" : "outline"}
+              onClick={() => setFilterTab("reading")}
+            >
+              Lese ich gerade
+            </Button>
+            <Button
+              variant={filterTab === "want-to-read" ? "default" : "outline"}
+              onClick={() => setFilterTab("want-to-read")}
+            >
+              Möchte ich lesen
+            </Button>
+          </div>
 
-        {/* Bücherliste */}
-        <div className="space-y-4">
-          {filteredAndSortedBooks.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="text-muted-foreground mb-2">
-                <svg
-                  className="mx-auto h-16 w-16 mb-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                  />
-                </svg>
+          {/* Bücherliste */}
+          <div className="space-y-4">
+            {filteredAndSortedBooks.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="text-muted-foreground mb-2">
+                  <svg
+                    className="mx-auto h-16 w-16 mb-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                    />
+                  </svg>
+                </div>
+                <p className="text-muted-foreground text-lg">Keine Bücher gefunden</p>
               </div>
-              <p className="text-muted-foreground text-lg">Keine Bücher gefunden</p>
-            </div>
-          ) : (
-            <div className="grid gap-4">
-              {filteredAndSortedBooks.map((book) => (
-                <BookCard
-                  key={book.ID}
-                  book={book}
-                  onDelete={handleDeleteBook}
-                  onUpdateStatus={handleUpdateStatus}
-                  onRate={handleRateBook}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+            ) : (
+              <div className="grid gap-4">
+                {filteredAndSortedBooks.map((book) => (
+                  <BookCard
+                    key={book.ID}
+                    book={book}
+                    onDelete={handleDeleteBook}
+                    onUpdateStatus={handleUpdateStatus}
+                    onRate={handleRateBook}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </>
       )}
     </div>

@@ -26,6 +26,11 @@ export const apiToBookState: Record<number, BookState> = {
   2: "read",
 }
 
+export interface BookRating {
+  Avg: number
+  Count: number
+}
+
 export interface Book {
   ID: number
   ISBN: string
@@ -33,14 +38,15 @@ export interface Book {
   Author: string
   CoverURL: string
   RatingAvg: number
+  Rating?: BookRating
   Description: string
   ReleaseDate: number
   Genre: string
 }
 
 export interface UserBook {
-  state: BookState
-  rating: number
+  state?: BookState
+  rating?: number
 }
 
 export interface BookWithUserData extends Book {

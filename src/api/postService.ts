@@ -22,6 +22,11 @@ export interface CreatePostData {
   content: string
 }
 
+export interface UpdatePost {
+  bid: number
+  content: string
+}
+
 /**
  * Holt alle Posts von einem bestimmten Benutzer
  * @param params - Die ID des Benutzers und die ID des Buches
@@ -40,5 +45,25 @@ export const getPosts = async (params: GetPostsParams): Promise<Post[]> => {
  */
 export const createPost = async (data: CreatePostData): Promise<Post> => {
   const response = await apiClient.post<Post>(`/post`, data)
+  return response.data
+}
+
+/**
+ * Löscht einen Post.
+ * @param id - Id des zu löschenden Posts
+ */
+// TODO 
+export const deletePost = async (id: number): Promise<void> => {
+  // const response = await apiClient.delete<Post>(`/post`, id)
+  // return response.data
+  console.log(`Post ${id} gelöscht!`)
+}
+
+/**
+ * Aktualisiert einen Post.  
+ * @param data - Die Daten zum Aktualisieren des Posts  
+ */
+export const updatePost = async (data: UpdatePost): Promise<Post> => {
+  const response = await apiClient.put<Post>(`/post`, data)
   return response.data
 }

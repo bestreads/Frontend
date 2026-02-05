@@ -1,4 +1,3 @@
-
 import type { Post } from "@/types/post"
 import PostCard from "@/components/PostCard"
 import { MessageSquareOff } from "lucide-react"
@@ -15,7 +14,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
-import { CreatePostDialog } from "@/components/CreatePostDialog"
+import { usePostDialog } from "@/contexts/PostDialogContext"
 
 const POSTS_PER_PAGE = 25
 
@@ -25,6 +24,8 @@ const Feed = () => {
   const [error, setError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  
+  const { openDialog, registerRefreshCallback, unregisterRefreshCallback } = usePostDialog()
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -70,6 +71,16 @@ const Feed = () => {
   useEffect(() => {
     fetchPosts()
   }, [fetchPosts])
+
+  // Registriere fetchPosts als Refresh-Callback für den PostDialog
+  useEffect(() => {
+    registerRefreshCallback(fetchPosts)
+    return () => unregisterRefreshCallback(fetchPosts)
+  }, [fetchPosts, registerRefreshCallback, unregisterRefreshCallback])
+
+  const handleEditPost = (post: Post) => {
+    openDialog(post.book.ID)
+  }
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -176,7 +187,12 @@ const Feed = () => {
         ) : (
           <div className="grid gap-4">
             {posts.map((post) => (
-              <PostCard postData={post} key={`${post.id}-${post.createdAt}`} />
+              <PostCard
+                postData={post}
+                key={`${post.id}-${post.createdAt}`}
+                onRatingChange={fetchPosts}
+                onEditPost={handleEditPost}
+              />
             ))}
           </div>
         )}
@@ -202,9 +218,6 @@ const Feed = () => {
           </Pagination>
         )}
       </div>
-
-      {/* Neuer Beitrag Button */}
-      <CreatePostDialog onPostCreated={fetchPosts} />
     </div>
   )
 }

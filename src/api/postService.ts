@@ -27,6 +27,10 @@ export interface UpdatePost {
   content: string
 }
 
+export interface DeletePost {
+  bid: number
+}
+
 /**
  * Holt alle Posts von einem bestimmten Benutzer
  * @param params - Die ID des Benutzers und die ID des Buches
@@ -52,11 +56,9 @@ export const createPost = async (data: CreatePostData): Promise<Post> => {
  * Löscht einen Post.
  * @param id - Id des zu löschenden Posts
  */
-// TODO 
-export const deletePost = async (id: number): Promise<void> => {
-  // const response = await apiClient.delete<Post>(`/post`, id)
-  // return response.data
-  console.log(`Post ${id} gelöscht!`)
+export const deletePost = async (data: DeletePost): Promise<void> => {
+  const response = await apiClient.delete(`/post`, { params: data })
+  return response.data
 }
 
 /**

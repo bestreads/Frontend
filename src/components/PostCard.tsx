@@ -1,7 +1,7 @@
 import type { Post } from "@/types/post"
 import { Card, CardContent, CardHeader } from "./ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
-import { User, Star, Pencil } from "lucide-react"
+import { User, Star, Pencil, Trash2, MoreVertical } from "lucide-react"
 import { bookStateLabelsThirdPerson } from "../types/book"
 import { BookDetailDialog } from "@/components/BookDetailDialog"
 import { useState } from "react"
@@ -10,9 +10,14 @@ import { StarRating } from "./libraryOptions/StarRating"
 import { AvgRating } from "./AvgRating"
 import { useAuth } from "@/contexts/Authcontext"
 import { Button } from "./ui/button"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog"
+import { deletePost } from "@/api/postService"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
 
 function PostCard({ postData, onRatingChange, onEditPost }: { postData: Post, onRatingChange?: () => void, onEditPost?: (post: Post) => void }) {
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+
   const [currentRating, setCurrentRating] = useState(postData.book.userBook.rating ? postData.book.userBook.rating : 0)
   const [hasChanges, setHasChanges] = useState(false)
   const location = useLocation()
@@ -43,6 +48,11 @@ function PostCard({ postData, onRatingChange, onEditPost }: { postData: Post, on
     onEditPost?.(postData)
   }
 
+  const handlePostDelete = async () => {
+    await deletePost({ bid: postData.book.ID })
+    onRatingChange?.()
+  }
+
   return (
     <>
       <Card className="flex flex-col p-6 gap-6 lg:grid grid-cols-3 grid-row2">
@@ -64,17 +74,36 @@ function PostCard({ postData, onRatingChange, onEditPost }: { postData: Post, on
             </span>
           </Link>
           <p className="text-lg">{postData.book.userBook.state ? bookStateLabelsThirdPerson[postData.book.userBook.state] : null}</p>
-          <div className="ml-auto">
-            {isOwnPost &&
-              <Button
-                type="button"
-                variant={"ghost"}
-                onClick={handlePostEdit}
-                aria-label="Beitrag bearbeiten">  
-                <Pencil className="w-4 h-4" />
-              </Button>
-            }
-          </div>
+
+          {isOwnPost && <div className="ml-auto">
+            {/* Post bearbeiten */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Beitragsoptionen"
+                >
+                  <MoreVertical className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handlePostEdit}>
+                  <Pencil className="w-4 h-4 mr-2" />
+                  Bearbeiten
+                </DropdownMenuItem>
+
+                {/* Post löschen */}
+                <DropdownMenuItem
+                  onClick={() => setIsDeleteDialogOpen(true)}
+                  className="text-red-600 focus:text-red-600"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Löschen
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>}
         </CardHeader>
 
         {/* Buchinformationen */}
@@ -83,7 +112,7 @@ function PostCard({ postData, onRatingChange, onEditPost }: { postData: Post, on
           onClick={() => setIsDetailDialogOpen(true)}
         >
           {/* Cover */}
-          <div className="w-30 aspect-2/3 hidden sm:flex items-center justify-center m-auto">
+          <div className="w-30 aspect-2/3 hidden sm:flex items-center justify-center m-auto wrap-break-word">
             <img
               src={postData.book.CoverURL || "/placeholder-book.png"}
               alt={`Cover von ${postData.book.Title}`}
@@ -98,9 +127,9 @@ function PostCard({ postData, onRatingChange, onEditPost }: { postData: Post, on
               <p className="text-muted-foreground text-base"> <span className="text-xs text-muted-foreground italic">von</span> {postData.book.Author}</p>
 
               {postData.book.Rating && (
-                <AvgRating 
-                  avg={postData.book.Rating.Avg} 
-                  count={postData.book.Rating.Count} 
+                <AvgRating
+                  avg={postData.book.Rating.Avg}
+                  count={postData.book.Rating.Count}
                   showLabel={false}
                 />
               )}
@@ -145,13 +174,34 @@ function PostCard({ postData, onRatingChange, onEditPost }: { postData: Post, on
       </Card >
 
       {/* Book Detail Dialog */}
-      <BookDetailDialog
+      < BookDetailDialog
         book={postData.book}
         open={isDetailDialogOpen}
         onOpenChange={handleDialogClose}
         onRatingChange={handleRatingChange}
         onStatusChange={handleStatusChange}
       />
+
+      {/* Delete Alert Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Beitrag löschen?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Möchtest du deinen Beitrag zu "{postData.book.Title}" wirklich entfernen? Diese Aktion kann nicht rückgängig gemacht werden.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handlePostDelete}
+              className={`bg-destructive text-white hover:bg-destructive/75 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60 dark:hover:bg-destructive/50 active:scale-95 transition-all`}
+            >
+              Löschen
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   )
 }

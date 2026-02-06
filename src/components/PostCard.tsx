@@ -48,8 +48,8 @@ function PostCard({ postData, onRatingChange, onEditPost }: { postData: Post, on
     onEditPost?.(postData)
   }
 
-  const handlePostDelete = () => {
-    deletePost({ bid: postData.book.ID })
+  const handlePostDelete = async () => {
+    await deletePost({ bid: postData.book.ID })
     onRatingChange?.()
   }
 

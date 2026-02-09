@@ -14,8 +14,9 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config
     const url = originalRequest.url || ""
 
-    // skip refresh 
-    const skipRefresh = url.includes("/auth/") || (url.includes("/user") && window.location.pathname === "/login")
+    // skip refresh for auth endpoints or when already on login/signup page
+    const isOnPublicPage = ['/login', '/signup'].includes(window.location.pathname)
+    const skipRefresh = url.includes("/auth/") || isOnPublicPage
 
     if (
       error.response?.status === 401 &&
@@ -29,7 +30,10 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest)
       } catch (refreshError){
         console.log(`Error refreshing token: ${refreshError}`)
-        window.location.href = "/login"
+        // Only redirect if not already on a public page
+        if (!isOnPublicPage) {
+          window.location.href = "/login"
+        }
         return Promise.reject(refreshError)
       }
     }

@@ -24,7 +24,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const user = await getCurrentUser()
       setUser(user)
-    } catch {
+    } catch (error) {
+      // Ignore errors when not authenticated (e.g. cookies deleted)
       setUser(null)
     } finally {
       setIsLoading(false)
@@ -60,6 +61,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       await authService.logout()
+    } catch (error) {
+      // Ignore logout errors (e.g. already logged out, cookies deleted)
+      console.log('Logout error (ignored):', error)
     } finally {
       setUser(null)
     }

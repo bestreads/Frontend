@@ -5,12 +5,15 @@ import { getUserProfile, type UserProfile } from "@/api/userService"
 import { Button } from "../ui/button"
 import { useAuth } from "@/contexts/Authcontext"
 import { followUser, unfollowUser } from "@/api/followService"
+import { FollowListDialog } from "../FollowListDialog"
 
 
 function ProfileHeader({ userId }: { userId: string }) {
   const [userStats, setUserStats] = useState<UserProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [followDialogOpen, setFollowDialogOpen] = useState(false)
+  const [initialTab, setInitialTab] = useState<"followers" | "following">("followers")
   const { user } = useAuth()
 
   const isOwnProfile = String(user?.userId) === userId
@@ -114,14 +117,16 @@ function ProfileHeader({ userId }: { userId: string }) {
             <span className="text-sm text-muted-foreground wrap-anywhere">Beiträge</span>
           </div>
         </div>
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => { setInitialTab("followers"); setFollowDialogOpen(true); }}>
           <span className="font-semibold text-lg">{userStats.followers || 0}</span>
           <div className="flex items-center gap-1.5">
             <Users className="w-3.5 h-3.5 text-muted-foreground hidden sm:flex" />
             <span className="text-sm text-muted-foreground wrap-anywhere">Follower</span>
           </div>
         </div>
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => { setInitialTab("following"); setFollowDialogOpen(true); }}>
           <span className="font-semibold text-lg">{userStats.following || 0}</span>
           <div className="flex items-center gap-1.5">
             <UserCheck className="w-3.5 h-3.5 text-muted-foreground hidden sm:flex" />
@@ -129,6 +134,13 @@ function ProfileHeader({ userId }: { userId: string }) {
           </div>
         </div>
       </div>
+
+      <FollowListDialog
+        open={followDialogOpen}
+        onOpenChange={setFollowDialogOpen}
+        userId={Number(userId)}
+        initialTab={initialTab}
+      />
     </div>
   )
 }

@@ -1,13 +1,21 @@
 import { useState, useEffect } from "react"
-import { User, BookOpen, MessageSquare } from "lucide-react"
+import { User, BookOpen, MessageSquare, UserX, UserPlus } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { getUserProfile, type UserProfile } from "@/api/userService"
+import { Button } from "../ui/button"
+import { useAuth } from "@/contexts/Authcontext"
+import { followUser, unfollowUser } from "@/api/followService"
 
 
 function ProfileHeader({ userId }: { userId: string }) {
   const [userStats, setUserStats] = useState<UserProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { user } = useAuth()
+
+  const isOwnProfile = String(user?.userId) === userId
+  const alreadyFollowing = false // TODO: API-Call
+
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -25,6 +33,14 @@ function ProfileHeader({ userId }: { userId: string }) {
     }
     fetchUserProfile()
   }, [userId])
+
+  function handleFollowButtonClick() {
+    if (alreadyFollowing) {
+      unfollowUser(Number(userId))
+    } else {
+      followUser(Number(userId))
+    }
+  }
 
   if (isLoading) {
     return (
@@ -52,14 +68,34 @@ function ProfileHeader({ userId }: { userId: string }) {
             <User className="w-12 h-12 text-primary" />
           </AvatarFallback>
         </Avatar>
-        {/* Name */}
-        <div className="flex-1 min-w-0">
-          <h2 className="text-2xl font-semibold flex flex-col lg:flex-row lg:items-baseline gap-1">
-            <span className="truncate max-w-full">{userStats.username}</span>
-            <span className="italic text-muted-foreground truncate text-sm md:text-xl"> #{userStats.userId}</span>
-          </h2>
-          <p className="text-sm text-muted-foreground">Mitglied seit {userStats.accountCreatedAtYear}</p>
+
+        <div className="flex-1 flex flex-col xs:flex-row gap-5 xs:items-center flex-wrap ">
+          {/* Name */}
+          <div className="flex-1 flex flex-col min-w-0">
+            <h2 className="text-2xl font-semibold flex items-center gap-1">
+              <span className="truncate max-w-full">{userStats.username}</span>
+              <span className="italic text-muted-foreground truncate text-sm md:text-xl"> #{userStats.userId}</span>
+            </h2>
+            <p className="text-sm text-muted-foreground">Mitglied seit {userStats.accountCreatedAtYear}</p>
+          </div>
+
+          {/* Follow/Unfollow Button */}
+          {isOwnProfile ?
+            null :
+            <Button className="flex-1 max-w-40" onClick={handleFollowButtonClick}>
+              {alreadyFollowing ?
+                <div className="flex justify-around items-center gap-3">
+                  <UserX className="w-4 h-4 inline" />
+                  <span>Entfolgen</span>
+                </div> :
+                <div className="flex justify-around items-center gap-3">
+                  <UserPlus className="w-4 h-4 inline" />
+                  <span>Folgen</span>
+                </div>}
+            </Button>}
+
         </div>
+
       </div>
 
       {/* Stats */}

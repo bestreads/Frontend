@@ -14,6 +14,8 @@ export interface UserProfile {
   accountCreatedAtYear: number
   booksInLibrary: number
   posts: number
+  followers: number
+  following: number
 }
 
 export interface OwnUserProfile {
@@ -68,12 +70,12 @@ export interface UpdateUserData {
  */
 export const updateUserData = async (data: UpdateUserData): Promise<void> => {
   const formData = new FormData()
-  
+
   if (data.username) formData.append("username", data.username)
   if (data.email) formData.append("email", data.email)
   if (data.password) formData.append("password", data.password)
   if (data.profilePicture) formData.append("profile_picture", data.profilePicture)
-  
+
   await apiClient.put("/user", formData, {
     headers: {
       "Content-Type": "multipart/form-data",

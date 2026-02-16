@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { User, BookOpen, MessageSquare, UserX, UserPlus } from "lucide-react"
+import { User, BookOpen, MessageSquare, UserX, UserPlus, UserCheck, Users } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { getUserProfile, type UserProfile } from "@/api/userService"
 import { Button } from "../ui/button"
@@ -104,14 +104,28 @@ function ProfileHeader({ userId }: { userId: string }) {
           <span className="font-semibold text-lg">{userStats.booksInLibrary}</span>
           <div className="flex items-center gap-1.5">
             <BookOpen className="w-3.5 h-3.5 text-muted-foreground hidden sm:flex" />
-            <span className="text-sm text-muted-foreground">Bücher</span>
+            <span className="text-sm text-muted-foreground wrap-anywhere">Bücher</span>
           </div>
         </div>
         <div className="flex flex-col items-center">
           <span className="font-semibold text-lg">{userStats.posts}</span>
           <div className="flex items-center gap-1.5">
             <MessageSquare className="w-3.5 h-3.5 text-muted-foreground hidden sm:flex" />
-            <span className="text-sm text-muted-foreground">Beiträge</span>
+            <span className="text-sm text-muted-foreground wrap-anywhere">Beiträge</span>
+          </div>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="font-semibold text-lg">{userStats.followers || 0}</span>
+          <div className="flex items-center gap-1.5">
+            <Users className="w-3.5 h-3.5 text-muted-foreground hidden sm:flex" />
+            <span className="text-sm text-muted-foreground wrap-anywhere">Follower</span>
+          </div>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="font-semibold text-lg">{userStats.following || 0}</span>
+          <div className="flex items-center gap-1.5">
+            <UserCheck className="w-3.5 h-3.5 text-muted-foreground hidden sm:flex" />
+            <span className="text-sm text-muted-foreground wrap-anywhere">Gefolgt</span>
           </div>
         </div>
       </div>

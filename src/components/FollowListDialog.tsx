@@ -13,6 +13,7 @@ import { useNavigate } from "react-router"
 import { useFollowContext } from "@/contexts/FollowContext"
 import { getUserProfile, type FollowUser, type UserProfile } from "@/api/userService"
 import { useAuth } from "@/contexts/Authcontext"
+import { Spinner } from "./ui/spinner"
 
 interface FollowListDialogProps {
   open: boolean
@@ -155,12 +156,12 @@ export function FollowListDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{dialogUser?.username || "Benutzer"}</DialogTitle>
+          <DialogTitle>Follower von <span className="font-bold">{dialogUser?.username || "Benutzer"}</span></DialogTitle>
         </DialogHeader>
 
         {isLoadingLists ? (
           <div className="flex justify-center py-8">
-            <p className="text-muted-foreground">Laden...</p>
+            <Spinner />
           </div>
         ) : (
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "followers" | "following")}>

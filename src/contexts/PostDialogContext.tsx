@@ -64,6 +64,7 @@ export function PostDialogProvider({ children }: { children: ReactNode }) {
   )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function usePostDialog() {
   const context = useContext(PostDialogContext)
   if (!context) {

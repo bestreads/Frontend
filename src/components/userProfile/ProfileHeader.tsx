@@ -4,9 +4,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { getUserProfile, type UserProfile } from "@/api/userService"
 import { Button } from "../ui/button"
 import { useAuth } from "@/contexts/Authcontext"
-import { followUser, unfollowUser } from "@/api/followService"
+import { useFollowContext } from "@/contexts/FollowContext"
 import { FollowListDialog } from "../FollowListDialog"
-
+import { Spinner } from "../ui/spinner"
 
 function ProfileHeader({ userId }: { userId: string }) {
   const [userStats, setUserStats] = useState<UserProfile | null>(null)
@@ -15,10 +15,8 @@ function ProfileHeader({ userId }: { userId: string }) {
   const [followDialogOpen, setFollowDialogOpen] = useState(false)
   const [initialTab, setInitialTab] = useState<"followers" | "following">("followers")
   const { user } = useAuth()
-
   const isOwnProfile = String(user?.userId) === userId
-  const alreadyFollowing = false // TODO: API-Call
-
+  const { isFollowing, toggle, isFollowLoading } = useFollowContext()
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -38,11 +36,7 @@ function ProfileHeader({ userId }: { userId: string }) {
   }, [userId])
 
   function handleFollowButtonClick() {
-    if (alreadyFollowing) {
-      unfollowUser(Number(userId))
-    } else {
-      followUser(Number(userId))
-    }
+    toggle(Number(userId))
   }
 
   if (isLoading) {
@@ -84,18 +78,22 @@ function ProfileHeader({ userId }: { userId: string }) {
 
           {/* Follow/Unfollow Button */}
           {isOwnProfile ?
-            null :
-            <Button className="flex-1 max-w-40" onClick={handleFollowButtonClick}>
-              {alreadyFollowing ?
-                <div className="flex justify-around items-center gap-3">
-                  <UserX className="w-4 h-4 inline" />
-                  <span>Entfolgen</span>
-                </div> :
-                <div className="flex justify-around items-center gap-3">
-                  <UserPlus className="w-4 h-4 inline" />
-                  <span>Folgen</span>
-                </div>}
-            </Button>}
+            null : (
+              isFollowLoading ?
+                <Spinner /> :
+                <Button className="flex-1 max-w-40" onClick={handleFollowButtonClick} disabled={isFollowLoading}>
+                  {isFollowing(Number(userId)) ?
+                    <div className="flex justify-around items-center gap-3">
+                      <UserX className="w-4 h-4 inline" />
+                      <span>Entfolgen</span>
+                    </div> :
+                    <div className="flex justify-around items-center gap-3">
+                      <UserPlus className="w-4 h-4 inline" />
+                      <span>Folgen</span>
+                    </div>}
+                </Button>
+            )
+          }
 
         </div>
 

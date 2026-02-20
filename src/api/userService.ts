@@ -56,6 +56,40 @@ export const getUser = async (): Promise<OwnUserProfile> => {
   return response.data
 }
 
+export interface FollowUser {
+  userId: number
+  username: string
+  profilePicture: string
+}
+
+/**
+ * Holt die Follower-Liste eines Benutzers.
+ * Ruft zuerst die IDs ab und löst dann jedes Profil einzeln auf.
+ * @param userId - Die ID des Benutzers
+ * @returns Liste der Nutzer, die dem Benutzer folgen
+ */
+export const getFollowers = async (userId: number): Promise<FollowUser[]> => {
+  const idsResponse = await apiClient.get<number[]>(`/user/${userId}/followers`)
+  const profiles = await Promise.all(
+    idsResponse.data.map((id) => apiClient.get<FollowUser>(`/user/${id}`))
+  )
+  return profiles.map((r) => r.data)
+}
+
+/**
+ * Holt die Following-Liste eines Benutzers.
+ * Ruft zuerst die IDs ab und löst dann jedes Profil einzeln auf.
+ * @param userId - Die ID des Benutzers
+ * @returns Liste der Nutzer, denen der Benutzer folgt
+ */
+export const getFollowing = async (userId: number): Promise<FollowUser[]> => {
+  const idsResponse = await apiClient.get<number[]>(`/user/${userId}/following`)
+  const profiles = await Promise.all(
+    idsResponse.data.map((id) => apiClient.get<FollowUser>(`/user/${id}`))
+  )
+  return profiles.map((r) => r.data)
+}
+
 export interface UpdateUserData {
   username?: string
   email?: string

@@ -10,19 +10,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { User, UserPlus, UserX } from "lucide-react"
 import { useNavigate } from "react-router"
-import { followUser, unfollowUser } from "@/api/followService"
-
-interface FollowUser {
-  userId: number
-  username: string
-  profilePicture: string
-  isFollowing?: boolean
-}
+import { useFollowContext } from "@/contexts/FollowContext"
+import { getUserProfile, type FollowUser, type UserProfile } from "@/api/userService"
+import { useAuth } from "@/contexts/Authcontext"
 
 interface FollowListDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  userId?: number // Optional: für spezifischen User, sonst eigene Follower/Following
+  userId: number // Die userId des Profils, dessen Follower/Following angezeigt werden sollen
   initialTab?: "followers" | "following"
 }
 
@@ -32,68 +27,62 @@ export function FollowListDialog({
   userId,
   initialTab = "followers",
 }: FollowListDialogProps) {
+  const { isFollowing, toggle, isFollowLoading, loadFollowersFor, loadFollowingFor } = useFollowContext()
+
   const [activeTab, setActiveTab] = useState<"followers" | "following">(initialTab)
-  const [followers, setFollowers] = useState<FollowUser[]>([])
-  const [following, setFollowing] = useState<FollowUser[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [followerList, setFollowerList] = useState<FollowUser[]>([])
+  const [followingList, setFollowingList] = useState<FollowUser[]>([])
+  const [isLoadingLists, setIsLoadingLists] = useState(false)
+  const [dialogUser, setDialogUser] = useState<UserProfile | null>(null)
   const navigate = useNavigate()
 
-  // Update activeTab when dialog opens with new initialTab
+  const { user: authUser } = useAuth()
+
+  // Sync activeTab mit initialTab wenn es sich ändert
   useEffect(() => {
-    if (open) {
-      setActiveTab(initialTab)
-    }
-  }, [open, initialTab])
+    setActiveTab(initialTab)
+  }, [initialTab])
 
-  // Load follower/following data when dialog opens
+  // Listen UND User-Profil für userId laden wenn Dialog geöffnet wird oder userId sich ändert
   useEffect(() => {
-    if (open) {
-      loadFollowData()
-    }
-  }, [open, userId])
-
-  const loadFollowData = async () => {
-    setIsLoading(true)
-    try {
-      // TODO: Ersetze durch echte API-Calls
-      // const followersData = await getFollowers(userId)
-      // const followingData = await getFollowing(userId)
-
-      // Mock-Daten
-      setFollowers([
-        { userId: 1, username: "Alice", profilePicture: "", isFollowing: true },
-        { userId: 2, username: "Bob", profilePicture: "", isFollowing: false },
-        { userId: 3, username: "Charlie", profilePicture: "", isFollowing: true },
-      ])
-
-      setFollowing([
-        { userId: 4, username: "David", profilePicture: "", isFollowing: true },
-        { userId: 5, username: "Emma", profilePicture: "", isFollowing: true },
-      ])
-    } catch (error) {
-      console.error("Fehler beim Laden der Follower-Daten:", error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleFollowToggle = async (targetUserId: number, currentlyFollowing: boolean) => {
-    try {
-      if (currentlyFollowing) {
-        await unfollowUser(targetUserId)
-      } else {
-        await followUser(targetUserId)
+    if (open && userId) {
+      const loadLists = async () => {
+        console.log("[FollowListDialog] Lade Listen und Profil für userId:", userId)
+        setIsLoadingLists(true)
+        try {
+          const [followers, following, userProfile] = await Promise.all([
+            loadFollowersFor(userId),
+            loadFollowingFor(userId),
+            getUserProfile(userId),
+          ])
+          setFollowerList(followers)
+          setFollowingList(following)
+          setDialogUser(userProfile)
+          console.log("[FollowListDialog] Daten geladen - User:", userProfile.username, "Followers:", followers.length, "Following:", following.length)
+        } catch (err) {
+          console.error("[FollowListDialog] Fehler beim Laden der Listen:", err)
+        } finally {
+          setIsLoadingLists(false)
+        }
       }
-      // Daten neu laden nach Änderung
-      await loadFollowData()
-    } catch (error) {
-      console.error("Fehler beim Follow/Unfollow:", error)
+      loadLists()
     }
+  }, [open, userId, loadFollowersFor, loadFollowingFor])
+
+  const handleFollowToggle = async (targetUserId: number) => {
+    console.log("[FollowListDialog] Toggle für userId:", targetUserId)
+    await toggle(targetUserId)
+    // Listen neu laden nach toggle
+    const [followers, following] = await Promise.all([
+      loadFollowersFor(userId),
+      loadFollowingFor(userId),
+    ])
+    setFollowerList(followers)
+    setFollowingList(following)
   }
 
   const handleUserClick = (targetUserId: number) => {
     onOpenChange(false)
-    // Kleine Verzögerung, damit der Dialog sich schließt, bevor navigiert wird
     setTimeout(() => {
       navigate(`/profile/${targetUserId}`)
     }, 100)
@@ -110,48 +99,54 @@ export function FollowListDialog({
 
     return (
       <div className="flex flex-col gap-2 max-h-96 overflow-y-auto">
-        {users.map((user) => (
-          <div
-            key={user.userId}
-            className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
-          >
+        {users.map((user) => {
+          const userIsFollowing = isFollowing(user.userId)
+
+          return (
             <div
-              onClick={() => handleUserClick(user.userId)}
-              className="flex items-center gap-3 flex-1 min-w-0 group cursor-pointer"
+              key={user.userId}
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
             >
-              <Avatar className="w-10 h-10 group-hover:border-accent border-2 border-transparent transition-colors">
-                <AvatarImage src={user.profilePicture} />
-                <AvatarFallback>
-                  <User className="w-5 h-5" />
-                </AvatarFallback>
-              </Avatar>
+              <div
+                onClick={() => handleUserClick(user.userId)}
+                className="flex items-center gap-3 flex-1 min-w-0 group cursor-pointer"
+              >
+                <Avatar className="w-10 h-10 group-hover:border-accent border-2 border-transparent transition-colors">
+                  <AvatarImage src={user.profilePicture} />
+                  <AvatarFallback>
+                    <User className="w-5 h-5" />
+                  </AvatarFallback>
+                </Avatar>
 
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate group-hover:text-accent transition-colors">{user.username}</p>
-                <p className="text-sm text-muted-foreground">#{user.userId}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium truncate group-hover:text-accent transition-colors">{user.username}</p>
+                  <p className="text-sm text-muted-foreground">#{user.userId}</p>
+                </div>
               </div>
-            </div>
-
-            <Button
-              size="sm"
-              variant={user.isFollowing ? "outline" : "default"}
-              onClick={() => handleFollowToggle(user.userId, user.isFollowing || false)}
-              className="shrink-0"
-            >
-              {user.isFollowing ? (
-                <>
-                  <UserX className="w-4 h-4 mr-1" />
-                  Entfolgen
-                </>
-              ) : (
-                <>
-                  <UserPlus className="w-4 h-4 mr-1" />
-                  Folgen
-                </>
+              {authUser && user.userId === authUser.userId ? null : (
+                <Button
+                  size="sm"
+                  variant={userIsFollowing ? "outline" : "default"}
+                  onClick={() => handleFollowToggle(user.userId)}
+                  disabled={isFollowLoading}
+                  className="shrink-0"
+                >
+                  {userIsFollowing ? (
+                    <>
+                      <UserX className="w-4 h-4 mr-1" />
+                      Entfolgen
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="w-4 h-4 mr-1" />
+                      Folgen
+                    </>
+                  )}
+                </Button>
               )}
-            </Button>
-          </div>
-        ))}
+            </div>
+          )
+        })}
       </div>
     )
   }
@@ -160,10 +155,10 @@ export function FollowListDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Follower & Gefolgt</DialogTitle>
+          <DialogTitle>{dialogUser?.username || "Benutzer"}</DialogTitle>
         </DialogHeader>
 
-        {isLoading ? (
+        {isLoadingLists ? (
           <div className="flex justify-center py-8">
             <p className="text-muted-foreground">Laden...</p>
           </div>
@@ -171,19 +166,19 @@ export function FollowListDialog({
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "followers" | "following")}>
             <TabsList className="w-full grid grid-cols-2">
               <TabsTrigger value="followers">
-                Follower ({followers.length})
+                Follower ({followerList.length})
               </TabsTrigger>
               <TabsTrigger value="following">
-                Gefolgt ({following.length})
+                Gefolgt ({followingList.length})
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="followers" className="mt-4">
-              {renderUserList(followers)}
+              {renderUserList(followerList)}
             </TabsContent>
 
             <TabsContent value="following" className="mt-4">
-              {renderUserList(following)}
+              {renderUserList(followingList)}
             </TabsContent>
           </Tabs>
         )}

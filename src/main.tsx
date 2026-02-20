@@ -15,6 +15,7 @@ import UserProfile from './pages/UserProfile.tsx';
 import { ThemeProvider } from './components/theme-provider.tsx';
 import { AuthProvider } from './contexts/Authcontext.tsx';
 import { LibraryProvider } from './contexts/LibraryContext.tsx';
+import { FollowProvider } from './contexts/FollowContext.tsx';
 
 const router = createBrowserRouter([
   {
@@ -57,11 +58,13 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
-      <LibraryProvider>
-        <ThemeProvider storageKey="vite-ui-theme">
-          <RouterProvider router={router} />
-        </ThemeProvider>
-      </LibraryProvider>
+      <FollowProvider>
+        <LibraryProvider>
+          <ThemeProvider storageKey="vite-ui-theme">
+            <RouterProvider router={router} />
+          </ThemeProvider>
+        </LibraryProvider>
+      </FollowProvider>
     </AuthProvider>
   </StrictMode>,
 )

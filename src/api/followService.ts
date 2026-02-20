@@ -6,7 +6,8 @@ import apiClient from "./client"
  * @returns Die Response-Daten vom Server
  */
 export const followUser = async (id: number): Promise<void> => {
-  await apiClient.post("/follow", null, { params: { id } })
+  console.log(`[followService] Calling POST /follow?id=${id}`)
+  await apiClient.post(`/follow?id=${id}`)
 }
 
 /**
@@ -15,5 +16,6 @@ export const followUser = async (id: number): Promise<void> => {
  * @returns Die Response-Daten vom Server
  */
 export const unfollowUser = async (id: number): Promise<void> => {
-  await apiClient.delete("/follow", { params: { id } })
+  console.log(`[followService] Calling DELETE /follow?id=${id}`)
+  await apiClient.delete(`/follow?id=${id}`)
 }

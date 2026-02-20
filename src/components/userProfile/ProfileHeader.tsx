@@ -117,7 +117,7 @@ function ProfileHeader({ userId }: { userId: string }) {
         </div>
         <div className="flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity"
           onClick={() => { setInitialTab("followers"); setFollowDialogOpen(true); }}>
-          <span className="font-semibold text-lg">{userStats.followers || 0}</span>
+          <span className="font-semibold text-lg">{userStats.followersCount || 0}</span>
           <div className="flex items-center gap-1.5">
             <Users className="w-3.5 h-3.5 text-muted-foreground hidden sm:flex" />
             <span className="text-sm text-muted-foreground wrap-anywhere">Follower</span>
@@ -125,7 +125,7 @@ function ProfileHeader({ userId }: { userId: string }) {
         </div>
         <div className="flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity"
           onClick={() => { setInitialTab("following"); setFollowDialogOpen(true); }}>
-          <span className="font-semibold text-lg">{userStats.following || 0}</span>
+          <span className="font-semibold text-lg">{userStats.followingCount || 0}</span>
           <div className="flex items-center gap-1.5">
             <UserCheck className="w-3.5 h-3.5 text-muted-foreground hidden sm:flex" />
             <span className="text-sm text-muted-foreground wrap-anywhere">Gefolgt</span>

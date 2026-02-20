@@ -14,8 +14,8 @@ export interface UserProfile {
   accountCreatedAtYear: number
   booksInLibrary: number
   posts: number
-  followers: number
-  following: number
+  followingCount: number
+  followersCount: number
 }
 
 export interface OwnUserProfile {

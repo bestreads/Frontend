@@ -18,7 +18,7 @@ import { Spinner } from "./ui/spinner"
 interface FollowListDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  userId: number // Die userId des Profils, dessen Follower/Following angezeigt werden sollen
+  userId?: number // Die userId des Profils, dessen Follower/Following angezeigt werden sollen
   initialTab?: "followers" | "following"
 }
 
@@ -75,8 +75,8 @@ export function FollowListDialog({
     await toggle(targetUserId)
     // Listen neu laden nach toggle
     const [followers, following] = await Promise.all([
-      loadFollowersFor(userId),
-      loadFollowingFor(userId),
+      loadFollowersFor(userId!),
+      loadFollowingFor(userId!),
     ])
     setFollowerList(followers)
     setFollowingList(following)

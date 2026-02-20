@@ -269,7 +269,7 @@ function Navigation() {
       <FollowListDialog
         open={followDialogOpen}
         onOpenChange={setFollowDialogOpen}
-        userId={user?.userId}
+        userId={user!.userId}
         initialTab={followInitialTab}
       />
     </>

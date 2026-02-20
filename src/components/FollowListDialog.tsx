@@ -48,7 +48,6 @@ export function FollowListDialog({
   useEffect(() => {
     if (open && userId) {
       const loadLists = async () => {
-        console.log("[FollowListDialog] Lade Listen und Profil für userId:", userId)
         setIsLoadingLists(true)
         try {
           const [followers, following, userProfile] = await Promise.all([
@@ -59,7 +58,6 @@ export function FollowListDialog({
           setFollowerList(followers)
           setFollowingList(following)
           setDialogUser(userProfile)
-          console.log("[FollowListDialog] Daten geladen - User:", userProfile.username, "Followers:", followers.length, "Following:", following.length)
         } catch (err) {
           console.error("[FollowListDialog] Fehler beim Laden der Listen:", err)
         } finally {
@@ -71,7 +69,6 @@ export function FollowListDialog({
   }, [open, userId, loadFollowersFor, loadFollowingFor])
 
   const handleFollowToggle = async (targetUserId: number) => {
-    console.log("[FollowListDialog] Toggle für userId:", targetUserId)
     await toggle(targetUserId)
     // Listen neu laden nach toggle
     const [followers, following] = await Promise.all([

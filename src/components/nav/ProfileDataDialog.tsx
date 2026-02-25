@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,9 +8,11 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Lock, Eye, EyeOff, Mail, Pencil, User, Camera } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Lock, Eye, EyeOff, Mail, Pencil, User, Camera, FileText } from "lucide-react";
 import { useAuth } from "@/contexts/Authcontext";
-import { updateUserData } from "@/api/userService";
+import { updateUserData, getUserProfile } from "@/api/userService";
+import BioRenderer from "@/components/BioRenderer";
 
 interface ProfileDialogProps {
   open: boolean;
@@ -26,6 +28,16 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
   const [tempEmail, setTempEmail] = useState<string>("");
   const [tempPassword, setTempPassword] = useState<string>("");
   const [tempPasswordConfirm, setTempPasswordConfirm] = useState<string>("");
+  const [tempDescription, setTempDescription] = useState<string>("");
+  const [currentDescription, setCurrentDescription] = useState<string>("");
+
+  useEffect(() => {
+    if (open && user?.userId) {
+      getUserProfile(user.userId)
+        .then((profile) => setCurrentDescription(profile.description || ""))
+        .catch(() => {});
+    }
+  }, [open, user?.userId]);
   const [passwordError, setPasswordError] = useState<string>("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -81,6 +93,19 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
     }
   };
 
+  const handleUpdateDescription = async (newDescription: string) => {
+    setIsSaving(true);
+    try {
+      await updateUserData({ description: newDescription });
+      setCurrentDescription(newDescription);
+      await handleUserData();
+    } catch (error) {
+      console.error("Fehler beim Aktualisieren der Beschreibung:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleSave = async () => {
     if (editingField === "username") {
       await handleUpdateUsername(tempUsername);
@@ -96,12 +121,15 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
         return;
       }
       await handleUpdatePassword(tempPassword);
+    } else if (editingField === "description") {
+      await handleUpdateDescription(tempDescription);
     }
     setEditingField(null);
     setTempUsername("");
     setTempEmail("");
     setTempPassword("");
     setTempPasswordConfirm("");
+    setTempDescription("");
     setPasswordError("");
   };
 
@@ -111,6 +139,7 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
     setTempEmail("");
     setTempPassword("");
     setTempPasswordConfirm("");
+    setTempDescription("");
     setPasswordError("");
   };
 
@@ -118,6 +147,7 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
     setEditingField(field);
     if (field === "username") setTempUsername(currentValue);
     if (field === "email") setTempEmail(currentValue);
+    if (field === "description") setTempDescription(currentValue);
   };
 
   const handleDialogClose = (open: boolean) => {
@@ -130,7 +160,7 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-125">
         <DialogHeader>
           <DialogTitle>Meine Daten</DialogTitle>
           <DialogDescription>
@@ -242,6 +272,68 @@ function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
                   value={tempEmail}
                   onChange={(e) => setTempEmail(e.target.value)}
                 />
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" size="sm" onClick={handleCancel} disabled={isSaving}>
+                    Abbrechen
+                  </Button>
+                  <Button size="sm" onClick={handleSave} disabled={isSaving}>
+                    {isSaving ? "Speichern..." : "Speichern"}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Beschreibung ändern */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  <label className="text-sm font-medium">Beschreibung</label>
+                </div>
+                {currentDescription ? (
+                  <p className="text-sm text-muted-foreground">
+                    {currentDescription.length > 20
+                      ? currentDescription.slice(0, 20) + "..."
+                      : currentDescription}
+                  </p>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Keine Beschreibung</p>
+                )}
+              </div>
+              {editingField !== "description" && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => startEditing("description", currentDescription)}
+                  disabled={isSaving}
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+            {editingField === "description" && (
+              <div className="space-y-2 pt-2">
+                <Textarea
+                  placeholder="Beschreibe dich... Links: Linktext[https://url]"
+                  value={tempDescription}
+                  onChange={(e) => {
+                    const val = e.target.value
+                    const lineCount = val.split("\n").length
+                    if (lineCount <= 3) {
+                      setTempDescription(val)
+                    }
+                  }}
+                  rows={3}
+                />
+                <p className={`text-xs text-right ${tempDescription.split("\n").length >= 3 ? "text-destructive" : "text-muted-foreground"}`}>{tempDescription.split("\n").length}/3 Zeilen</p>
+                {tempDescription && (
+                  <div className="rounded-md border p-3 bg-muted/50">
+                    <p className="text-xs text-muted-foreground mb-1">Vorschau:</p>
+                    <BioRenderer text={tempDescription} className="text-sm" />
+                  </div>
+                )}
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" size="sm" onClick={handleCancel} disabled={isSaving}>
                     Abbrechen

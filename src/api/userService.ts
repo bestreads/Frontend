@@ -14,8 +14,9 @@ export interface UserProfile {
   accountCreatedAtYear: number
   booksInLibrary: number
   posts: number
-  followingCount: number
+  description: string
   followersCount: number
+  followingCount: number
 }
 
 export interface OwnUserProfile {
@@ -95,6 +96,7 @@ export interface UpdateUserData {
   email?: string
   password?: string
   profilePicture?: File
+  description?: string
 }
 
 /**
@@ -109,6 +111,7 @@ export const updateUserData = async (data: UpdateUserData): Promise<void> => {
   if (data.email) formData.append("email", data.email)
   if (data.password) formData.append("password", data.password)
   if (data.profilePicture) formData.append("profile_picture", data.profilePicture)
+  if (data.description !== undefined) formData.append("description", data.description)
 
   await apiClient.put("/user", formData, {
     headers: {

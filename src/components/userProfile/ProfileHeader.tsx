@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/Authcontext"
 import { useFollowContext } from "@/contexts/FollowContext"
 import { FollowListDialog } from "../FollowListDialog"
 import { Spinner } from "../ui/spinner"
+import BioRenderer from "../BioRenderer"
 
 function ProfileHeader({ userId }: { userId: string }) {
   const [userStats, setUserStats] = useState<UserProfile | null>(null)
@@ -74,6 +75,9 @@ function ProfileHeader({ userId }: { userId: string }) {
               <span className="italic text-muted-foreground truncate text-sm md:text-xl"> #{userStats.userId}</span>
             </h2>
             <p className="text-sm text-muted-foreground">Mitglied seit {userStats.accountCreatedAtYear}</p>
+            {userStats.description && (
+              <BioRenderer text={userStats.description} className="text-sm text-muted-foreground mt-1" />
+            )}
           </div>
 
           {/* Follow/Unfollow Button */}

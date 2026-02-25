@@ -8,7 +8,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-import { LogOut, Search, Settings, User, Menu, Library, House, UserPen } from "lucide-react";
+import { LogOut, Search, Settings, User, Menu, Library, House, UserPen, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -21,6 +21,7 @@ import {
 import SettingsDialog from "./SettingsDialog";
 import ProfileDialog from "./ProfileDataDialog";
 import BookSearchDialog from "../BookSearchDialog";
+import { FollowListDialog } from "../FollowListDialog";
 import logoSvgN from "@/assets/images/logo_text_nebeneinander.svg"
 import { useAuth } from "@/contexts/Authcontext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -30,6 +31,8 @@ function Navigation() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [bookSearchOpen, setBookSearchOpen] = useState(false);
+  const [followDialogOpen, setFollowDialogOpen] = useState(false);
+  const [followInitialTab, setFollowInitialTab] = useState<"followers" | "following">("followers");
   const location = useLocation();
   const { logout, user } = useAuth();
 
@@ -103,6 +106,17 @@ function Navigation() {
                 <User className="w-4 h-4" />
                 Mein Profil
               </Link>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setFollowInitialTab("followers");
+                  setFollowDialogOpen(true);
+                }}
+                className="px-4 py-2 rounded-md hover:bg-accent text-left flex items-center gap-2"
+              >
+                <Users className="w-4 h-4" />
+                Follower & Gefolgt
+              </button>
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
@@ -193,8 +207,8 @@ function Navigation() {
                   {user?.username}
                 </h1>
               </NavigationMenuTrigger>
-              <NavigationMenuContent className="left-auto right-0">
-                <ul className="p-2 space-y-2">
+              <NavigationMenuContent className="left-auto right-0 min-w-[220px]">
+                <ul className="p-2 space-y-2 whitespace-nowrap">
                   <li>
                     <Link
                       to={`/profile/${user?.userId}`}
@@ -203,6 +217,18 @@ function Navigation() {
                       <User className="w-4 h-4" />
                       Mein Profil
                     </Link>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => {
+                        setFollowInitialTab("followers");
+                        setFollowDialogOpen(true);
+                      }}
+                      className="w-full px-3 py-2 text-sm hover:bg-accent rounded-md text-left flex items-center gap-2"
+                    >
+                      <Users className="w-4 h-4" />
+                      Follower & Gefolgt
+                    </button>
                   </li>
                   <li>
                     <button
@@ -240,6 +266,12 @@ function Navigation() {
       <ProfileDialog open={profileOpen} onOpenChange={setProfileOpen} />
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
       <BookSearchDialog open={bookSearchOpen} onOpenChange={setBookSearchOpen} />
+      <FollowListDialog
+        open={followDialogOpen}
+        onOpenChange={setFollowDialogOpen}
+        userId={user!.userId}
+        initialTab={followInitialTab}
+      />
     </>
   );
 }

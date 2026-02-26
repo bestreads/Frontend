@@ -12,7 +12,7 @@ import { useAuth } from "@/contexts/Authcontext"
 import { Button } from "./ui/button"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog"
 import { deletePost } from "@/api/postService"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
 
 function PostCard({ postData, onRatingChange, onEditPost }: { postData: Post, onRatingChange?: () => void, onEditPost?: (post: Post) => void }) {
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
@@ -93,6 +93,9 @@ function PostCard({ postData, onRatingChange, onEditPost }: { postData: Post, on
                   Bearbeiten
                 </DropdownMenuItem>
 
+                <DropdownMenuSeparator />
+            
+
                 {/* Post löschen */}
                 <DropdownMenuItem
                   onClick={() => setIsDeleteDialogOpen(true)}
@@ -155,14 +158,14 @@ function PostCard({ postData, onRatingChange, onEditPost }: { postData: Post, on
             </div>
 
             <p className="hidden sm:flex text-muted-foreground text-s">
-              {new Date(postData.createdAt).toLocaleDateString('de-DE', {
+              {new Date(postData.updatedAt).toLocaleDateString('de-DE', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
               })}
             </p>
             <p className="sm:hidden text-muted-foreground text-s">
-              {new Date(postData.createdAt).toLocaleDateString('de-DE', {
+              {new Date(postData.updatedAt).toLocaleDateString('de-DE', {
                 year: 'numeric',
                 month: 'numeric',
                 day: 'numeric'

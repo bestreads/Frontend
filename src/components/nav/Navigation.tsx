@@ -8,7 +8,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-import { LogOut, Search, Settings, User, Menu, Library, House, UserPen, Users } from "lucide-react";
+import { LogOut, Search, Settings, User, Menu, Library, UserPen, Users, MessagesSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -50,7 +50,7 @@ function Navigation() {
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[300px] sm:w-[400px] p-6">
+          <SheetContent side="right" className="w-75 sm:w-100 p-6">
             <SheetHeader>
               <SheetTitle>
                 <div className="flex flex-col items-center justify-center gap-4">
@@ -74,9 +74,19 @@ function Navigation() {
                 className={`px-4 py-2 rounded-md hover:bg-accent flex items-center gap-2 ${location.pathname === "/" ? "bg-accent-foreground" : ""
                   }`}
               >
-                <House className="w-4 h-4" />
-                Startseite
+                <MessagesSquare className="w-4 h-4" />
+                Beiträge
               </Link>
+              <Link
+                to="/following"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`px-4 py-2 rounded-md hover:bg-accent flex items-center gap-2 ${location.pathname === "/following" ? "bg-accent-foreground" : ""
+                  }`}
+              >
+                <Users className="w-4 h-4" />
+                Freunde
+              </Link>
+              <hr className="my-0" />
               <Link
                 to="/library"
                 onClick={() => setMobileMenuOpen(false)}
@@ -158,11 +168,27 @@ function Navigation() {
                   to="/"
                   className={`px-4 py-2 text-sm font-medium rounded-md hover:bg-accent hover:text-accent-foreground flex flex-row items-center gap-2 ${location.pathname === "/" ? "bg-accent-foreground" : ""}`}
                 >
-                  <House className="w-4 h-4 text-current" />
-                  Startseite
+                  <MessagesSquare className="w-4 h-4 text-current" />
+                  Beiträge
                 </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
+
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link
+                  to="/following"
+                  className={` flex flex-row items-center gap-2 px-4 py-2 text-sm font-medium rounded-md 
+                    hover:bg-accent hover:text-accent-foreground 
+                    ${location.pathname === "/following" ? "bg-accent-foreground" : ""}`}
+                >
+                  <Users className="w-4 h-4 text-current" />
+                  Freunde
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+
+            <div className="w-px h-5 bg-border self-center" />
 
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
@@ -207,7 +233,7 @@ function Navigation() {
                   {user?.username}
                 </h1>
               </NavigationMenuTrigger>
-              <NavigationMenuContent className="left-auto right-0 min-w-[220px]">
+              <NavigationMenuContent className="left-auto right-0 min-w-55">
                 <ul className="p-2 space-y-2 whitespace-nowrap">
                   <li>
                     <Link

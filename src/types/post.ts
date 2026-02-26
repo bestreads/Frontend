@@ -19,7 +19,7 @@ export interface Post {
   author: PostAuthor
   book: BookWithUserData
   content: string
-  createdAt: string
+  updatedAt: string
   likes?: number
   commentCount?: number
   comments?: Comment[] // erst bei Klick laden? 

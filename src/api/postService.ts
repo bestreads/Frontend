@@ -7,7 +7,7 @@ export interface Post {
   Uid: number
   Book: Book
   Content: string
-  CreatedAt: string
+  UpdatedAt: string
   State: number
   Rating: number
 }
@@ -38,6 +38,16 @@ export interface DeletePost {
  */
 export const getPosts = async (params: GetPostsParams): Promise<Post[]> => {
   const response = await apiClient.get<Post[]>("/post", { params })
+  return response.data
+}
+
+/**
+ * Holt alle Posts von Benutzern, denen man folgt
+ * @param params - Offset für Pagination
+ * @returns Die Posts der gefolgten Benutzer
+ */
+export const getFollowingPosts = async (params: { offset?: number }): Promise<Post[]> => {
+  const response = await apiClient.get<Post[]>("/post/following", { params })
   return response.data
 }
 

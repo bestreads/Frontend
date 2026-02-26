@@ -1,11 +1,6 @@
-import { Star, Trash2, BookOpen } from "lucide-react"
+import { Trash2, BookOpen, MoreVertical, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,8 +10,15 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { useState } from "react"
 import { bookStateLabels } from "@/types/book"
 import type { BookWithUserData, BookState } from "@/types/book"
@@ -33,13 +35,11 @@ interface BookCardProps {
 
 export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onRate }: BookCardProps) {
 
-  const [isRatingPopoverOpen, setIsRatingPopoverOpen] = useState(false)
-  const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState(false)
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false)
 
   const handleStatusChange = (newStatus: BookState) => {
     onUpdateStatus?.(book.ID, newStatus)
-    setIsStatusPopoverOpen(false)
   }
 
   const handleDelete = () => {
@@ -48,7 +48,6 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
 
   const handleRatingClick = (rating: number) => {
     onRate?.(book.ID, rating)
-    setIsRatingPopoverOpen(false)
   }
 
 
@@ -79,7 +78,7 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
 
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-sm text-muted-foreground shrink-0">Status:</span>
-                  <span className="text-sm font-medium truncate min-w-0">{book.userBook.state? bookStateLabels[book.userBook.state] : null}</span>
+                  <span className="text-sm font-medium truncate min-w-0">{book.userBook.state ? bookStateLabels[book.userBook.state] : null}</span>
                 </div>
 
                 <div className="flex items-center gap-2 min-w-0">
@@ -89,77 +88,62 @@ export function BookCard({ book, readOnly = false, onDelete, onUpdateStatus, onR
 
               {/* Action Buttons */}
               {!readOnly && (
-                <div className="flex gap-1 sm:gap-2 shrink-0 self-end sm:self-start" onClick={(e) => e.stopPropagation()}>
-                  {/* Bewertung Popover */}
-                  <Popover open={isRatingPopoverOpen} onOpenChange={setIsRatingPopoverOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        title="Bewerten"
-                      >
-                        <Star className="h-5 w-5 text-primary fill-primary" />
+                <div className="shrink-0 self-end sm:self-start" onClick={(e) => e.stopPropagation()}>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" aria-label="Buchoptionen">
+                        <MoreVertical className="h-5 w-5" />
                       </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-4" align="end">
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">Bewertung</p>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-50">
+                      {/* Bewertung */}
+                      <DropdownMenuLabel className="text-xs text-muted-foreground font-normal flex items-center gap-2">
+                        <Star className="w-3 h-3" />
+                        Bewertung
+                      </DropdownMenuLabel>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="focus:bg-transparent cursor-default">
                         <StarRating rating={book.userBook.rating} interactive={true} onRatingChange={handleRatingClick} />
-                      </div>
-                    </PopoverContent>
-                  </Popover>
+                      </DropdownMenuItem>
 
-                  {/* Status ändern Popover */}
-                  <Popover open={isStatusPopoverOpen} onOpenChange={setIsStatusPopoverOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        title="Status ändern"
-                      >
-                        <BookOpen className="h-5 w-5" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-2" align="end">
-                      <div className="flex flex-col gap-1">
-                        <Button
-                          variant={book.userBook.state === "want-to-read" ? "default" : "ghost"}
-                          className="justify-start"
-                          size="sm"
-                          onClick={() => handleStatusChange("want-to-read")}
-                        >
-                          Möchte ich lesen
-                        </Button>
-                        <Button
-                          variant={book.userBook.state === "reading" ? "default" : "ghost"}
-                          className="justify-start"
-                          size="sm"
-                          onClick={() => handleStatusChange("reading")}
-                        >
-                          Lese ich gerade
-                        </Button>
-                        <Button
-                          variant={book.userBook.state === "read" ? "default" : "ghost"}
-                          className="justify-start"
-                          size="sm"
-                          onClick={() => handleStatusChange("read")}
-                        >
-                          Gelesen
-                        </Button>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
+                      <DropdownMenuSeparator />
 
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        title="Löschen"
+                      {/* Lesestatus */}
+                      <DropdownMenuLabel className="text-xs text-muted-foreground font-normal flex items-center gap-2">
+                        <BookOpen className="w-3 h-3" />
+                        Lesestatus
+                      </DropdownMenuLabel>
+                      <DropdownMenuItem
+                        onClick={() => handleStatusChange("want-to-read")}
+                        className={book.userBook.state === "want-to-read" ? "font-semibold" : ""}
                       >
-                        <Trash2 className="h-5 w-5 text-red-600" />
-                      </Button>
-                    </AlertDialogTrigger>
+                        Möchte ich lesen
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleStatusChange("reading")}
+                        className={book.userBook.state === "reading" ? "font-semibold" : ""}
+                      >
+                        Lese ich gerade
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleStatusChange("read")}
+                        className={book.userBook.state === "read" ? "font-semibold" : ""}
+                      >
+                        Gelesen
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      {/* Löschen */}
+                      <DropdownMenuItem
+                        onClick={() => setIsDeleteAlertOpen(true)}
+                        className="text-red-600 focus:text-red-600"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Löschen
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  {/* Delete Alert Dialog */}
+                  <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>Buch löschen?</AlertDialogTitle>

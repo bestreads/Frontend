@@ -8,6 +8,7 @@ import { useFollowContext } from "@/contexts/FollowContext"
 import { FollowListDialog } from "../FollowListDialog"
 import { Spinner } from "../ui/spinner"
 import BioRenderer from "../BioRenderer"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "../ui/alert-dialog"
 
 function ProfileHeader({ userId }: { userId: string }) {
   const [userStats, setUserStats] = useState<UserProfile | null>(null)
@@ -18,6 +19,8 @@ function ProfileHeader({ userId }: { userId: string }) {
   const { user } = useAuth()
   const isOwnProfile = String(user?.userId) === userId
   const { isFollowing, toggle, isFollowLoading } = useFollowContext()
+
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false)
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -37,7 +40,11 @@ function ProfileHeader({ userId }: { userId: string }) {
   }, [userId])
 
   function handleFollowButtonClick() {
-    toggle(Number(userId))
+    if (isFollowing(Number(userId))) {
+      setIsDeleteAlertOpen(true)
+    } else {
+      toggle(Number(userId))
+    }
   }
 
   if (isLoading) {
@@ -143,6 +150,27 @@ function ProfileHeader({ userId }: { userId: string }) {
         userId={Number(userId)}
         initialTab={initialTab}
       />
+
+      {/* Unfollow Alert Dialog */}
+      <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Benutzer entfolgen?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Möchtest du "{userStats?.username}" wirklich entfolgen?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => toggle(Number(userId))}
+              className={`bg-destructive text-white hover:bg-destructive/75 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60 dark:hover:bg-destructive/50 active:scale-95 transition-all`}
+            >
+              Entfolgen
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

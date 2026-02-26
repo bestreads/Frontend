@@ -12,7 +12,7 @@ import { useAuth } from "@/contexts/Authcontext"
 import { Button } from "./ui/button"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog"
 import { deletePost } from "@/api/postService"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
 
 function PostCard({ postData, onRatingChange, onEditPost }: { postData: Post, onRatingChange?: () => void, onEditPost?: (post: Post) => void }) {
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
@@ -92,6 +92,9 @@ function PostCard({ postData, onRatingChange, onEditPost }: { postData: Post, on
                   <Pencil className="w-4 h-4 mr-2" />
                   Bearbeiten
                 </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+            
 
                 {/* Post löschen */}
                 <DropdownMenuItem

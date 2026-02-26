@@ -155,14 +155,14 @@ function PostCard({ postData, onRatingChange, onEditPost }: { postData: Post, on
             </div>
 
             <p className="hidden sm:flex text-muted-foreground text-s">
-              {new Date(postData.createdAt).toLocaleDateString('de-DE', {
+              {new Date(postData.updatedAt).toLocaleDateString('de-DE', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
               })}
             </p>
             <p className="sm:hidden text-muted-foreground text-s">
-              {new Date(postData.createdAt).toLocaleDateString('de-DE', {
+              {new Date(postData.updatedAt).toLocaleDateString('de-DE', {
                 year: 'numeric',
                 month: 'numeric',
                 day: 'numeric'

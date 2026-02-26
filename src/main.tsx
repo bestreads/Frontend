@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute.tsx';
 import Login from './pages/Login.tsx';
 import Signup from './pages/Signup.tsx';
 import Library from './pages/Library.tsx';
+import FollowingFeed from './pages/FollowingFeed.tsx';
 import Error from './pages/Errorpage.tsx';
 import UserProfile from './pages/UserProfile.tsx';
 
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
           {
             path: "library",
             element: <Library />
+          },
+          {
+            path: "following",
+            element: <FollowingFeed />
           },
           {
             path: "profile/:userId",

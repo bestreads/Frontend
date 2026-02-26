@@ -226,7 +226,7 @@ export function CreatePostDialog({
               placeholder="Was möchtest du über dieses Buch sagen?"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="w-full min-h-[100px] resize-none"
+              className="w-full min-h-25 resize-none"
             />
           </div>
 

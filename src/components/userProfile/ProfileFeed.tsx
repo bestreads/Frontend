@@ -35,7 +35,7 @@ function ProfileFeed({ userId }: { userId: string }) {
 
       // Backend-Response zu Frontend-Post-Type mappen
       const mappedPosts: Post[] = data.map((apiPost: ApiPost) => ({
-        id: `post-${apiPost.Uid}-${apiPost.Book.ID}-${apiPost.CreatedAt}`,
+        id: `post-${apiPost.Uid}-${apiPost.Book.ID}-${apiPost.UpdatedAt}`,
         author: {
           userId: apiPost.Uid.toString(),
           username: apiPost.Username,
@@ -49,7 +49,7 @@ function ProfileFeed({ userId }: { userId: string }) {
           },
         },
         content: apiPost.Content,
-        createdAt: apiPost.CreatedAt,
+        updatedAt: apiPost.UpdatedAt,
       }))
 
       setPosts(mappedPosts)
@@ -178,7 +178,7 @@ function ProfileFeed({ userId }: { userId: string }) {
                   {posts.map((post) => (
                     <PostCard
                       postData={post}
-                      key={`${post.id}-${post.createdAt}`}
+                      key={`${post.id}-${post.updatedAt}`}
                       onRatingChange={fetchPosts}
                       onEditPost={handleEditPost}
                     />

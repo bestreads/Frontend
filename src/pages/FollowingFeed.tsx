@@ -1,8 +1,8 @@
 import type { Post } from "@/types/post"
 import PostCard from "@/components/PostCard"
-import { MessageSquareOff } from "lucide-react"
+import { Users } from "lucide-react"
 import { useEffect, useState, useCallback } from "react"
-import { getPosts, type Post as ApiPost } from "@/api/postService"
+import { getFollowingPosts, type Post as ApiPost } from "@/api/postService"
 import { Spinner } from "@/components/ui/spinner"
 import { apiToBookState } from "@/types/book"
 import {
@@ -18,7 +18,7 @@ import { usePostDialog } from "@/contexts/PostDialogContext"
 
 const POSTS_PER_PAGE = 25
 
-const Feed = () => {
+const FollowingFeed = () => {
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -31,7 +31,7 @@ const Feed = () => {
     try {
       setLoading(true)
       const offset = (currentPage - 1) * POSTS_PER_PAGE
-      const data = await getPosts({ offset })
+      const data = await getFollowingPosts({ offset })
 
       // Backend-Response zu Frontend-Post-Type mappen
       const mappedPosts: Post[] = data.map((apiPost: ApiPost) => ({
@@ -53,11 +53,9 @@ const Feed = () => {
       }))
 
       setPosts(mappedPosts)
-      // Wenn weniger als POSTS_PER_PAGE zurückkommen, sind wir auf der letzten Seite
       if (data.length < POSTS_PER_PAGE) {
         setTotalPages(currentPage)
       } else {
-        // Ansonsten gibt es mindestens eine weitere Seite
         setTotalPages(prev => Math.max(prev, currentPage + 1))
       }
     } catch (err) {
@@ -72,7 +70,6 @@ const Feed = () => {
     fetchPosts()
   }, [fetchPosts])
 
-  // Registriere fetchPosts als Refresh-Callback für den PostDialog
   useEffect(() => {
     registerRefreshCallback(fetchPosts)
     return () => unregisterRefreshCallback(fetchPosts)
@@ -154,7 +151,7 @@ const Feed = () => {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8">Beiträge</h1>
+        <h1 className="text-4xl font-bold mb-8">Freunde</h1>
         <div className="flex justify-center items-center py-16">
           <Spinner />
         </div>
@@ -165,7 +162,7 @@ const Feed = () => {
   if (error) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8">Beiträge</h1>
+        <h1 className="text-4xl font-bold mb-8">Freunde</h1>
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <p className="text-destructive text-lg">{error}</p>
         </div>
@@ -175,14 +172,15 @@ const Feed = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8">Beiträge</h1>
+      <h1 className="text-4xl font-bold mb-8">Freunde</h1>
       <div className="space-y-4">
         {posts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <div className="text-muted-foreground mb-2">
-              <MessageSquareOff className="w-20 h-20" />
+              <Users className="w-20 h-20" />
             </div>
-            <p className="text-muted-foreground text-lg">Keine Beiträge gefunden</p>
+            <p className="text-muted-foreground text-lg">Keine Beiträge von Freunden</p>
+            <p className="text-muted-foreground text-sm mt-1">Folge anderen Nutzern, um ihre Beiträge hier zu sehen</p>
           </div>
         ) : (
           <div className="grid gap-4">
@@ -222,4 +220,4 @@ const Feed = () => {
   )
 }
 
-export default Feed
+export default FollowingFeed
